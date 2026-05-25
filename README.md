@@ -1,5 +1,13 @@
-# void
-A powerful and advanced GameGuardian script for Hill Climb Racing 2. 
+# 🌌 Void | Advanced Memory Framework
+> A powerful and highly optimized memory manipulation script built for Hill Climb Racing 2 on the custom **GG: ME** (GameGuardian: Memory Editor) environment.
 
-- Important Note:
-This script is powerful. To ensure the longevity of your account and prevent immediate server-side flags, use this tool with discretion. Aggressive abuse will result in an automated ban by the game’s security systems. Use responsibly.
+---
+
+## ⚠️ Critical Account Safety Notice
+> **Important Note on Discretion:**
+> The modification capabilities of this script are exceptionally powerful, allowing local variables to change instantly. Because the game's server-side logging actively monitors rapid or unnatural account progression, you must use this tool with extreme discretion.
+> 
+> * **Avoid Aggressive Abuse:** Attempting to max an account instantly or changing too many values at once **will** trigger automated server-side flags and result in an immediate ban.
+> * **Use Responsibly:** Replicate human progression limits and test on alternative accounts to maintain environment stability.
+
+---
