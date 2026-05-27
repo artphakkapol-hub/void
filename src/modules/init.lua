@@ -7,17 +7,17 @@
 ]]
 
 local tabHandlers = {
-    {"account",   "ACCOUNT MENU"   },
-    {"player",    "PLAYER MENU"    },
-    {"adventure", "ADVENTURE MENU" },
-    {"cups",      "CUPS MENU"      },
-    {"team",      "TEAM MENU"      },
-    {"event",     "EVENT MENU"     },
-    {"creative",  "CREATIVE MENU"  },
-    {"shop",      "SHOP MENU"      },
-    {"tool",      "TOOLS MENU"     },
-    {"other",     "OTHER MENU"     },
-    {"settings",  "SETTINGS MENU"  },
+    {"account", "ACCOUNT MENU"},
+    {"player", "PLAYER MENU"},
+    {"adventure", "ADVENTURE MENU"},
+    {"cups", "CUPS MENU"},
+    {"team", "TEAM MENU"},
+    {"event", "EVENT MENU"},
+    {"creative", "CREATIVE MENU"},
+    {"shop", "SHOP MENU"},
+    {"tool", "TOOLS MENU"},
+    {"other", "OTHER MENU"},
+    {"settings", "SETTINGS MENU"},
 }
 
 local categoryHandlers = {}

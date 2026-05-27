@@ -9,7 +9,6 @@ return function(container)
     addModule(container, "change_name", "Change Name", "Change your player name", "input", {
         {hint = "Enter Name", value = "", type = "text"}
     }, function(done, val)
-        -- Route the interactive input execution through the scheduler thread lock
         scheduler:add(function(finish_task)
             if val ~= nil and val ~= "" then
                 local name = val
