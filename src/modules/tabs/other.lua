@@ -1,6 +1,6 @@
 --[[
   Other Tab - Other mode features
-  Status: Resolution adjust, Resolution offset adjust, Mods pack (UNFINISHED).
+  Status: Resolution adjust, Resolution offset adjust
   
   @module callback Receives container View to populate with modules
 ]]

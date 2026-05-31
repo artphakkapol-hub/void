@@ -36,9 +36,6 @@ def bundle():
     modules_to_bundle = get_all_modules()
     packed_content = []
     
-    packed_content.append("-- ─────────────────────────────────────────────")
-    packed_content.append("-- VOID v1.0 — SECURE VIRTUAL EXTENSION FILE")
-    packed_content.append("-- ─────────────────────────────────────────────\n")
     packed_content.append("local __vfs = {}")
 
     # Pack files into the memory table
@@ -140,7 +137,6 @@ end
         out.write("\n".join(packed_content))
     
     print(f"\n[✔] Done! Single file generated: '{OUTPUT_FILE}'")
-    print("[!] Pass this file directly into your encrypter.")
 
 if __name__ == "__main__":
     bundle()

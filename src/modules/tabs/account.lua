@@ -71,4 +71,10 @@ return function(container)
     }}
     
     addArchModule(container, "fake_vip", "Fake VIP", "Toggle vip subscription state locally", "switch", nil, fakeVipPatches)
+    
+    addModule(container, "fake_rank", "Fake Rank", "Set your rank to fake legendary automatically", "button", nil, function(done)
+        scheduler:add(function(finish_task)
+            
+        end)
+    end)
 end

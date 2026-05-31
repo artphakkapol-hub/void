@@ -15,7 +15,6 @@ local tabHandlers = {
     {"event", "EVENT MENU"},
     {"creative", "CREATIVE MENU"},
     {"shop", "SHOP MENU"},
-    {"tool", "TOOLS MENU"},
     {"other", "OTHER MENU"},
     {"settings", "SETTINGS MENU"},
 }

@@ -42,13 +42,13 @@ return function(container)
             "Champion Chest", "Special Chest 1", "Xmas Chest", "Legendary Chest",
             "Blue Chest", "VIP Chest 1", "VIP Chest 2", "Video Chest",
             "Starter Chest", "Special Chest 2", "Fingersoft Chest", "Mega Chest",
-            "Team Spirit Chest"
+            "Team Spirit Chest", "Style Chest", "Mythic Chest"
         },
         default = 8
     }, function(done, item, index)
         scheduler:add(function(finish_task)
             local chestIDs = {
-                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18, 19, 20
             }
             local preload = memory:load("change_chest")
             if preload then
@@ -92,22 +92,27 @@ return function(container)
                 
                 local counter = 0 
                 local edits = {}
+                local tptrs = {}
                 
                 for _, r in ipairs(results) do
                     gg.clearResults()
                     gg.searchNumber(tostring(r.address), 32, false, gg.SIGN_EQUAL, min, max, 0)
                     local ptrs = gg.getResults(gg.getResultsCount())
-                    
-                    for _, p in ipairs(ptrs) do
-                        local val = gg.getValues({{address = p.address + 0x18, flags = 4}})[1].value
-                        if val > 0 and val < 100 then
-                            for off = 0x18, 0x2C, 4 do
-                                table.insert(edits, {address = p.address + off, flags = 4, value = 0})
-                            end
-                        end
+                    for _, sp in ipairs(ptrs) do
+                        table.insert(tptrs, {sp.address + 0x18, flags = 4})
                     end
                     counter = counter + 1
                     showToast(tostring(counter) .. "/" .. tostring(totalres), true)
+                end
+                
+                local tptrs = gg.getValues(tptrs)
+                for _, p in ipairs(tptrs) do
+                    local val = p.value
+                    if val > 0 and val < 100 then
+                        for off = 0x18, 0x2C, 4 do
+                            table.insert(edits, {address = p.address + off, flags = 4, value = 0})
+                        end
+                    end
                 end
                 
                 if #edits > 0 then

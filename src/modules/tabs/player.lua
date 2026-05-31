@@ -19,7 +19,6 @@ return function(container)
 
     addModule(container, "no_clip", "No-Clip", "Make your player go through objects without dying", "switch", nil,
     function(done, state)
-        -- Hand off memory operation to the atomic scheduler queue
         scheduler:add(function(finish_task)
             local preload = memory:load("no_clip")
             if preload then

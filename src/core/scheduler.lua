@@ -42,7 +42,7 @@ function scheduler:next()
     end)
 
     if not success then
-        gg.toast("Scheduler Warning: Task crashed -> " .. tostring(err))
+        gg.alert("Scheduler Warning: Task crashed -> " .. tostring(err))
         self:next()
     end
 end

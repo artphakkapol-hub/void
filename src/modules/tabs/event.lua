@@ -9,7 +9,7 @@ local custom_rewards = "H4sIAAAAAAAA/+1d34/ktpF+918RzLMHmBnv2sm9OfYBd0AOOFwOwQFB
 
 return function(container)
     addModule(container, "patch_rewards", "Event Rewards Patch", "Patch the current public event rewards to custom one provided by VOID (require game restart)", "button", nil, function(done)
-        gg.toast("Please Wait!")
+        gg.toast("Scanning active files...")
     
         local eventsPaths = {
             "/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/",
@@ -191,4 +191,115 @@ return function(container)
             showDialog("Failed", "Failed to patch, try again.", {"OK"})
         end
     end)
+    
+    addModule(container, "restore_events", "Restore Event Files", "Delete modified event JSONs to force game server recovery (requires game restart)", "button", nil, function(done)
+        gg.toast("Scanning active files...")
+    
+        local eventsPaths = {
+            "/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/",
+            "/data/user/0/com.waxmoon.ma.gp/rootfs/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/"
+        }
+    
+        local successList = {}
+        local failedList = {}
+    
+        for _, path in ipairs(eventsPaths) do
+            local active = path .. "active_events.json"
+            local active_decrypted = path .. ".active_events"
+    
+            local meta = Crypto.decrypt(active, active_decrypted)
+            if meta then
+                local activeFile = io.open(active_decrypted, "r")
+                if activeFile then
+                    local activeContent = activeFile:read("*a")
+                    activeFile:close()
+                    os.remove(active_decrypted)
+    
+                    local jsonActive = nil
+                    local ok, err = pcall(function()
+                        jsonActive = json.decode(activeContent)
+                    end)
+    
+                    if ok and jsonActive then
+                        local gameEvents = jsonActive.gameEvents or {}
+                        if #gameEvents > 0 then
+                            local labels = {}
+                            for i = 1, #gameEvents do labels[i] = tostring(gameEvents[i]) end
+                            
+                            local selections = gg.multiChoice(labels, nil, "Select files to restore (delete):\nPath: " .. path)
+                            
+                            if selections then
+                                local fileTaskDone = false
+                                
+                                scheduler:add(function(finish_task)
+                                    pcall(function()
+                                        for idx, selected in pairs(selections) do
+                                            if selected then
+                                                local eventName = gameEvents[idx]
+                                                if eventName then
+                                                    local eventPath = path .. eventName .. ".json"
+                                                    
+                                                    local removed, remErr = os.remove(eventPath)
+                                                    if removed then
+                                                        table.insert(successList, eventName)
+                                                    else
+                                                        table.insert(failedList, "Failed to delete " .. eventName .. ": " .. tostring(remErr))
+                                                    end
+                                                end
+                                            end
+                                        end
+                                    end)
+                                    finish_task()
+                                    fileTaskDone = true
+                                end)
+    
+                                while not fileTaskDone do gg.sleep(50) end
+                            end
+                        else
+                            table.insert(failedList, "No active events found at path: " .. path)
+                        end
+                    else
+                        table.insert(failedList, "Failed to decode active_events.json at path: " .. path)
+                    end
+                else
+                    table.insert(failedList, "Cannot open active_events.json at path: " .. path)
+                end
+            end
+        end
+        
+        local resultMsg = ""
+        if #successList > 0 then
+            resultMsg = resultMsg .. "Successfully Removed (Will Restore on Restart):\n"
+            for _, name in ipairs(successList) do
+                resultMsg = resultMsg .. "- " .. name .. ".json\n"
+            end
+            resultMsg = resultMsg .. "\n"
+        end
+        if #failedList > 0 then
+            resultMsg = resultMsg .. "Failed:\n"
+            for _, e in ipairs(failedList) do
+                resultMsg = resultMsg .. "- " .. e .. "\n"
+            end
+        end
+    
+        showDialog("Restore Results", resultMsg, {"OK"})
+        done()
+    
+        if #successList > 0 then
+            print(resultMsg)
+            showDialog("Restart Required", "Game will now close to allow server file synchronization.", {"OK"})
+            
+            if scheduler:getQueueCount() > 0 or scheduler:isProcessing() then
+                gg.toast("Finishing pending background tasks... ⏳")
+                while scheduler:getQueueCount() > 0 or scheduler:isProcessing() do
+                    gg.sleep(100)
+                end
+            end
+    
+            gg.processKill()
+            gg.sleep(1000)
+            exitScript()
+        end
+    end)
+    
 end
