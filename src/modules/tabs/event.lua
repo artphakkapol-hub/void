@@ -1,16 +1,26 @@
 --[[
-  Event Tab - Evemt mode features
-  Features: Event Rewards Patch
+  Event Tab - Event mode features
+  Features: Event Rewards Patch / Restore
   
   @module callback Receives container View to populate with modules
 ]]
 
 return function(container)
+    -- Helper function to safely execute root commands across both modules
+    local function shellAsRoot(cmd)
+        local output = gg.shell("su -c '" .. cmd .. "'")
+        return output or "" -- Guarantee a string is returned, never nil
+    end
+
     addModule(container, "patch_rewards", "Event Rewards Patch", "Patch the current public event rewards to custom one provided by VOID (require game restart)", "button", nil, function(done)
-        -- Determine if environment is natively Rooted or using a Virtual Space
+        -- Determine if environment is natively Rooted or using a Virtual Space safely
         gg.toast("Checking environment permissions...")
-        local suCheck = gg.shell("su -c id")
-        local hasRoot = suCheck and suCheck:find("uid=0") ~= nil
+        local suCheck = shellAsRoot("id")
+        
+        local hasRoot = false
+        if suCheck and suCheck:find("uid=0") then
+            hasRoot = true
+        end
         
         if hasRoot then
             memory:save("shell_states", {root=true})
@@ -58,8 +68,8 @@ return function(container)
             elseif hasRoot then
                 -- File blocked but root exists: Pull to public space
                 local secureActiveCopy = safeWorkspace .. "active_events.json"
-                gg.shell("su -c 'cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\"'")
-                gg.shell("su -c 'chmod 777 \"" .. secureActiveCopy .. "\"'")
+                shellAsRoot("cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\"")
+                shellAsRoot("chmod 777 \"" .. secureActiveCopy .. "\"")
                 targetActivePath = secureActiveCopy
                 activeMovedViaRoot = true
             else
@@ -132,8 +142,8 @@ return function(container)
                                             if testEventOpen then
                                                 testEventOpen:close()
                                             elseif hasRoot then
-                                                gg.shell("su -c 'cp \"" .. eventPath .. "\" \"" .. secureEventCopy .. "\"'")
-                                                gg.shell("su -c 'chmod 777 \"" .. secureEventCopy .. "\"'")
+                                                shellAsRoot("cp \"" .. eventPath .. "\" \"" .. secureEventCopy .. "\"")
+                                                shellAsRoot("chmod 777 \"" .. secureEventCopy .. "\"")
                                                 targetEventPath = secureEventCopy
                                                 eventMovedViaRoot = true
                                             else
@@ -166,8 +176,8 @@ return function(container)
                                                             local secureEncryptedOut = safeWorkspace .. eventName .. "_patched.json"
                                                             Crypto.encrypt(decryptedPath, secureEncryptedOut, eventMeta)
                                                             
-                                                            gg.shell("su -c 'cp \"" .. secureEncryptedOut .. "\" \"" .. eventPath .. "\"'")
-                                                            gg.shell("su -c 'chmod 660 \"" .. eventPath .. "\"'")
+                                                            shellAsRoot("cp \"" .. secureEncryptedOut .. "\" \"" .. eventPath .. "\"")
+                                                            shellAsRoot("chmod 660 \"" .. eventPath .. "\"")
                                                             os.remove(secureEncryptedOut)
                                                         else
                                                             -- Virtual space configuration: directly encrypt back to root app folder destination
@@ -256,10 +266,14 @@ return function(container)
     end)
 
     addModule(container, "restore_events", "Event Rewards Restore", "Delete modified event JSONs to force game server recovery (requires game restart)", "button", nil, function(done)
-        -- Determine if environment is natively Rooted or using a Virtual Space
+        -- Determine if environment is natively Rooted or using a Virtual Space safely
         gg.toast("Checking environment permissions...")
-        local suCheck = gg.shell("su -c id")
-        local hasRoot = suCheck and suCheck:find("uid=0") ~= nil
+        local suCheck = shellAsRoot("id")
+        
+        local hasRoot = false
+        if suCheck and suCheck:find("uid=0") then
+            hasRoot = true
+        end
         
         if hasRoot then
             memory:save("shell_states", {root=true})
@@ -297,8 +311,8 @@ return function(container)
             elseif hasRoot then
                 -- File blocked but root exists: Pull to public space to parse gameEvents list
                 local secureActiveCopy = safeWorkspace .. "active_events.json"
-                gg.shell("su -c 'cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\"'")
-                gg.shell("su -c 'chmod 777 \"" .. secureActiveCopy .. "\"'")
+                shellAsRoot("cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\"")
+                shellAsRoot("chmod 777 \"" .. secureActiveCopy .. "\"")
                 targetActivePath = secureActiveCopy
                 activeMovedViaRoot = true
             else
@@ -346,9 +360,9 @@ return function(container)
                                                     
                                                     -- If standard removal fails and we have root escalation privileges
                                                     if not removed and hasRoot then
-                                                        local rootRmOut = gg.shell("su -c 'rm \"" .. eventPath .. "\"'")
+                                                        shellAsRoot("rm \"" .. eventPath .. "\"")
                                                         -- Verify file deletion over root channel
-                                                        local checkFile = gg.shell("su -c '[ -f \"" .. eventPath .. "\" ] && echo yes || echo no'")
+                                                        local checkFile = shellAsRoot("[ -f \"" .. eventPath .. "\" ] && echo yes || echo no")
                                                         if checkFile and checkFile:find("no") then
                                                             removed = true
                                                         else
