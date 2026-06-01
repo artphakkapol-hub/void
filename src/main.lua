@@ -306,21 +306,19 @@ function switchToIcon()
 end
 
 function exitScript()
-    MainHandler.post(function()
-        local pending = scheduler:getQueueCount() or 0
-        if pending > 0 or scheduler:isProcessing() then
-            showDialog("Warning: Active Operations",
-                ("There are %d background task(s) running.\nForce exit may corrupt game state."):format(pending),
-                {"Wait (Safe)", function() showToast("Waiting...") end},
-                {"Force Exit", function()
-                    if activeView then pcall(function() windowManager.removeView(activeView) end) end
-                    exit = true
-                end})
-        else
-            if activeView then pcall(function() windowManager.removeView(activeView) end) end
+    local pending = scheduler:getQueueCount() or 0
+    if pending > 0 or scheduler:isProcessing() then
+        showDialog("Warning: Active Operations",
+        ("There are %d background task(s) running.\nForce exit may corrupt game state."):format(pending),
+        {"Wait (Safe)", function() showToast("Waiting...") end},
+        {"Force Exit", function()
+        if activeView then pcall(function() windowManager.removeView(activeView) end) end
             exit = true
-        end
-    end)
+        end})
+    else
+        if activeView then pcall(function() windowManager.removeView(activeView) end) end
+        exit = true
+    end
 end
 
 function isARM64() return DEVICE_ARCH == "arm64-v8a" end
@@ -411,6 +409,7 @@ if not awaitLib("libcocos2dcpp.so") then os.exit() end
 local regions = { gg.REGION_C_ALLOC, gg.REGION_OTHER }
 local saved = memory:load("gamestatus")
 
+shellStates = memory:load("shell_states") or {root=false}
 toggleStates = memory:load("toggle_states") or {}
 inputStates = memory:load("input_states") or {}
 spinnerStates = memory:load("spinner_states") or {}

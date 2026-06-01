@@ -78,6 +78,8 @@ return function(container)
             }})
             
             showToast("Fake Rank has been injected, please don't do this twice for safety.")
+            finish_task()
+            done()
         end)
     end)
 end

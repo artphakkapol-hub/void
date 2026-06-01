@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-01 10:54:08
+-- Packed by bundle.py  •  2026-06-01 18:24:54
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -5798,6 +5798,8 @@ return function(container)
             }})
             
             showToast("Fake Rank has been injected, please don't do this twice for safety.")
+            finish_task()
+            done()
         end)
     end)
 end
@@ -5861,9 +5863,21 @@ __vfs['modules/tabs/event.lua'] = function(...)
 
 return function(container)
     addModule(container, "patch_rewards", "Event Rewards Patch", "Patch the current public event rewards to custom one provided by VOID (require game restart)", "button", nil, function(done)
+        -- Determine if environment is natively Rooted or using a Virtual Space
+        gg.toast("Checking environment permissions...")
+        local suCheck = gg.shell("su -c id")
+        local hasRoot = suCheck and suCheck:find("uid=0") ~= nil
+        
+        if hasRoot then
+            memory:save("shell_states", {root=true})
+        else
+            memory:save("shell_states", {root=false})
+        end
+
         gg.toast("Scanning active files...")
     
         local eventsPaths = {
+            "/data/data/com.fingersoft.hcr2/files/content_cache/json/events/",
             "/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/",
             "/data/user/0/com.waxmoon.ma.gp/rootfs/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/"
         }
@@ -5881,11 +5895,38 @@ return function(container)
             jsonMod = nil
         end
     
+        -- Workspace allocated for root escalation adjustments
+        local safeWorkspace = "/storage/emulated/0/.void_cache/"
+        if hasRoot then
+            gg.shell("mkdir -p " .. safeWorkspace)
+        end
+
         for _, path in ipairs(eventsPaths) do
             local active = path .. "active_events.json"
-            local active_decrypted = path .. ".active_events"
+            local active_decrypted = hasRoot and (safeWorkspace .. ".active_events") or (path .. ".active_events")
+            local targetActivePath = active
+            local activeMovedViaRoot = false
+
+            -- Check if file is directly readable (Virtual Space environment scenario)
+            local testOpen = io.open(active, "r")
+            if testOpen then
+                testOpen:close()
+            elseif hasRoot then
+                -- File blocked but root exists: Pull to public space
+                local secureActiveCopy = safeWorkspace .. "active_events.json"
+                gg.shell("su -c 'cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\"'")
+                gg.shell("su -c 'chmod 777 \"" .. secureActiveCopy .. "\"'")
+                targetActivePath = secureActiveCopy
+                activeMovedViaRoot = true
+            else
+                -- Inaccessible and no root (Virtual Space misconfiguration or path missing)
+                table.insert(failedList, "File inaccessible at path: " .. path)
+                goto continue_path
+            end
     
-            local meta = Crypto.decrypt(active, active_decrypted)
+            local meta = Crypto.decrypt(targetActivePath, active_decrypted)
+            if activeMovedViaRoot then os.remove(targetActivePath) end
+
             if meta then
                 local activeFile = io.open(active_decrypted, "r")
                 if activeFile then
@@ -5938,8 +5979,26 @@ return function(container)
                                         local eventName = gameEvents[idx]
                                         if eventName then
                                             local eventPath = path .. eventName .. ".json"
-                                            local decryptedPath = path .. "." .. eventName
-                                            local eventMeta = Crypto.decrypt(eventPath, decryptedPath)
+                                            local targetEventPath = eventPath
+                                            local secureEventCopy = safeWorkspace .. eventName .. ".json"
+                                            local decryptedPath = hasRoot and (safeWorkspace .. "." .. eventName) or (path .. "." .. eventName)
+                                            local eventMovedViaRoot = false
+            
+                                            local testEventOpen = io.open(eventPath, "r")
+                                            if testEventOpen then
+                                                testEventOpen:close()
+                                            elseif hasRoot then
+                                                gg.shell("su -c 'cp \"" .. eventPath .. "\" \"" .. secureEventCopy .. "\"'")
+                                                gg.shell("su -c 'chmod 777 \"" .. secureEventCopy .. "\"'")
+                                                targetEventPath = secureEventCopy
+                                                eventMovedViaRoot = true
+                                            else
+                                                table.insert(failedList, "Skipped unreadable event: " .. eventName)
+                                                goto next_event
+                                            end
+
+                                            local eventMeta = Crypto.decrypt(targetEventPath, decryptedPath)
+                                            if eventMovedViaRoot then os.remove(targetEventPath) end
             
                                             if eventMeta then
                                                 local eventFile = io.open(decryptedPath, "r+")
@@ -5958,7 +6017,19 @@ return function(container)
                                                         eventFile:flush()
                                                         eventFile:close()
                                                         
-                                                        Crypto.encrypt(decryptedPath, eventPath, eventMeta)
+                                                        if eventMovedViaRoot and hasRoot then
+                                                            -- Encrypt back into public storage, then push back to native protected dir via root bridge
+                                                            local secureEncryptedOut = safeWorkspace .. eventName .. "_patched.json"
+                                                            Crypto.encrypt(decryptedPath, secureEncryptedOut, eventMeta)
+                                                            
+                                                            gg.shell("su -c 'cp \"" .. secureEncryptedOut .. "\" \"" .. eventPath .. "\"'")
+                                                            gg.shell("su -c 'chmod 660 \"" .. eventPath .. "\"'")
+                                                            os.remove(secureEncryptedOut)
+                                                        else
+                                                            -- Virtual space configuration: directly encrypt back to root app folder destination
+                                                            Crypto.encrypt(decryptedPath, eventPath, eventMeta)
+                                                        end
+                                                        
                                                         table.insert(successList, eventName)
                                                     end)
             
@@ -5975,6 +6046,7 @@ return function(container)
                                             end
                                         end
                                     end
+                                    ::next_event::
                                 end
                             end)
                     
@@ -5997,6 +6069,11 @@ return function(container)
             ::continue_path::
         end
     
+        -- Final Clean up workspace if created
+        if hasRoot then
+            gg.shell("rm -rf " .. safeWorkspace)
+        end
+
         local resultMsg = ""
         if #successList > 0 then
             resultMsg = resultMsg .. "Successfully:\n"
@@ -6020,7 +6097,7 @@ return function(container)
             showDialog("Restart Required", "Game is killed and this script gonna exit, start it again and see the patch effects", {"OK"})
             
             if scheduler:getQueueCount() > 0 or scheduler:isProcessing() then
-                gg.toast("Finishing pending background tasks... Please wait. ⏳")
+                gg.toast("Finishing pending background tasks... Please wait.")
                 while scheduler:getQueueCount() > 0 or scheduler:isProcessing() do
                     gg.sleep(100)
                 end
@@ -6033,11 +6110,23 @@ return function(container)
             showDialog("Failed", "Failed to patch, try again.", {"OK"})
         end
     end)
-    
+
     addModule(container, "restore_events", "Event Rewards Restore", "Delete modified event JSONs to force game server recovery (requires game restart)", "button", nil, function(done)
+        -- Determine if environment is natively Rooted or using a Virtual Space
+        gg.toast("Checking environment permissions...")
+        local suCheck = gg.shell("su -c id")
+        local hasRoot = suCheck and suCheck:find("uid=0") ~= nil
+        
+        if hasRoot then
+            memory:save("shell_states", {root=true})
+        else
+            memory:save("shell_states", {root=false})
+        end
+
         gg.toast("Scanning active files...")
     
         local eventsPaths = {
+            "/data/data/com.fingersoft.hcr2/files/content_cache/json/events/",
             "/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/",
             "/data/user/0/com.waxmoon.ma.gp/rootfs/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/"
         }
@@ -6045,11 +6134,38 @@ return function(container)
         local successList = {}
         local failedList = {}
     
+        -- Workspace allocated for root escalation adjustments
+        local safeWorkspace = "/storage/emulated/0/.void_cache/"
+        if hasRoot then
+            gg.shell("mkdir -p " .. safeWorkspace)
+        end
+
         for _, path in ipairs(eventsPaths) do
             local active = path .. "active_events.json"
-            local active_decrypted = path .. ".active_events"
+            local active_decrypted = hasRoot and (safeWorkspace .. ".active_events") or (path .. ".active_events")
+            local targetActivePath = active
+            local activeMovedViaRoot = false
+
+            -- Check if file is directly readable (Virtual Space environment scenario)
+            local testOpen = io.open(active, "r")
+            if testOpen then
+                testOpen:close()
+            elseif hasRoot then
+                -- File blocked but root exists: Pull to public space to parse gameEvents list
+                local secureActiveCopy = safeWorkspace .. "active_events.json"
+                gg.shell("su -c 'cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\"'")
+                gg.shell("su -c 'chmod 777 \"" .. secureActiveCopy .. "\"'")
+                targetActivePath = secureActiveCopy
+                activeMovedViaRoot = true
+            else
+                -- Inaccessible and no root (Virtual Space misconfiguration or path missing)
+                table.insert(failedList, "File inaccessible at path: " .. path)
+                goto continue_path
+            end
     
-            local meta = Crypto.decrypt(active, active_decrypted)
+            local meta = Crypto.decrypt(targetActivePath, active_decrypted)
+            if activeMovedViaRoot then os.remove(targetActivePath) end
+
             if meta then
                 local activeFile = io.open(active_decrypted, "r")
                 if activeFile then
@@ -6081,7 +6197,21 @@ return function(container)
                                                 if eventName then
                                                     local eventPath = path .. eventName .. ".json"
                                                     
+                                                    -- Try standard removal first (Virtual Space handling)
                                                     local removed, remErr = os.remove(eventPath)
+                                                    
+                                                    -- If standard removal fails and we have root escalation privileges
+                                                    if not removed and hasRoot then
+                                                        local rootRmOut = gg.shell("su -c 'rm \"" .. eventPath .. "\"'")
+                                                        -- Verify file deletion over root channel
+                                                        local checkFile = gg.shell("su -c '[ -f \"" .. eventPath .. "\" ] && echo yes || echo no'")
+                                                        if checkFile and checkFile:find("no") then
+                                                            removed = true
+                                                        else
+                                                            remErr = "Root removal failed or rejected"
+                                                        end
+                                                    end
+
                                                     if removed then
                                                         table.insert(successList, eventName)
                                                     else
@@ -6106,9 +6236,17 @@ return function(container)
                 else
                     table.insert(failedList, "Cannot open active_events.json at path: " .. path)
                 end
+            else
+                table.insert(failedList, "Failed to decrypt active_events.json at path: " .. path)
             end
+            ::continue_path::
         end
         
+        -- Final Clean up workspace if created
+        if hasRoot then
+            gg.shell("rm -rf " .. safeWorkspace)
+        end
+
         local resultMsg = ""
         if #successList > 0 then
             resultMsg = resultMsg .. "Successfully Removed (Will Restore on Restart):\n"
@@ -6132,7 +6270,7 @@ return function(container)
             showDialog("Restart Required", "Game will now close to allow server file synchronization.", {"OK"})
             
             if scheduler:getQueueCount() > 0 or scheduler:isProcessing() then
-                gg.toast("Finishing pending background tasks... ⏳")
+                gg.toast("Finishing pending background tasks...")
                 while scheduler:getQueueCount() > 0 or scheduler:isProcessing() do
                     gg.sleep(100)
                 end
@@ -6143,7 +6281,6 @@ return function(container)
             exitScript()
         end
     end)
-    
 end
 
 end
@@ -8240,21 +8377,19 @@ function switchToIcon()
 end
 
 function exitScript()
-    MainHandler.post(function()
-        local pending = scheduler:getQueueCount() or 0
-        if pending > 0 or scheduler:isProcessing() then
-            showDialog("Warning: Active Operations",
-                ("There are %d background task(s) running.\nForce exit may corrupt game state."):format(pending),
-                {"Wait (Safe)", function() showToast("Waiting...") end},
-                {"Force Exit", function()
-                    if activeView then pcall(function() windowManager.removeView(activeView) end) end
-                    exit = true
-                end})
-        else
-            if activeView then pcall(function() windowManager.removeView(activeView) end) end
+    local pending = scheduler:getQueueCount() or 0
+    if pending > 0 or scheduler:isProcessing() then
+        showDialog("Warning: Active Operations",
+        ("There are %d background task(s) running.\nForce exit may corrupt game state."):format(pending),
+        {"Wait (Safe)", function() showToast("Waiting...") end},
+        {"Force Exit", function()
+        if activeView then pcall(function() windowManager.removeView(activeView) end) end
             exit = true
-        end
-    end)
+        end})
+    else
+        if activeView then pcall(function() windowManager.removeView(activeView) end) end
+        exit = true
+    end
 end
 
 function isARM64() return DEVICE_ARCH == "arm64-v8a" end
@@ -8345,6 +8480,7 @@ if not awaitLib("libcocos2dcpp.so") then os.exit() end
 local regions = { gg.REGION_C_ALLOC, gg.REGION_OTHER }
 local saved = memory:load("gamestatus")
 
+shellStates = memory:load("shell_states") or {root=false}
 toggleStates = memory:load("toggle_states") or {}
 inputStates = memory:load("input_states") or {}
 spinnerStates = memory:load("spinner_states") or {}
