@@ -17,7 +17,11 @@
 ---@param tabView View The tab TextView that was clicked
 ---@return nil
 function loadCategory(id, tabView)
-    if not moduleContainer or not tabView then return end
+    LOG.info("loadCategory", "id=" .. tostring(id) .. " tabView=" .. tostring(tabView) .. " moduleContainer=" .. tostring(moduleContainer))
+    if not moduleContainer or not tabView then
+        LOG.warn("loadCategory", "EARLY RETURN — moduleContainer=" .. tostring(moduleContainer) .. " tabView=" .. tostring(tabView))
+        return
+    end
 
     moduleContainer.removeAllViews()
 
@@ -85,6 +89,7 @@ end
 --- - "switch": Toggle on/off (state saved)
 --- - "button": Single action button
 --- - "ro": Read-only display (clickable to copy)
+--- - "info": Static label with ⓘ indicator; tap card to open a detail dialog
 --- - "spinner": Dropdown selector (state saved)
 --- - "slider": Single or multi-slider input (state saved)
 --- - "input": Single or multi-line text input (state saved)
@@ -93,8 +98,8 @@ end
 ---@param id string Unique module identifier
 ---@param title string Display title
 ---@param desc string Description text
----@param mode string Module type: "switch" | "button" | "ro" | "spinner" | "slider" | "input"
----@param extra any Mode-specific data (options, config, etc.)
+---@param mode string Module type: "switch" | "button" | "ro" | "info" | "spinner" | "slider" | "input"
+---@param extra any Mode-specific data. For "info": the detail string shown in the dialog.
 ---@param callback? fun(done: fun(), ...) Function called on action. Must call done() when finished.
 ---@return nil
 currentInputs = {}
@@ -558,66 +563,6 @@ function updateRO(id, newText)
     end)
 end
 
----@type table Animation frames with text and color pairs for glitch effect
-local GLITCH_FRAMES = {
-    {"VOID",  UI.LOGO},
-    {"V0ID",  UI.GLOW},
-    {"VO1D",  UI.LOGO},
-    {"VØĪD",  UI.GLOW},
-    {"VŌ1D",  UI.TEXT},
-    {"V0ID",  UI.GLOW},
-    {"VOID",  UI.LOGO},
-    {"XXXX",  UI.GLOW},
-    {"VOID",  UI.LOGO}
-}
-
----Starts an animated glitch effect on a TextView with title animation.
----Alternates between normal and glitched text periodically.
----@param textView View The TextView to animate
----@return nil
-local function startGlitchLoop(textView)
-    local frame   = 1
-    local ticks   = 0
-    local NORMAL_HOLD = 2.5
-    local GLITCH_HOLD = 2
-    local inGlitch = false
-    local glitchCount = 0
-
-    local function tick()
-        if not textView then return end
-        ticks = ticks + 1
-
-        if not inGlitch then
-            if ticks >= NORMAL_HOLD then
-                ticks     = 0
-                inGlitch  = true
-                glitchCount = math.random(3, 6)
-                frame     = 2
-            end
-            
-            textView.setText(GLITCH_FRAMES[1][1])
-            textView.setTextColor(GLITCH_FRAMES[1][2])
-        else
-            textView.setText(GLITCH_FRAMES[frame][1])
-            textView.setTextColor(GLITCH_FRAMES[frame][2])
-            ticks = ticks + 1
-            if ticks >= GLITCH_HOLD then
-                ticks  = 0
-                frame  = (frame % (#GLITCH_FRAMES - 1)) + 2 
-                glitchCount = glitchCount - 1
-                if glitchCount <= 0 then
-                    inGlitch = false
-                    frame    = 1
-                end
-            end
-        end
-
-        MainHandler.postDelayed(Runnable({ run = tick }), 150)
-    end
-
-    MainHandler.postDelayed(Runnable({ run = tick }), 500)
-end
-
 -- ─────────────────────────────────────────────
 -- ICON VIEW (Collapsed Floating Pill)
 -- ─────────────────────────────────────────────
@@ -626,13 +571,19 @@ end
 ---Displays title, version, and exit button. Tappable to expand menu.
 ---@return View The icon view LinearLayout
 function createIconView()
+    LOG.info("createIconView", "START | activity=" .. tostring(activity))
     local iconRoot = LinearLayout(activity)
     iconRoot.setOrientation(0)
     iconRoot.setGravity(Gravity.BOTTOM)
     iconRoot.setBackground(getSkin(UI.HEADER, 16))
     iconRoot.setPadding(dp(15), dp(10), dp(10), dp(10))
     
-    local params = LinLayoutParams(dp(WIDTH - 40), -2)
+    -- Explicit dp(WIN_W) width with plain LayoutParams (not LinLayoutParams).
+    -- -1 (MATCH_PARENT) on a direct WM child fills the *entire screen* width,
+    -- not just the WM window. We want exactly the same width as menuView's root,
+    -- so we set it explicitly. Height is WRAP_CONTENT so the pill only takes
+    -- as much vertical space as its content (title + ✕ row), not the full menu height.
+    local params = LayoutParams(dp(WIN_W), -2)
     iconRoot.setLayoutParams(params)
     
     -- Title
@@ -642,8 +593,6 @@ function createIconView()
     title.setTextSize(1, 15)
     title.setTypeface(Typeface.create("sans-serif-black", Typeface.BOLD))
     iconRoot.addView(title)
-
-    startGlitchLoop(title)
 
     -- Subtitle
     local sub = TextView(activity)
@@ -734,14 +683,24 @@ end
 ---Creates the full menu view - main UI panel with tabs, content, and header.
 ---Includes draggable header, tab navigation, and content scroll area.
 ---@return View The menu FrameLayout containing all UI elements
-function createMenuView()
-    local base = FrameLayout(activity)
-    base.setLayoutParams(LayoutParams(-2, -2))
 
+-- ─────────────────────────────────────────────
+-- MENU VIEW HELPERS
+-- createMenuView() was a 387-line monolith with 41 locals + 503 bytecodes.
+-- Every dp()/addView()/setXxx() call crosses the Lua→Java bridge and burns
+-- JVM stack space. Wrapped in _safePcall the cumulative depth overflowed the
+-- 8 MB stack. Fix: split into focused helpers so each frame is popped before
+-- the next is pushed, keeping peak depth well below the limit.
+-- ─────────────────────────────────────────────
+
+---Builds the root LinearLayout for the menu and wires its touch-to-dismiss listener.
+---@param base FrameLayout Parent frame
+---@return View root LinearLayout
+local function _buildMenuRoot(base)
     local root = LinearLayout(activity)
     root.setOrientation(1)
-    root.setBackground(getSkin(UI.BG, 16, 2, UI.STROKE))
-    root.setLayoutParams(FrameLayout.LayoutParams(dp(WIDTH), -2))
+    root.setBackground(getSkin(UI.BG, 16, 0, UI.STROKE))
+    root.setLayoutParams(FrameLayout.LayoutParams(dp(WIN_W), -2))
     root.setFocusable(true)
     root.setFocusableInTouchMode(true)
     root.setOnTouchListener(View.OnTouchListener{
@@ -759,8 +718,12 @@ function createMenuView()
             return false
         end
     })
+    return root
+end
 
-    -- header
+---Builds the draggable header row (title, subtitle, ✕ button) and adds it to root.
+---@param root View Parent LinearLayout
+local function _buildMenuHeader(root)
     local headerGroup = LinearLayout(activity)
     headerGroup.setOrientation(0)
     headerGroup.setGravity(Gravity.CENTER_VERTICAL)
@@ -768,7 +731,7 @@ function createMenuView()
     headerGroup.setBackground(getSkin(UI.HEADER, 16))
     headerGroup.setClickable(true)
     headerGroup.setFocusable(false)
-    
+
     local titleLayout = LinearLayout(activity)
     titleLayout.setOrientation(0)
     titleLayout.setGravity(Gravity.BOTTOM)
@@ -780,8 +743,6 @@ function createMenuView()
     title.setTextSize(1, 16)
     title.setTypeface(Typeface.create("sans-serif-black", Typeface.BOLD))
     titleLayout.addView(title)
-
-    startGlitchLoop(title)
 
     local sub = TextView(activity)
     sub.setText(" v1.0 • By Vekendian")
@@ -798,69 +759,65 @@ function createMenuView()
     sub.setSelected(true)
     titleLayout.addView(sub)
     headerGroup.addView(titleLayout)
-    
+
+    -- Drag-to-move + tap-to-minimise
     local sx, sy, lx, ly
     local touchStartTime = 0
-    
+
     headerGroup.setOnTouchListener(View.OnTouchListener({
         onTouch = function(v, ev)
             local action = ev.getAction()
-            
             if action == MotionEvent.ACTION_DOWN then
-                sx = ev.getRawX()
-                sy = ev.getRawY()
-                lx = mParams.x
-                ly = mParams.y
+                sx = ev.getRawX(); sy = ev.getRawY()
+                lx = mParams.x;    ly = mParams.y
                 touchStartTime = os.clock() * 1000
                 return true
-                
             elseif action == MotionEvent.ACTION_MOVE then
                 mParams.x = lx + (ev.getRawX() - sx)
                 mParams.y = ly + (ev.getRawY() - sy)
                 windowManager.updateViewLayout(menuView, mParams)
                 return true
-                
             elseif action == MotionEvent.ACTION_UP then
-                local touchDuration = (os.clock() * 1000) - touchStartTime
-                local moveDistance = math.abs(ev.getRawX() - sx) + math.abs(ev.getRawY() - sy)
-                
-                if touchDuration < 300 and moveDistance < 20 then
-                    switchToIcon()
-                    return true
+                local dur  = (os.clock() * 1000) - touchStartTime
+                local dist = math.abs(ev.getRawX() - sx) + math.abs(ev.getRawY() - sy)
+                if dur < 300 and dist < 20 then
+                    switchToIcon(); return true
                 end
             end
-
             return false
         end
     }))
 
-    local function addHeaderBtn(txt, color, click)
-        local b = TextView(activity)
-        b.setText(txt)
-        b.setTextColor(color)
-        b.setTextSize(1, 16)
-        b.setPadding(dp(10), dp(0), dp(5), dp(0))
-        b.setTypeface(Typeface.DEFAULT_BOLD)
-        b.setOnClickListener(View.OnClickListener({
-            onClick = function()
-                Thread(Runnable({ run = function() pcall(click) end })).start()
-            end
-        }))
-        headerGroup.addView(b)
-    end
-    
-    addHeaderBtn("✕", UI.RED, function()
-        showDialog("Confirm Exit", "Exit The Script?", {"Yes", function()
-            memory:save("toggle_states",  toggleStates)
-            memory:save("input_states",   inputStates)
-            memory:save("spinner_states", spinnerStates)
-            memory:save("slider_states",  sliderStates)
-            exitScript()
-        end}, {"No"})
-    end)
+    -- ✕ close button (inlined; no local closure needed)
+    local xBtn = TextView(activity)
+    xBtn.setText("✕")
+    xBtn.setTextColor(UI.RED)
+    xBtn.setTextSize(1, 16)
+    xBtn.setPadding(dp(10), dp(0), dp(5), dp(0))
+    xBtn.setTypeface(Typeface.DEFAULT_BOLD)
+    xBtn.setOnClickListener(View.OnClickListener({
+        onClick = function()
+            Thread(Runnable({ run = function()
+                pcall(function()
+                    showDialog("Confirm Exit", "Exit The Script?", {"Yes", function()
+                        memory:save("toggle_states",  toggleStates)
+                        memory:save("input_states",   inputStates)
+                        memory:save("spinner_states", spinnerStates)
+                        memory:save("slider_states",  sliderStates)
+                        exitScript()
+                    end}, {"No"})
+                end)
+            end })).start()
+        end
+    }))
+    headerGroup.addView(xBtn)
     root.addView(headerGroup)
+end
 
-    -- tab bar
+---Builds the horizontal tab bar and adds it to root.
+---@param root View Parent LinearLayout
+---@return View|nil firstTab, string|nil firstTabId
+local function _buildMenuTabs(root)
     local tabScroll = HorizontalScrollView(activity)
     tabScroll.setHorizontalScrollBarEnabled(false)
     tabScroll.setPadding(dp(15), dp(15), dp(15), dp(5))
@@ -870,21 +827,21 @@ function createMenuView()
     tabScroll.addView(tabLayout)
     root.addView(tabScroll)
 
-    local firstTab   = nil
-    local firstTabId = nil
-
+    local firstTab, firstTabId = nil, nil
     local menuList = tabHandlers or {{"unknown", "unknown"}}
     for i, m in ipairs(menuList) do
         local t = addTab(tabLayout, m[1], m[2])
-        if i == 1 then
-            firstTab   = t
-            firstTabId = m[1]
-        end
+        if i == 1 then firstTab = t; firstTabId = m[1] end
     end
+    return firstTab, firstTabId
+end
 
-    -- content scroll
+---Builds the content ScrollView + moduleContainer and adds them to root.
+---@param root View Parent LinearLayout
+---@return View scroll The ScrollView (needed by resize handles)
+local function _buildMenuContent(root)
     local scroll = ScrollView(activity)
-    scroll.setLayoutParams(LinLayoutParams(-1, dp(220)))
+    scroll.setLayoutParams(LinLayoutParams(-1, dp(WIN_H)))
     scroll.setVerticalScrollBarEnabled(false)
     scroll.setPadding(dp(15), dp(10), dp(15), dp(15))
 
@@ -892,83 +849,160 @@ function createMenuView()
     moduleContainer.setOrientation(1)
     scroll.addView(moduleContainer)
     root.addView(scroll)
+    return scroll
+end
 
-    if firstTab and firstTabId then
-        loadCategory(firstTabId, firstTab)
-    end
+-- Window size bounds (dp).  Referenced by applyWindowResize and settings sliders.
+RESIZE_MIN_W = 200
+RESIZE_MAX_W = 650
+RESIZE_MIN_H = 200
+RESIZE_MAX_H = 650
+-- Fixed dp overhead for header row + tab bar (not part of the resizable scroll area).
+-- Keeps mParams.height explicit so WindowManager doesn't expand the overlay to full screen.
+-- Global so switchToMenu in main.lua can restore mParams.height correctly.
+UI_CHROME_H = 95
 
-    base.addView(root)
-    menuView = base
-    
+-- Module-level upvalues captured from createMenuView so applyWindowResize
+-- can reach the inner layout views without being nested inside createMenuView.
+local _menuRoot   = nil
+local _menuScroll = nil
+
+---Saves the new window dimensions and exits so the user can restart the script.
+---Direct WindowManager.updateViewLayout calls crash the Lua environment when
+---the target view is not currently attached, so a clean restart is the only
+---safe way to apply new dimensions.
+---@param newW number Target width in dp
+---@param newH number Target height in dp
+function applyWindowResize(newW, newH)
+    WIN_W = math.max(RESIZE_MIN_W, math.min(RESIZE_MAX_W, math.floor(newW)))
+    WIN_H = math.max(RESIZE_MIN_H, math.min(RESIZE_MAX_H, math.floor(newH)))
+    memory:saveGlobal("window_size", { w = WIN_W, h = WIN_H })
+    showToast("Size saved! Please restart the script to apply.")
+    exitScript()
+end
+
+
+---Wires the back-key listener and outside-tap dismissal on the menu overlay.
+---Separated so its handleBackButton closure doesn't live in createMenuView's frame.
+---@param base FrameLayout The overlay root (menuView)
+local function _setupMenuInteraction(base)
     local function handleBackButton()
         local imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE)
-    
         if menuView then
             imm.hideSoftInputFromWindow(menuView.getWindowToken(), 0)
         end
-    
         if currentInputs then
-            for _, edit in ipairs(currentInputs) do
-                edit.clearFocus()
-            end
+            for _, edit in ipairs(currentInputs) do edit.clearFocus() end
         end
-    
         mParams.flags = 8 | 32
-        windowManager.updateViewLayout(menuView, mParams)
+        -- Only update the WM layout when menuView is actually attached.
+        -- Calling updateViewLayout on a detached view (e.g. while iconView
+        -- is shown) throws IllegalArgumentException and crashes Lua.
+        if activeView == menuView then
+            windowManager.updateViewLayout(menuView, mParams)
+        end
     end
 
     activity.getWindow().getDecorView().setOnKeyListener(View.OnKeyListener{
         onKey = function(v, keyCode, event)
             if event.getAction() == MotionEvent.ACTION_UP and keyCode == KeyEvent.KEYCODE_BACK then
                 if currentInputs and #currentInputs > 0 then
-                    handleBackButton()
-                    return true  -- block default back behavior
+                    handleBackButton(); return true
                 end
             end
             return false
         end
     })
-    
-    menuView.setOnTouchListener(View.OnTouchListener{
+
+    base.setOnTouchListener(View.OnTouchListener{
         onTouch = function(v, event)
             if event.getAction() == MotionEvent.ACTION_DOWN then
                 local isTouchOnInput = false
-                
                 if currentInputs then
                     for _, edit in ipairs(currentInputs) do
                         local rect = Rect()
                         edit.getGlobalVisibleRect(rect)
                         if rect.contains(event.getRawX(), event.getRawY()) then
-                            isTouchOnInput = true
-                            break
+                            isTouchOnInput = true; break
                         end
                     end
                 end
-
-                if not isTouchOnInput then
-                    handleBackButton()   -- reuse the same function
-                end
+                if not isTouchOnInput then handleBackButton() end
             end
             return false
         end
     })
+end
+
+-- ─────────────────────────────────────────────
+-- MENU VIEW  (expanded panel)
+-- ─────────────────────────────────────────────
+
+---Creates the full menu view - main UI panel with tabs, content, and header.
+---Delegates every major section to a helper function so createMenuView itself
+---stays shallow (few locals, few bytecodes) and never overflows the JVM stack.
+---@return View The menu FrameLayout containing all UI elements
+function createMenuView()
+    LOG.info("createMenuView", "START | activity=" .. tostring(activity) .. " WIN_W=" .. tostring(WIN_W))
+
+    local base = FrameLayout(activity)
+    base.setLayoutParams(LayoutParams(-2, -2))
+
+    local root   = _buildMenuRoot(base)
+    _menuRoot = root
+    _buildMenuHeader(root)
+    local firstTab, firstTabId = _buildMenuTabs(root)
+    local scroll = _buildMenuContent(root)
+    _menuScroll = scroll
+
+    -- Defer first-tab load so createMenuView() fully returns before
+    -- addModule() closures are built. Loading synchronously here puts
+    -- createMenuView + initUI + _safePcall frames on the stack at the
+    -- same time as all the addModule closure allocations → StackOverflow.
+    if firstTab and firstTabId then
+        local _ftab, _ftabId = firstTab, firstTabId
+        MainHandler.post(Runnable({ run = function()
+            LOG.info("createMenuView", "deferred loadCategory: " .. tostring(_ftabId))
+            loadCategory(_ftabId, _ftab)
+        end }))
+    end
+
+    base.addView(root)
+    menuView = base
+
+    -- _setupMenuInteraction is deferred to a fresh MainHandler callback so it
+    -- runs OUTSIDE the _safePcall Java frames that caused the StackOverflowError.
+    MainHandler.post(Runnable({ run = function()
+        LOG.info("createMenuView", "deferred: _setupMenuInteraction")
+        _setupMenuInteraction(base)
+    end }))
 
     return base
 end
 
--- ─────────────────────────────────────────────
--- INIT
--- ─────────────────────────────────────────────
-
----Initializes the entire UI system.
----Sets up WindowManager, creates menu and icon views, and starts with icon view visible.
----@return nil
 function initUI()
+    -- No _safePcall wrappers here — the caller (MainHandler post in main.lua)
+    -- already wraps this entire call in _safePcall. Extra layers keep Java
+    -- frames on the stack throughout createMenuView's ~100 dp() calls → overflow.
+    LOG.info("initUI", "START | WIN_W=" .. tostring(WIN_W) .. " WIN_H=" .. tostring(WIN_H) .. " SDK=" .. tostring(Build.VERSION.SDK_INT))
+
     windowManager = activity.getSystemService(Context.WINDOW_SERVICE)
-    mParams = LayoutParams(dp(WIDTH), -2, Build.VERSION.SDK_INT >= 26 and 2038 or 2002, 8, -3)
+    LOG.info("initUI", "windowManager acquired: " .. tostring(windowManager))
+
+    mParams = LayoutParams(dp(WIN_W), dp(WIN_H + UI_CHROME_H), Build.VERSION.SDK_INT >= 26 and 2038 or 2002, 8, -3)
     mParams.gravity = Gravity.TOP | Gravity.LEFT
     mParams.x, mParams.y = 100, 200
-    menuView  = createMenuView()
-    iconView  = createIconView()
+    LOG.info("initUI", "mParams type=" .. tostring(Build.VERSION.SDK_INT >= 26 and 2038 or 2002))
+
+    LOG.info("initUI", "calling createMenuView()")
+    menuView = createMenuView()
+    LOG.info("initUI", "menuView=" .. tostring(menuView))
+
+    LOG.info("initUI", "calling createIconView()")
+    iconView = createIconView()
+    LOG.info("initUI", "iconView=" .. tostring(iconView))
+
+    LOG.info("initUI", "calling switchToIcon()")
     switchToIcon()
+    LOG.info("initUI", "DONE | menuView=" .. tostring(menuView) .. " iconView=" .. tostring(iconView) .. " activeView=" .. tostring(activeView))
 end

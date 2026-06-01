@@ -1,0 +1,644 @@
+[0.001] [INFO ] [LOGGER] ══════ VOID Logger started ══════
+[0.001] [INFO ] [LOGGER] Log date: Mon Jun 01 08:09:51 2026
+[0.001] [INFO ] [LOGGER] Log file: /storage/sdcard0/#Vekendian/void-imp/src/void_debug.log
+[0.001] [INFO ] [LOGGER] Script started at t=0.001
+[0.002] [INFO ] [MAIN] scriptDir resolved: /storage/sdcard0/#Vekendian/void-imp/src
+[0.002] [INFO ] [loadModule] -> loading: core/env.lua
+[0.011] [INFO ] [loadModule] OK loaded: core/env.lua | returns=0
+[0.016] [INFO ] [loadModule] -> loading: core/json.lua
+[0.029] [INFO ] [loadModule] OK loaded: core/json.lua | returns=1
+[0.029] [INFO ] [loadModule] -> loading: core/memory.lua
+[0.038] [INFO ] [loadModule] OK loaded: core/memory.lua | returns=1
+[0.038] [INFO ] [loadModule] -> loading: core/scheduler.lua
+[0.044] [INFO ] [loadModule] OK loaded: core/scheduler.lua | returns=1
+[0.044] [INFO ] [loadModule] -> loading: core/loader.lua
+[0.049] [INFO ] [loadModule] OK loaded: core/loader.lua | returns=1
+[0.050] [INFO ] [loadModule] -> loading: core/patches.lua
+[0.058] [INFO ] [loadModule] OK loaded: core/patches.lua | returns=0
+[0.058] [INFO ] [loadModule] -> loading: core/arch.lua
+[0.100] [INFO ] [loadModule] -> loading: data/manifest.lua
+[0.104] [INFO ] [loadModule] OK loaded: data/manifest.lua | returns=1
+[0.291] [INFO ] [loadModule] -> loading: data/arm64-v8a/v1.73.x.lua
+[0.299] [INFO ] [loadModule] OK loaded: data/arm64-v8a/v1.73.x.lua | returns=1
+[0.299] [INFO ] [loadModule] OK loaded: core/arch.lua | returns=0
+[0.300] [INFO ] [loadModule] -> loading: modules/registry.lua
+[0.308] [INFO ] [loadModule] OK loaded: modules/registry.lua | returns=2
+[0.308] [INFO ] [loadModule] -> loading: ui/ui.lua
+[0.343] [INFO ] [loadModule] OK loaded: ui/ui.lua | returns=0
+[1.208] [INFO ] [INIT] Initialized | BaseGameStatus=520243481400 BaseRegion=4
+[1.208] [INFO ] [INIT] BaseGameStatus OK=520243481400 | scheduling initUI() via MainHandler
+[1.212] [INFO ] [INIT] User preferences RE-APPLIED
+[1.213] [INFO ] [INIT] activeView check before switchToIcon: activeView=nil
+[1.213] [WARN ] [INIT] activeView is nil — calling switchToIcon() as fallback
+[1.213] [INFO ] [switchToIcon] called | activeView=nil iconView=nil menuView=nil
+[1.213] [INFO ] [MAIN] Entering main loop | exit=false activeView=nil
+[1.226] [INFO ] [INIT] MainHandler: calling initUI()
+[1.243] [INFO ] [initUI] windowManager acquired: android.view.WindowManagerImpl@470ebd0
+[1.247] [INFO ] [dp] density cached: 1.806249976158142
+[1.250] [INFO ] [initUI] mParams type=2038
+[1.250] [INFO ] [initUI] calling createMenuView()
+[1.251] [INFO ] [createMenuView] START | activity=org.vekendian.me.MainActivity@400e83d WIN_W=464.0
+[1.380] [INFO ] [initUI] menuView=android.widget.FrameLayout{a44d004 V.E...... ......I. 0,0-0,0}
+[1.381] [INFO ] [initUI] calling createIconView()
+[1.382] [INFO ] [createIconView] START | activity=org.vekendian.me.MainActivity@400e83d
+[1.396] [INFO ] [initUI] iconView=android.widget.LinearLayout{3e085d2 V.E...... ......I. 0,0-0,0}
+[1.396] [INFO ] [initUI] calling switchToIcon()
+[1.396] [INFO ] [switchToIcon] called | activeView=nil iconView=android.widget.LinearLayout{3e085d2 V.E...... ......I. 0,0-0,0} menuView=android.widget.FrameLayout{a44d004 V.E...... ......I. 0,0-0,0}
+[1.397] [INFO ] [initUI] DONE | menuView=android.widget.FrameLayout{a44d004 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{3e085d2 V.E...... ......I. 0,0-0,0} activeView=nil
+[1.397] [INFO ] [INIT] initUI() completed | menuView=android.widget.FrameLayout{a44d004 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{3e085d2 V.E...... ......I. 0,0-0,0} activeView=nil
+[1.397] [INFO ] [switchToIcon] MainHandler running
+[1.406] [INFO ] [switchToIcon] mParams.flags set to 8|32 | mParams={(100,200)(838x961) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true}
+[1.408] [INFO ] [switchToIcon] removing menuView (no animation) | menuView=android.widget.FrameLayout{a44d004 V.E...... ......I. 0,0-0,0}
+[1.420] [INFO ] [switchToIcon] attempting windowManager.addView(iconView) | iconView=android.widget.LinearLayout{3e085d2 V.E...... ......I. 0,0-0,0}
+[1.440] [INFO ] [switchToIcon] iconView added OK | activeView=android.widget.LinearLayout{3e085d2 V.E...... ......I. 0,0-0,0}
+[1.473] [INFO ] [createMenuView] deferred loadCategory: account
+[1.473] [INFO ] [loadCategory] id=account tabView=android.widget.TextView{efb7356 VFED..C.. ......ID 0,0-0,0} moduleContainer=android.widget.LinearLayout{8b87fd7 V.E...... ......I. 0,0-0,0}
+[1.484] [INFO ] [loadModule] -> loading: modules/tabs/account.lua
+[1.501] [INFO ] [loadModule] OK loaded: modules/tabs/account.lua | returns=1
+[1.579] [INFO ] [createMenuView] deferred: _setupMenuInteraction
+[1.586] [INFO ] [switchToIcon] MainHandler running
+[1.586] [WARN ] [switchToIcon] EARLY RETURN — activeView is already iconView
+[1.990] [INFO ] [switchToMenu] called | activeView=android.widget.LinearLayout{3e085d2 V.E...... ......I. 0,0-838,87} menuView=android.widget.FrameLayout{a44d004 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{3e085d2 V.E...... ......I. 0,0-838,87}
+[1.996] [INFO ] [switchToMenu] MainHandler running
+[1.997] [INFO ] [switchToMenu] removing iconView from windowManager
+[1.999] [INFO ] [switchToMenu] attempting windowManager.addView(menuView) | menuView=android.widget.FrameLayout{a44d004 V.E...... ......I. 0,0-0,0} mParams={(100,200)(838xwrap) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true} windowManager=android.view.WindowManagerImpl@470ebd0
+[2.014] [INFO ] [switchToMenu] menuView added OK | activeView=android.widget.FrameLayout{a44d004 V.E...... ......I. 0,0-0,0}
+[3.202] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{c4ac534 VFED..C.. ...P..I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{8b87fd7 V.E...... ......I. 27,18-811,515}
+[3.203] [INFO ] [loadModule] -> loading: modules/tabs/settings.lua
+[3.213] [INFO ] [loadModule] OK loaded: modules/tabs/settings.lua | returns=1
+[3.214] [INFO ] [INIT] User preferences RE-APPLIED
+[22.891] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{c4ac534 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{8b87fd7 V.E...... ......I. 27,18-811,3661}
+[22.893] [INFO ] [INIT] User preferences RE-APPLIED
+[28.816] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{c4ac534 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{8b87fd7 V.E...... ......I. 27,18-811,3661}
+[28.818] [INFO ] [INIT] User preferences RE-APPLIED
+[47.736] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{c4ac534 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{8b87fd7 V.E...... ......I. 27,18-811,3661}
+[47.738] [INFO ] [INIT] User preferences RE-APPLIED
+[75.589] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{c4ac534 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{8b87fd7 V.E...... ......I. 27,18-811,3661}
+[75.591] [INFO ] [INIT] User preferences RE-APPLIED
+[89.150] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{c4ac534 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{8b87fd7 V.E...... ......I. 27,18-811,3661}
+[89.152] [INFO ] [INIT] User preferences RE-APPLIED
+[93.606] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{c4ac534 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{8b87fd7 V.E...... ......I. 27,18-811,3661}
+[93.608] [INFO ] [INIT] User preferences RE-APPLIED
+[95.442] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{c4ac534 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{8b87fd7 V.E...... ......I. 27,18-811,3661}
+[95.444] [INFO ] [INIT] User preferences RE-APPLIED
+[101.463] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{c4ac534 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{8b87fd7 V.E...... ......I. 27,18-811,3661}
+[101.465] [INFO ] [INIT] User preferences RE-APPLIED
+[105.497] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{c4ac534 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{8b87fd7 V.E...... ......I. 27,18-811,3661}
+[105.499] [INFO ] [INIT] User preferences RE-APPLIED
+[107.619] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{c4ac534 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{8b87fd7 V.E...... ......I. 27,18-811,3661}
+[107.621] [INFO ] [INIT] User preferences RE-APPLIED
+[109.070] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{c4ac534 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{8b87fd7 V.E...... ......I. 27,18-811,3661}
+[109.072] [INFO ] [INIT] User preferences RE-APPLIED
+[111.240] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{c4ac534 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{8b87fd7 V.E...... ......I. 27,18-811,3661}
+[111.242] [INFO ] [INIT] User preferences RE-APPLIED
+[113.596] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{c4ac534 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{8b87fd7 V.E...... ......I. 27,18-811,3661}
+[113.598] [INFO ] [INIT] User preferences RE-APPLIED
+[0.001] [INFO ] [LOGGER] ══════ VOID Logger started ══════
+[0.001] [INFO ] [LOGGER] Log date: Mon Jun 01 08:11:54 2026
+[0.001] [INFO ] [LOGGER] Log file: /storage/sdcard0/#Vekendian/void-imp/src/void_debug.log
+[0.002] [INFO ] [LOGGER] Script started at t=0.001
+[0.002] [INFO ] [MAIN] scriptDir resolved: /storage/sdcard0/#Vekendian/void-imp/src
+[0.002] [INFO ] [loadModule] -> loading: core/env.lua
+[0.016] [INFO ] [loadModule] OK loaded: core/env.lua | returns=0
+[0.023] [INFO ] [loadModule] -> loading: core/json.lua
+[0.035] [INFO ] [loadModule] OK loaded: core/json.lua | returns=1
+[0.035] [INFO ] [loadModule] -> loading: core/memory.lua
+[0.042] [INFO ] [loadModule] OK loaded: core/memory.lua | returns=1
+[0.043] [INFO ] [loadModule] -> loading: core/scheduler.lua
+[0.047] [INFO ] [loadModule] OK loaded: core/scheduler.lua | returns=1
+[0.047] [INFO ] [loadModule] -> loading: core/loader.lua
+[0.050] [INFO ] [loadModule] OK loaded: core/loader.lua | returns=1
+[0.051] [INFO ] [loadModule] -> loading: core/patches.lua
+[0.055] [INFO ] [loadModule] OK loaded: core/patches.lua | returns=0
+[0.055] [INFO ] [loadModule] -> loading: core/arch.lua
+[0.083] [INFO ] [loadModule] -> loading: data/manifest.lua
+[0.085] [INFO ] [loadModule] OK loaded: data/manifest.lua | returns=1
+[0.102] [INFO ] [loadModule] -> loading: data/arm64-v8a/v1.73.x.lua
+[0.105] [INFO ] [loadModule] OK loaded: data/arm64-v8a/v1.73.x.lua | returns=1
+[0.105] [INFO ] [loadModule] OK loaded: core/arch.lua | returns=0
+[0.106] [INFO ] [loadModule] -> loading: modules/registry.lua
+[0.109] [INFO ] [loadModule] OK loaded: modules/registry.lua | returns=2
+[0.109] [INFO ] [loadModule] -> loading: ui/ui.lua
+[0.125] [INFO ] [loadModule] OK loaded: ui/ui.lua | returns=0
+[0.258] [INFO ] [INIT] Initialized | BaseGameStatus=520243481400 BaseRegion=4
+[0.259] [INFO ] [INIT] BaseGameStatus OK=520243481400 | scheduling initUI() via MainHandler
+[0.259] [INFO ] [INIT] User preferences RE-APPLIED
+[0.260] [INFO ] [INIT] activeView check before switchToIcon: activeView=nil
+[0.260] [WARN ] [INIT] activeView is nil — calling switchToIcon() as fallback
+[0.260] [INFO ] [switchToIcon] called | activeView=nil iconView=nil menuView=nil
+[0.260] [INFO ] [MAIN] Entering main loop | exit=false activeView=nil
+[0.275] [INFO ] [INIT] MainHandler: calling initUI()
+[0.276] [INFO ] [initUI] START | WIN_W=464.0 WIN_H=437.0 SDK=35
+[0.276] [INFO ] [initUI] windowManager acquired: android.view.WindowManagerImpl@470ebd0
+[0.281] [INFO ] [dp] density cached: 1.806249976158142
+[0.281] [INFO ] [initUI] mParams type=2038
+[0.281] [INFO ] [initUI] calling createMenuView()
+[0.281] [INFO ] [createMenuView] START | activity=org.vekendian.me.MainActivity@400e83d WIN_W=464.0
+[0.360] [INFO ] [initUI] menuView=android.widget.FrameLayout{511b826 V.E...... ......I. 0,0-0,0}
+[0.361] [INFO ] [initUI] calling createIconView()
+[0.361] [INFO ] [createIconView] START | activity=org.vekendian.me.MainActivity@400e83d
+[0.375] [INFO ] [initUI] iconView=android.widget.LinearLayout{7f39044 V.E...... ......I. 0,0-0,0}
+[0.376] [INFO ] [initUI] calling switchToIcon()
+[0.377] [INFO ] [switchToIcon] called | activeView=nil iconView=android.widget.LinearLayout{7f39044 V.E...... ......I. 0,0-0,0} menuView=android.widget.FrameLayout{511b826 V.E...... ......I. 0,0-0,0}
+[0.377] [INFO ] [initUI] DONE | menuView=android.widget.FrameLayout{511b826 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{7f39044 V.E...... ......I. 0,0-0,0} activeView=nil
+[0.377] [INFO ] [INIT] initUI() completed | menuView=android.widget.FrameLayout{511b826 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{7f39044 V.E...... ......I. 0,0-0,0} activeView=nil
+[0.377] [INFO ] [switchToIcon] MainHandler running
+[0.387] [INFO ] [switchToIcon] mParams.flags set to 8|32 | mParams={(100,200)(838x961) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true}
+[0.387] [INFO ] [switchToIcon] removing menuView (no animation) | menuView=android.widget.FrameLayout{511b826 V.E...... ......I. 0,0-0,0}
+[0.395] [INFO ] [switchToIcon] attempting windowManager.addView(iconView) | iconView=android.widget.LinearLayout{7f39044 V.E...... ......I. 0,0-0,0}
+[0.414] [INFO ] [switchToIcon] iconView added OK | activeView=android.widget.LinearLayout{7f39044 V.E...... ......I. 0,0-0,0}
+[0.450] [INFO ] [createMenuView] deferred loadCategory: account
+[0.451] [INFO ] [loadCategory] id=account tabView=android.widget.TextView{f3f81c2 VFED..C.. ......ID 0,0-0,0} moduleContainer=android.widget.LinearLayout{59f8bd3 V.E...... ......I. 0,0-0,0}
+[0.451] [INFO ] [loadModule] -> loading: modules/tabs/account.lua
+[0.455] [INFO ] [loadModule] OK loaded: modules/tabs/account.lua | returns=1
+[0.527] [INFO ] [createMenuView] deferred: _setupMenuInteraction
+[0.527] [INFO ] [switchToIcon] MainHandler running
+[0.527] [WARN ] [switchToIcon] EARLY RETURN — activeView is already iconView
+[0.902] [INFO ] [switchToMenu] called | activeView=android.widget.LinearLayout{7f39044 V.E...... ......I. 0,0-838,87} menuView=android.widget.FrameLayout{511b826 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{7f39044 V.E...... ......I. 0,0-838,87}
+[0.910] [INFO ] [switchToMenu] MainHandler running
+[0.910] [INFO ] [switchToMenu] removing iconView from windowManager
+[0.911] [INFO ] [switchToMenu] attempting windowManager.addView(menuView) | menuView=android.widget.FrameLayout{511b826 V.E...... ......I. 0,0-0,0} mParams={(100,200)(838xwrap) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true} windowManager=android.view.WindowManagerImpl@470ebd0
+[0.926] [INFO ] [switchToMenu] menuView added OK | activeView=android.widget.FrameLayout{511b826 V.E...... ......I. 0,0-0,0}
+[9.942] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{760ea9c VFED..C.. ...P..I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{59f8bd3 V.E...... ......I. 27,18-811,515}
+[9.943] [INFO ] [loadModule] -> loading: modules/tabs/settings.lua
+[9.948] [INFO ] [loadModule] OK loaded: modules/tabs/settings.lua | returns=1
+[9.949] [INFO ] [INIT] User preferences RE-APPLIED
+[20.498] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{760ea9c VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{59f8bd3 V.E...... ......I. 27,18-811,3661}
+[20.500] [INFO ] [INIT] User preferences RE-APPLIED
+[22.674] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{760ea9c VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{59f8bd3 V.E...... ......I. 27,18-811,3661}
+[22.675] [INFO ] [INIT] User preferences RE-APPLIED
+[0.000] [INFO ] [LOGGER] ══════ VOID Logger started ══════
+[0.001] [INFO ] [LOGGER] Log date: Mon Jun 01 08:12:38 2026
+[0.003] [INFO ] [LOGGER] Log file: /storage/sdcard0/#Vekendian/void-imp/src/void_debug.log
+[0.003] [INFO ] [LOGGER] Script started at t=0.001
+[0.006] [INFO ] [MAIN] scriptDir resolved: /storage/sdcard0/#Vekendian/void-imp/src
+[0.007] [INFO ] [loadModule] -> loading: core/env.lua
+[0.013] [INFO ] [loadModule] OK loaded: core/env.lua | returns=0
+[0.024] [INFO ] [loadModule] -> loading: core/json.lua
+[0.036] [INFO ] [loadModule] OK loaded: core/json.lua | returns=1
+[0.037] [INFO ] [loadModule] -> loading: core/memory.lua
+[0.054] [INFO ] [loadModule] OK loaded: core/memory.lua | returns=1
+[0.054] [INFO ] [loadModule] -> loading: core/scheduler.lua
+[0.057] [INFO ] [loadModule] OK loaded: core/scheduler.lua | returns=1
+[0.058] [INFO ] [loadModule] -> loading: core/loader.lua
+[0.062] [INFO ] [loadModule] OK loaded: core/loader.lua | returns=1
+[0.062] [INFO ] [loadModule] -> loading: core/patches.lua
+[0.070] [INFO ] [loadModule] OK loaded: core/patches.lua | returns=0
+[0.070] [INFO ] [loadModule] -> loading: core/arch.lua
+[0.104] [INFO ] [loadModule] -> loading: data/manifest.lua
+[0.107] [INFO ] [loadModule] OK loaded: data/manifest.lua | returns=1
+[0.126] [INFO ] [loadModule] -> loading: data/arm64-v8a/v1.73.x.lua
+[0.128] [INFO ] [loadModule] OK loaded: data/arm64-v8a/v1.73.x.lua | returns=1
+[0.128] [INFO ] [loadModule] OK loaded: core/arch.lua | returns=0
+[0.128] [INFO ] [loadModule] -> loading: modules/registry.lua
+[0.131] [INFO ] [loadModule] OK loaded: modules/registry.lua | returns=2
+[0.131] [INFO ] [loadModule] -> loading: ui/ui.lua
+[0.146] [INFO ] [loadModule] OK loaded: ui/ui.lua | returns=0
+[0.270] [INFO ] [INIT] Initialized | BaseGameStatus=520243481400 BaseRegion=4
+[0.270] [INFO ] [INIT] BaseGameStatus OK=520243481400 | scheduling initUI() via MainHandler
+[0.270] [INFO ] [INIT] User preferences RE-APPLIED
+[0.271] [INFO ] [INIT] activeView check before switchToIcon: activeView=nil
+[0.271] [WARN ] [INIT] activeView is nil — calling switchToIcon() as fallback
+[0.271] [INFO ] [switchToIcon] called | activeView=nil iconView=nil menuView=nil
+[0.271] [INFO ] [MAIN] Entering main loop | exit=false activeView=nil
+[0.283] [INFO ] [INIT] MainHandler: calling initUI()
+[0.284] [INFO ] [initUI] START | WIN_W=464.0 WIN_H=437.0 SDK=35
+[0.284] [INFO ] [initUI] windowManager acquired: android.view.WindowManagerImpl@470ebd0
+[0.286] [INFO ] [dp] density cached: 1.806249976158142
+[0.287] [INFO ] [initUI] mParams type=2038
+[0.287] [INFO ] [initUI] calling createMenuView()
+[0.287] [INFO ] [createMenuView] START | activity=org.vekendian.me.MainActivity@400e83d WIN_W=464.0
+[0.375] [INFO ] [initUI] menuView=android.widget.FrameLayout{2f1ce8d V.E...... ......I. 0,0-0,0}
+[0.375] [INFO ] [initUI] calling createIconView()
+[0.375] [INFO ] [createIconView] START | activity=org.vekendian.me.MainActivity@400e83d
+[0.390] [INFO ] [initUI] iconView=android.widget.LinearLayout{c64443 V.E...... ......I. 0,0-0,0}
+[0.391] [INFO ] [initUI] calling switchToIcon()
+[0.391] [INFO ] [switchToIcon] called | activeView=nil iconView=android.widget.LinearLayout{c64443 V.E...... ......I. 0,0-0,0} menuView=android.widget.FrameLayout{2f1ce8d V.E...... ......I. 0,0-0,0}
+[0.391] [INFO ] [initUI] DONE | menuView=android.widget.FrameLayout{2f1ce8d V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{c64443 V.E...... ......I. 0,0-0,0} activeView=nil
+[0.391] [INFO ] [INIT] initUI() completed | menuView=android.widget.FrameLayout{2f1ce8d V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{c64443 V.E...... ......I. 0,0-0,0} activeView=nil
+[0.391] [INFO ] [switchToIcon] MainHandler running
+[0.397] [INFO ] [switchToIcon] mParams.flags set to 8|32 | mParams={(100,200)(838x961) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true}
+[0.397] [INFO ] [switchToIcon] removing menuView (no animation) | menuView=android.widget.FrameLayout{2f1ce8d V.E...... ......I. 0,0-0,0}
+[0.403] [INFO ] [switchToIcon] attempting windowManager.addView(iconView) | iconView=android.widget.LinearLayout{c64443 V.E...... ......I. 0,0-0,0}
+[0.419] [INFO ] [switchToIcon] iconView added OK | activeView=android.widget.LinearLayout{c64443 V.E...... ......I. 0,0-0,0}
+[0.450] [INFO ] [createMenuView] deferred loadCategory: account
+[0.450] [INFO ] [loadCategory] id=account tabView=android.widget.TextView{a8f52d9 VFED..C.. ......ID 0,0-0,0} moduleContainer=android.widget.LinearLayout{71a949e V.E...... ......I. 0,0-0,0}
+[0.451] [INFO ] [loadModule] -> loading: modules/tabs/account.lua
+[0.453] [INFO ] [loadModule] OK loaded: modules/tabs/account.lua | returns=1
+[0.528] [INFO ] [createMenuView] deferred: _setupMenuInteraction
+[0.528] [INFO ] [switchToIcon] MainHandler running
+[0.528] [WARN ] [switchToIcon] EARLY RETURN — activeView is already iconView
+[1.061] [INFO ] [switchToMenu] called | activeView=android.widget.LinearLayout{c64443 V.E...... ......I. 0,0-838,87} menuView=android.widget.FrameLayout{2f1ce8d V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{c64443 V.E...... ......I. 0,0-838,87}
+[1.068] [INFO ] [switchToMenu] MainHandler running
+[1.068] [INFO ] [switchToMenu] removing iconView from windowManager
+[1.069] [INFO ] [switchToMenu] attempting windowManager.addView(menuView) | menuView=android.widget.FrameLayout{2f1ce8d V.E...... ......I. 0,0-0,0} mParams={(100,200)(838xwrap) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true} windowManager=android.view.WindowManagerImpl@470ebd0
+[1.084] [INFO ] [switchToMenu] menuView added OK | activeView=android.widget.FrameLayout{2f1ce8d V.E...... ......I. 0,0-0,0}
+[6.201] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{7691613 VFED..C.. ...P..I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{71a949e V.E...... ......I. 27,18-811,515}
+[6.202] [INFO ] [loadModule] -> loading: modules/tabs/settings.lua
+[6.208] [INFO ] [loadModule] OK loaded: modules/tabs/settings.lua | returns=1
+[6.208] [INFO ] [INIT] User preferences RE-APPLIED
+[10.268] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{7691613 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{71a949e V.E...... ......I. 27,18-811,3661}
+[10.270] [INFO ] [INIT] User preferences RE-APPLIED
+[12.857] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{7691613 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{71a949e V.E...... ......I. 27,18-811,3661}
+[12.858] [INFO ] [INIT] User preferences RE-APPLIED
+[0.000] [INFO ] [LOGGER] ══════ VOID Logger started ══════
+[0.001] [INFO ] [LOGGER] Log date: Mon Jun 01 08:14:02 2026
+[0.001] [INFO ] [LOGGER] Log file: /storage/sdcard0/#Vekendian/void-imp/src/void_debug.log
+[0.001] [INFO ] [LOGGER] Script started at t=0.001
+[0.002] [INFO ] [MAIN] scriptDir resolved: /storage/sdcard0/#Vekendian/void-imp/src
+[0.002] [INFO ] [loadModule] -> loading: core/env.lua
+[0.012] [INFO ] [loadModule] OK loaded: core/env.lua | returns=0
+[0.016] [INFO ] [loadModule] -> loading: core/json.lua
+[0.040] [INFO ] [loadModule] OK loaded: core/json.lua | returns=1
+[0.040] [INFO ] [loadModule] -> loading: core/memory.lua
+[0.049] [INFO ] [loadModule] OK loaded: core/memory.lua | returns=1
+[0.049] [INFO ] [loadModule] -> loading: core/scheduler.lua
+[0.055] [INFO ] [loadModule] OK loaded: core/scheduler.lua | returns=1
+[0.055] [INFO ] [loadModule] -> loading: core/loader.lua
+[0.060] [INFO ] [loadModule] OK loaded: core/loader.lua | returns=1
+[0.062] [INFO ] [loadModule] -> loading: core/patches.lua
+[0.068] [INFO ] [loadModule] OK loaded: core/patches.lua | returns=0
+[0.068] [INFO ] [loadModule] -> loading: core/arch.lua
+[0.112] [INFO ] [loadModule] -> loading: data/manifest.lua
+[0.125] [INFO ] [loadModule] OK loaded: data/manifest.lua | returns=1
+[0.426] [INFO ] [loadModule] -> loading: data/arm64-v8a/v1.73.x.lua
+[0.432] [INFO ] [loadModule] OK loaded: data/arm64-v8a/v1.73.x.lua | returns=1
+[0.432] [INFO ] [loadModule] OK loaded: core/arch.lua | returns=0
+[0.433] [INFO ] [loadModule] -> loading: modules/registry.lua
+[0.441] [INFO ] [loadModule] OK loaded: modules/registry.lua | returns=2
+[0.441] [INFO ] [loadModule] -> loading: ui/ui.lua
+[0.464] [INFO ] [loadModule] OK loaded: ui/ui.lua | returns=0
+[0.591] [INFO ] [INIT] Initialized | BaseGameStatus=520243481400 BaseRegion=4
+[0.592] [INFO ] [INIT] BaseGameStatus OK=520243481400 | scheduling initUI() via MainHandler
+[0.593] [INFO ] [INIT] User preferences RE-APPLIED
+[0.594] [INFO ] [INIT] activeView check before switchToIcon: activeView=nil
+[0.594] [WARN ] [INIT] activeView is nil — calling switchToIcon() as fallback
+[0.594] [INFO ] [switchToIcon] called | activeView=nil iconView=nil menuView=nil
+[0.594] [INFO ] [MAIN] Entering main loop | exit=false activeView=nil
+[0.608] [INFO ] [INIT] MainHandler: calling initUI()
+[0.609] [INFO ] [initUI] START | WIN_W=464.0 WIN_H=437.0 SDK=35
+[0.609] [INFO ] [initUI] windowManager acquired: android.view.WindowManagerImpl@470ebd0
+[0.613] [INFO ] [dp] density cached: 1.806249976158142
+[0.614] [INFO ] [initUI] mParams type=2038
+[0.614] [INFO ] [initUI] calling createMenuView()
+[0.615] [INFO ] [createMenuView] START | activity=org.vekendian.me.MainActivity@400e83d WIN_W=464.0
+[0.686] [INFO ] [initUI] menuView=android.widget.FrameLayout{4fcec30 V.E...... ......I. 0,0-0,0}
+[0.687] [INFO ] [initUI] calling createIconView()
+[0.687] [INFO ] [createIconView] START | activity=org.vekendian.me.MainActivity@400e83d
+[0.701] [INFO ] [initUI] iconView=android.widget.LinearLayout{a3226de V.E...... ......I. 0,0-0,0}
+[0.701] [INFO ] [initUI] calling switchToIcon()
+[0.701] [INFO ] [switchToIcon] called | activeView=nil iconView=android.widget.LinearLayout{a3226de V.E...... ......I. 0,0-0,0} menuView=android.widget.FrameLayout{4fcec30 V.E...... ......I. 0,0-0,0}
+[0.701] [INFO ] [initUI] DONE | menuView=android.widget.FrameLayout{4fcec30 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{a3226de V.E...... ......I. 0,0-0,0} activeView=nil
+[0.701] [INFO ] [INIT] initUI() completed | menuView=android.widget.FrameLayout{4fcec30 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{a3226de V.E...... ......I. 0,0-0,0} activeView=nil
+[0.702] [INFO ] [switchToIcon] MainHandler running
+[0.708] [INFO ] [switchToIcon] mParams.flags set to 8|32 | mParams={(100,200)(838x961) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true}
+[0.709] [INFO ] [switchToIcon] removing menuView (no animation) | menuView=android.widget.FrameLayout{4fcec30 V.E...... ......I. 0,0-0,0}
+[0.714] [INFO ] [switchToIcon] attempting windowManager.addView(iconView) | iconView=android.widget.LinearLayout{a3226de V.E...... ......I. 0,0-0,0}
+[0.735] [INFO ] [switchToIcon] iconView added OK | activeView=android.widget.LinearLayout{a3226de V.E...... ......I. 0,0-0,0}
+[0.774] [INFO ] [createMenuView] deferred loadCategory: account
+[0.774] [INFO ] [loadCategory] id=account tabView=android.widget.TextView{aefc7ec VFED..C.. ......ID 0,0-0,0} moduleContainer=android.widget.LinearLayout{38a37b5 V.E...... ......I. 0,0-0,0}
+[0.774] [INFO ] [loadModule] -> loading: modules/tabs/account.lua
+[0.790] [INFO ] [loadModule] OK loaded: modules/tabs/account.lua | returns=1
+[0.916] [INFO ] [createMenuView] deferred: _setupMenuInteraction
+[0.917] [INFO ] [switchToIcon] MainHandler running
+[0.917] [WARN ] [switchToIcon] EARLY RETURN — activeView is already iconView
+[1.204] [INFO ] [switchToMenu] called | activeView=android.widget.LinearLayout{a3226de V.E...... ......I. 0,0-838,87} menuView=android.widget.FrameLayout{4fcec30 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{a3226de V.E...... ......I. 0,0-838,87}
+[1.219] [INFO ] [switchToMenu] MainHandler running
+[1.220] [INFO ] [switchToMenu] removing iconView from windowManager
+[1.221] [INFO ] [switchToMenu] attempting windowManager.addView(menuView) | menuView=android.widget.FrameLayout{4fcec30 V.E...... ......I. 0,0-0,0} mParams={(100,200)(838xwrap) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true} windowManager=android.view.WindowManagerImpl@470ebd0
+[1.255] [INFO ] [switchToMenu] menuView added OK | activeView=android.widget.FrameLayout{4fcec30 V.E...... ......I. 0,0-0,0}
+[2.397] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{643d8d1 VFED..C.. ...P..I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{38a37b5 V.E...... ......I. 27,18-811,515}
+[2.397] [INFO ] [loadModule] -> loading: modules/tabs/settings.lua
+[2.406] [INFO ] [loadModule] OK loaded: modules/tabs/settings.lua | returns=1
+[2.406] [INFO ] [INIT] User preferences RE-APPLIED
+[5.136] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{643d8d1 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{38a37b5 V.E...... ......I. 27,18-811,3661}
+[5.138] [INFO ] [INIT] User preferences RE-APPLIED
+[7.456] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{643d8d1 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{38a37b5 V.E...... ......I. 27,18-811,3661}
+[7.458] [INFO ] [INIT] User preferences RE-APPLIED
+[0.000] [INFO ] [LOGGER] ══════ VOID Logger started ══════
+[0.000] [INFO ] [LOGGER] Log date: Mon Jun 01 08:14:19 2026
+[0.001] [INFO ] [LOGGER] Log file: /storage/sdcard0/#Vekendian/void-imp/src/void_debug.log
+[0.001] [INFO ] [LOGGER] Script started at t=0.001
+[0.001] [INFO ] [MAIN] scriptDir resolved: /storage/sdcard0/#Vekendian/void-imp/src
+[0.001] [INFO ] [loadModule] -> loading: core/env.lua
+[0.015] [INFO ] [loadModule] OK loaded: core/env.lua | returns=0
+[0.024] [INFO ] [loadModule] -> loading: core/json.lua
+[0.032] [INFO ] [loadModule] OK loaded: core/json.lua | returns=1
+[0.032] [INFO ] [loadModule] -> loading: core/memory.lua
+[0.038] [INFO ] [loadModule] OK loaded: core/memory.lua | returns=1
+[0.038] [INFO ] [loadModule] -> loading: core/scheduler.lua
+[0.043] [INFO ] [loadModule] OK loaded: core/scheduler.lua | returns=1
+[0.043] [INFO ] [loadModule] -> loading: core/loader.lua
+[0.048] [INFO ] [loadModule] OK loaded: core/loader.lua | returns=1
+[0.048] [INFO ] [loadModule] -> loading: core/patches.lua
+[0.051] [INFO ] [loadModule] OK loaded: core/patches.lua | returns=0
+[0.052] [INFO ] [loadModule] -> loading: core/arch.lua
+[0.095] [INFO ] [loadModule] -> loading: data/manifest.lua
+[0.098] [INFO ] [loadModule] OK loaded: data/manifest.lua | returns=1
+[0.123] [INFO ] [loadModule] -> loading: data/arm64-v8a/v1.73.x.lua
+[0.126] [INFO ] [loadModule] OK loaded: data/arm64-v8a/v1.73.x.lua | returns=1
+[0.126] [INFO ] [loadModule] OK loaded: core/arch.lua | returns=0
+[0.126] [INFO ] [loadModule] -> loading: modules/registry.lua
+[0.128] [INFO ] [loadModule] OK loaded: modules/registry.lua | returns=2
+[0.129] [INFO ] [loadModule] -> loading: ui/ui.lua
+[0.140] [INFO ] [loadModule] OK loaded: ui/ui.lua | returns=0
+[0.249] [INFO ] [INIT] Initialized | BaseGameStatus=520243481400 BaseRegion=4
+[0.249] [INFO ] [INIT] BaseGameStatus OK=520243481400 | scheduling initUI() via MainHandler
+[0.250] [INFO ] [INIT] User preferences RE-APPLIED
+[0.250] [INFO ] [INIT] activeView check before switchToIcon: activeView=nil
+[0.250] [WARN ] [INIT] activeView is nil — calling switchToIcon() as fallback
+[0.251] [INFO ] [switchToIcon] called | activeView=nil iconView=nil menuView=nil
+[0.251] [INFO ] [MAIN] Entering main loop | exit=false activeView=nil
+[0.270] [INFO ] [INIT] MainHandler: calling initUI()
+[0.270] [INFO ] [initUI] START | WIN_W=464.0 WIN_H=437.0 SDK=35
+[0.271] [INFO ] [initUI] windowManager acquired: android.view.WindowManagerImpl@470ebd0
+[0.274] [INFO ] [dp] density cached: 1.806249976158142
+[0.274] [INFO ] [initUI] mParams type=2038
+[0.274] [INFO ] [initUI] calling createMenuView()
+[0.274] [INFO ] [createMenuView] START | activity=org.vekendian.me.MainActivity@400e83d WIN_W=464.0
+[0.342] [INFO ] [initUI] menuView=android.widget.FrameLayout{221f2f0 V.E...... ......I. 0,0-0,0}
+[0.342] [INFO ] [initUI] calling createIconView()
+[0.342] [INFO ] [createIconView] START | activity=org.vekendian.me.MainActivity@400e83d
+[0.353] [INFO ] [initUI] iconView=android.widget.LinearLayout{1ac1b9e V.E...... ......I. 0,0-0,0}
+[0.353] [INFO ] [initUI] calling switchToIcon()
+[0.354] [INFO ] [switchToIcon] called | activeView=nil iconView=android.widget.LinearLayout{1ac1b9e V.E...... ......I. 0,0-0,0} menuView=android.widget.FrameLayout{221f2f0 V.E...... ......I. 0,0-0,0}
+[0.354] [INFO ] [initUI] DONE | menuView=android.widget.FrameLayout{221f2f0 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{1ac1b9e V.E...... ......I. 0,0-0,0} activeView=nil
+[0.354] [INFO ] [INIT] initUI() completed | menuView=android.widget.FrameLayout{221f2f0 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{1ac1b9e V.E...... ......I. 0,0-0,0} activeView=nil
+[0.354] [INFO ] [switchToIcon] MainHandler running
+[0.359] [INFO ] [switchToIcon] mParams.flags set to 8|32 | mParams={(100,200)(838x961) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true}
+[0.359] [INFO ] [switchToIcon] removing menuView (no animation) | menuView=android.widget.FrameLayout{221f2f0 V.E...... ......I. 0,0-0,0}
+[0.363] [INFO ] [switchToIcon] attempting windowManager.addView(iconView) | iconView=android.widget.LinearLayout{1ac1b9e V.E...... ......I. 0,0-0,0}
+[0.379] [INFO ] [switchToIcon] iconView added OK | activeView=android.widget.LinearLayout{1ac1b9e V.E...... ......I. 0,0-0,0}
+[0.406] [INFO ] [createMenuView] deferred loadCategory: account
+[0.406] [INFO ] [loadCategory] id=account tabView=android.widget.TextView{b590aac VFED..C.. ......ID 0,0-0,0} moduleContainer=android.widget.LinearLayout{3322375 V.E...... ......I. 0,0-0,0}
+[0.406] [INFO ] [loadModule] -> loading: modules/tabs/account.lua
+[0.410] [INFO ] [loadModule] OK loaded: modules/tabs/account.lua | returns=1
+[0.471] [INFO ] [createMenuView] deferred: _setupMenuInteraction
+[0.471] [INFO ] [switchToIcon] MainHandler running
+[0.471] [WARN ] [switchToIcon] EARLY RETURN — activeView is already iconView
+[0.854] [INFO ] [switchToMenu] called | activeView=android.widget.LinearLayout{1ac1b9e V.E...... ......I. 0,0-838,87} menuView=android.widget.FrameLayout{221f2f0 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{1ac1b9e V.E...... ......I. 0,0-838,87}
+[0.862] [INFO ] [switchToMenu] MainHandler running
+[0.862] [INFO ] [switchToMenu] removing iconView from windowManager
+[0.863] [INFO ] [switchToMenu] attempting windowManager.addView(menuView) | menuView=android.widget.FrameLayout{221f2f0 V.E...... ......I. 0,0-0,0} mParams={(100,200)(838xwrap) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true} windowManager=android.view.WindowManagerImpl@470ebd0
+[0.880] [INFO ] [switchToMenu] menuView added OK | activeView=android.widget.FrameLayout{221f2f0 V.E...... ......I. 0,0-0,0}
+[2.364] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{65090a8 VFED..C.. ...P..I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{3322375 V.E...... ......I. 27,18-811,515}
+[2.365] [INFO ] [loadModule] -> loading: modules/tabs/settings.lua
+[2.370] [INFO ] [loadModule] OK loaded: modules/tabs/settings.lua | returns=1
+[2.371] [INFO ] [INIT] User preferences RE-APPLIED
+[5.632] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{65090a8 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{3322375 V.E...... ......I. 27,18-811,3661}
+[5.634] [INFO ] [INIT] User preferences RE-APPLIED
+[7.097] [INFO ] [loadCategory] id=settings tabView=android.widget.TextView{65090a8 VFED..C.. ......I. 1812,0-2026,58} moduleContainer=android.widget.LinearLayout{3322375 V.E...... ......I. 27,18-811,3661}
+[7.098] [INFO ] [INIT] User preferences RE-APPLIED
+[0.000] [INFO ] [LOGGER] ══════ VOID Logger started ══════
+[0.000] [INFO ] [LOGGER] Log date: Mon Jun 01 08:14:29 2026
+[0.000] [INFO ] [LOGGER] Log file: /storage/sdcard0/#Vekendian/void-imp/src/void_debug.log
+[0.000] [INFO ] [LOGGER] Script started at t=0.001
+[0.000] [INFO ] [MAIN] scriptDir resolved: /storage/sdcard0/#Vekendian/void-imp/src
+[0.000] [INFO ] [loadModule] -> loading: core/env.lua
+[0.005] [INFO ] [loadModule] OK loaded: core/env.lua | returns=0
+[0.013] [INFO ] [loadModule] -> loading: core/json.lua
+[0.029] [INFO ] [loadModule] OK loaded: core/json.lua | returns=1
+[0.029] [INFO ] [loadModule] -> loading: core/memory.lua
+[0.037] [INFO ] [loadModule] OK loaded: core/memory.lua | returns=1
+[0.037] [INFO ] [loadModule] -> loading: core/scheduler.lua
+[0.048] [INFO ] [loadModule] OK loaded: core/scheduler.lua | returns=1
+[0.048] [INFO ] [loadModule] -> loading: core/loader.lua
+[0.053] [INFO ] [loadModule] OK loaded: core/loader.lua | returns=1
+[0.053] [INFO ] [loadModule] -> loading: core/patches.lua
+[0.057] [INFO ] [loadModule] OK loaded: core/patches.lua | returns=0
+[0.057] [INFO ] [loadModule] -> loading: core/arch.lua
+[0.093] [INFO ] [loadModule] -> loading: data/manifest.lua
+[0.096] [INFO ] [loadModule] OK loaded: data/manifest.lua | returns=1
+[0.115] [INFO ] [loadModule] -> loading: data/arm64-v8a/v1.73.x.lua
+[0.119] [INFO ] [loadModule] OK loaded: data/arm64-v8a/v1.73.x.lua | returns=1
+[0.119] [INFO ] [loadModule] OK loaded: core/arch.lua | returns=0
+[0.119] [INFO ] [loadModule] -> loading: modules/registry.lua
+[0.122] [INFO ] [loadModule] OK loaded: modules/registry.lua | returns=2
+[0.122] [INFO ] [loadModule] -> loading: ui/ui.lua
+[0.134] [INFO ] [loadModule] OK loaded: ui/ui.lua | returns=0
+[0.251] [INFO ] [INIT] Initialized | BaseGameStatus=520243481400 BaseRegion=4
+[0.251] [INFO ] [INIT] BaseGameStatus OK=520243481400 | scheduling initUI() via MainHandler
+[0.252] [INFO ] [INIT] User preferences RE-APPLIED
+[0.252] [INFO ] [INIT] activeView check before switchToIcon: activeView=nil
+[0.252] [WARN ] [INIT] activeView is nil — calling switchToIcon() as fallback
+[0.252] [INFO ] [switchToIcon] called | activeView=nil iconView=nil menuView=nil
+[0.253] [INFO ] [MAIN] Entering main loop | exit=false activeView=nil
+[0.263] [INFO ] [initUI] START | WIN_W=464.0 WIN_H=437.0 SDK=35
+[0.263] [INFO ] [initUI] windowManager acquired: android.view.WindowManagerImpl@470ebd0
+[0.264] [INFO ] [dp] density cached: 1.806249976158142
+[0.265] [INFO ] [initUI] mParams type=2038
+[0.265] [INFO ] [initUI] calling createMenuView()
+[0.265] [INFO ] [createMenuView] START | activity=org.vekendian.me.MainActivity@400e83d WIN_W=464.0
+[0.336] [INFO ] [initUI] menuView=android.widget.FrameLayout{aaa5dc4 V.E...... ......I. 0,0-0,0}
+[0.336] [INFO ] [initUI] calling createIconView()
+[0.336] [INFO ] [createIconView] START | activity=org.vekendian.me.MainActivity@400e83d
+[0.351] [INFO ] [initUI] iconView=android.widget.LinearLayout{19d9992 V.E...... ......I. 0,0-0,0}
+[0.351] [INFO ] [initUI] calling switchToIcon()
+[0.351] [INFO ] [switchToIcon] called | activeView=nil iconView=android.widget.LinearLayout{19d9992 V.E...... ......I. 0,0-0,0} menuView=android.widget.FrameLayout{aaa5dc4 V.E...... ......I. 0,0-0,0}
+[0.351] [INFO ] [initUI] DONE | menuView=android.widget.FrameLayout{aaa5dc4 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{19d9992 V.E...... ......I. 0,0-0,0} activeView=nil
+[0.351] [INFO ] [INIT] initUI() completed | menuView=android.widget.FrameLayout{aaa5dc4 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{19d9992 V.E...... ......I. 0,0-0,0} activeView=nil
+[0.351] [INFO ] [switchToIcon] MainHandler running
+[0.359] [INFO ] [switchToIcon] mParams.flags set to 8|32 | mParams={(100,200)(838x961) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true}
+[0.359] [INFO ] [switchToIcon] removing menuView (no animation) | menuView=android.widget.FrameLayout{aaa5dc4 V.E...... ......I. 0,0-0,0}
+[0.368] [INFO ] [switchToIcon] attempting windowManager.addView(iconView) | iconView=android.widget.LinearLayout{19d9992 V.E...... ......I. 0,0-0,0}
+[0.390] [INFO ] [switchToIcon] iconView added OK | activeView=android.widget.LinearLayout{19d9992 V.E...... ......I. 0,0-0,0}
+[0.414] [INFO ] [createMenuView] deferred loadCategory: account
+[0.429] [INFO ] [loadCategory] id=account tabView=android.widget.TextView{eb895c0 VFED..C.. ......ID 0,0-0,0} moduleContainer=android.widget.LinearLayout{4b872f9 V.E...... ......I. 0,0-0,0}
+[0.429] [INFO ] [loadModule] -> loading: modules/tabs/account.lua
+[0.432] [INFO ] [loadModule] OK loaded: modules/tabs/account.lua | returns=1
+[0.507] [INFO ] [createMenuView] deferred: _setupMenuInteraction
+[0.507] [INFO ] [switchToIcon] MainHandler running
+[0.507] [WARN ] [switchToIcon] EARLY RETURN — activeView is already iconView
+[0.805] [INFO ] [switchToMenu] called | activeView=android.widget.LinearLayout{19d9992 V.E...... ......I. 0,0-838,87} menuView=android.widget.FrameLayout{aaa5dc4 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{19d9992 V.E...... ......I. 0,0-838,87}
+[0.811] [INFO ] [switchToMenu] MainHandler running
+[0.811] [INFO ] [switchToMenu] removing iconView from windowManager
+[0.812] [INFO ] [switchToMenu] attempting windowManager.addView(menuView) | menuView=android.widget.FrameLayout{aaa5dc4 V.E...... ......I. 0,0-0,0} mParams={(100,200)(838xwrap) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true} windowManager=android.view.WindowManagerImpl@470ebd0
+[0.830] [INFO ] [switchToMenu] menuView added OK | activeView=android.widget.FrameLayout{aaa5dc4 V.E...... ......I. 0,0-0,0}
+[5.244] [INFO ] [switchToIcon] called | activeView=android.widget.FrameLayout{aaa5dc4 V.E...... ......I. 0,0-838,961} iconView=android.widget.LinearLayout{19d9992 V.E...... ......I. 0,0-838,87} menuView=android.widget.FrameLayout{aaa5dc4 V.E...... ......I. 0,0-838,961}
+[5.250] [INFO ] [switchToIcon] MainHandler running
+[5.256] [INFO ] [switchToIcon] mParams.flags set to 8|32 | mParams={(153,556)(838x961) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true}
+[5.256] [INFO ] [switchToIcon] animating menuView out
+[5.256] [INFO ] [switchToIcon] attempting windowManager.addView(iconView) | iconView=android.widget.LinearLayout{19d9992 V.E...... ......I. 0,0-838,87}
+[5.276] [INFO ] [switchToIcon] iconView added OK | activeView=android.widget.LinearLayout{19d9992 V.E...... ......ID 0,0-838,87}
+[34.964] [INFO ] [switchToMenu] called | activeView=android.widget.LinearLayout{19d9992 V.E...... ......I. 0,0-838,87} menuView=android.widget.FrameLayout{aaa5dc4 V.E...... ......I. 0,0-838,961} iconView=android.widget.LinearLayout{19d9992 V.E...... ......I. 0,0-838,87}
+[34.971] [INFO ] [switchToMenu] MainHandler running
+[34.972] [INFO ] [switchToMenu] removing iconView from windowManager
+[34.980] [INFO ] [switchToMenu] attempting windowManager.addView(menuView) | menuView=android.widget.FrameLayout{aaa5dc4 V.E...... ......I. 0,0-838,961} mParams={(165,478)(838xwrap) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true} windowManager=android.view.WindowManagerImpl@470ebd0
+[34.995] [INFO ] [switchToMenu] menuView added OK | activeView=android.widget.FrameLayout{aaa5dc4 V.E...... ......ID 0,0-838,961}
+[37.579] [INFO ] [loadCategory] id=cups tabView=android.widget.TextView{463e1f9 VFED..C.. ...P..I. 660,0-826,58} moduleContainer=android.widget.LinearLayout{4b872f9 V.E...... ......I. 27,18-811,515}
+[37.580] [INFO ] [loadModule] -> loading: modules/tabs/cups.lua
+[37.585] [INFO ] [loadModule] OK loaded: modules/tabs/cups.lua | returns=1
+[38.213] [INFO ] [loadCategory] id=adventure tabView=android.widget.TextView{22ac8ec VFED..C.. ...P..I. 420,0-646,58} moduleContainer=android.widget.LinearLayout{4b872f9 V.E...... ......ID 27,18-811,18}
+[38.214] [INFO ] [loadModule] -> loading: modules/tabs/adventure.lua
+[38.219] [INFO ] [loadModule] OK loaded: modules/tabs/adventure.lua | returns=1
+[38.593] [INFO ] [loadCategory] id=player tabView=android.widget.TextView{60d86bb VFED..C.. ...P..I. 216,0-406,58} moduleContainer=android.widget.LinearLayout{4b872f9 V.E...... ......ID 27,18-811,18}
+[38.594] [INFO ] [loadModule] -> loading: modules/tabs/player.lua
+[38.601] [INFO ] [loadModule] OK loaded: modules/tabs/player.lua | returns=1
+[51.592] [INFO ] [loadCategory] id=other tabView=android.widget.TextView{bfd8b39 VFED..C.. ...P..I. 1620,0-1798,58} moduleContainer=android.widget.LinearLayout{4b872f9 V.E...... ......I. 27,18-811,1314}
+[51.593] [INFO ] [loadModule] -> loading: modules/tabs/other.lua
+[51.604] [INFO ] [loadModule] OK loaded: modules/tabs/other.lua | returns=1
+[52.943] [INFO ] [loadCategory] id=shop tabView=android.widget.TextView{7de700 VFED..C.. ...P..I. 1440,0-1606,58} moduleContainer=android.widget.LinearLayout{4b872f9 V.E...... ......I. 27,18-811,623}
+[52.944] [INFO ] [loadModule] -> loading: modules/tabs/shop.lua
+[52.953] [INFO ] [loadModule] OK loaded: modules/tabs/shop.lua | returns=1
+[53.986] [INFO ] [loadCategory] id=creative tabView=android.widget.TextView{30c983 VFED..C.. ...P..I. 1212,0-1426,58} moduleContainer=android.widget.LinearLayout{4b872f9 V.E...... ......I. 27,18-811,461}
+[53.987] [INFO ] [loadModule] -> loading: modules/tabs/creative.lua
+[53.992] [INFO ] [loadModule] OK loaded: modules/tabs/creative.lua | returns=1
+[0.001] [INFO ] [LOGGER] ══════ VOID Logger started ══════
+[0.001] [INFO ] [LOGGER] Log date: Mon Jun 01 08:16:06 2026
+[0.001] [INFO ] [LOGGER] Log file: /storage/sdcard0/#Vekendian/void-imp/src/void_debug.log
+[0.001] [INFO ] [LOGGER] Script started at t=0.001
+[0.003] [INFO ] [MAIN] scriptDir resolved: /storage/sdcard0/#Vekendian/void-imp/src
+[0.003] [INFO ] [loadModule] -> loading: core/env.lua
+[0.024] [INFO ] [loadModule] OK loaded: core/env.lua | returns=0
+[0.027] [INFO ] [loadModule] -> loading: core/json.lua
+[0.036] [INFO ] [loadModule] OK loaded: core/json.lua | returns=1
+[0.036] [INFO ] [loadModule] -> loading: core/memory.lua
+[0.046] [INFO ] [loadModule] OK loaded: core/memory.lua | returns=1
+[0.046] [INFO ] [loadModule] -> loading: core/scheduler.lua
+[0.051] [INFO ] [loadModule] OK loaded: core/scheduler.lua | returns=1
+[0.051] [INFO ] [loadModule] -> loading: core/loader.lua
+[0.055] [INFO ] [loadModule] OK loaded: core/loader.lua | returns=1
+[0.056] [INFO ] [loadModule] -> loading: core/patches.lua
+[0.060] [INFO ] [loadModule] OK loaded: core/patches.lua | returns=0
+[0.060] [INFO ] [loadModule] -> loading: core/arch.lua
+[0.092] [INFO ] [loadModule] -> loading: data/manifest.lua
+[0.098] [INFO ] [loadModule] OK loaded: data/manifest.lua | returns=1
+[0.267] [INFO ] [loadModule] -> loading: data/arm64-v8a/v1.73.x.lua
+[0.272] [INFO ] [loadModule] OK loaded: data/arm64-v8a/v1.73.x.lua | returns=1
+[0.272] [INFO ] [loadModule] OK loaded: core/arch.lua | returns=0
+[0.272] [INFO ] [loadModule] -> loading: modules/registry.lua
+[0.275] [INFO ] [loadModule] OK loaded: modules/registry.lua | returns=2
+[0.275] [INFO ] [loadModule] -> loading: ui/ui.lua
+[0.286] [INFO ] [loadModule] OK loaded: ui/ui.lua | returns=0
+[0.375] [INFO ] [INIT] Initialized | BaseGameStatus=520243481400 BaseRegion=4
+[0.375] [INFO ] [INIT] BaseGameStatus OK=520243481400 | scheduling initUI() via MainHandler
+[0.375] [INFO ] [INIT] User preferences RE-APPLIED
+[0.376] [INFO ] [INIT] activeView check before switchToIcon: activeView=nil
+[0.376] [WARN ] [INIT] activeView is nil — calling switchToIcon() as fallback
+[0.376] [INFO ] [switchToIcon] called | activeView=nil iconView=nil menuView=nil
+[0.376] [INFO ] [MAIN] Entering main loop | exit=false activeView=nil
+[0.387] [INFO ] [INIT] MainHandler: calling initUI()
+[0.387] [INFO ] [initUI] START | WIN_W=464.0 WIN_H=437.0 SDK=35
+[0.388] [INFO ] [initUI] windowManager acquired: android.view.WindowManagerImpl@470ebd0
+[0.389] [INFO ] [dp] density cached: 1.806249976158142
+[0.390] [INFO ] [initUI] mParams type=2038
+[0.390] [INFO ] [initUI] calling createMenuView()
+[0.390] [INFO ] [createMenuView] START | activity=org.vekendian.me.MainActivity@400e83d WIN_W=464.0
+[0.458] [INFO ] [initUI] menuView=android.widget.FrameLayout{2014ef5 V.E...... ......I. 0,0-0,0}
+[0.458] [INFO ] [initUI] calling createIconView()
+[0.458] [INFO ] [createIconView] START | activity=org.vekendian.me.MainActivity@400e83d
+[0.472] [INFO ] [initUI] iconView=android.widget.LinearLayout{ba878eb V.E...... ......I. 0,0-0,0}
+[0.472] [INFO ] [initUI] calling switchToIcon()
+[0.472] [INFO ] [switchToIcon] called | activeView=nil iconView=android.widget.LinearLayout{ba878eb V.E...... ......I. 0,0-0,0} menuView=android.widget.FrameLayout{2014ef5 V.E...... ......I. 0,0-0,0}
+[0.473] [INFO ] [initUI] DONE | menuView=android.widget.FrameLayout{2014ef5 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{ba878eb V.E...... ......I. 0,0-0,0} activeView=nil
+[0.473] [INFO ] [INIT] initUI() completed | menuView=android.widget.FrameLayout{2014ef5 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{ba878eb V.E...... ......I. 0,0-0,0} activeView=nil
+[0.473] [INFO ] [switchToIcon] MainHandler running
+[0.477] [INFO ] [switchToIcon] mParams.flags set to 8|32 | mParams={(100,200)(838x961) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true}
+[0.477] [INFO ] [switchToIcon] removing menuView (no animation) | menuView=android.widget.FrameLayout{2014ef5 V.E...... ......I. 0,0-0,0}
+[0.482] [INFO ] [switchToIcon] attempting windowManager.addView(iconView) | iconView=android.widget.LinearLayout{ba878eb V.E...... ......I. 0,0-0,0}
+[0.499] [INFO ] [switchToIcon] iconView added OK | activeView=android.widget.LinearLayout{ba878eb V.E...... ......I. 0,0-0,0}
+[0.526] [INFO ] [createMenuView] deferred loadCategory: account
+[0.526] [INFO ] [loadCategory] id=account tabView=android.widget.TextView{88a8fc1 VFED..C.. ......ID 0,0-0,0} moduleContainer=android.widget.LinearLayout{b123366 V.E...... ......I. 0,0-0,0}
+[0.527] [INFO ] [loadModule] -> loading: modules/tabs/account.lua
+[0.531] [INFO ] [loadModule] OK loaded: modules/tabs/account.lua | returns=1
+[0.597] [INFO ] [createMenuView] deferred: _setupMenuInteraction
+[0.597] [INFO ] [switchToIcon] MainHandler running
+[0.598] [WARN ] [switchToIcon] EARLY RETURN — activeView is already iconView
+[0.922] [INFO ] [switchToMenu] called | activeView=android.widget.LinearLayout{ba878eb V.E...... ......I. 0,0-838,87} menuView=android.widget.FrameLayout{2014ef5 V.E...... ......I. 0,0-0,0} iconView=android.widget.LinearLayout{ba878eb V.E...... ......I. 0,0-838,87}
+[0.938] [INFO ] [switchToMenu] MainHandler running
+[0.938] [INFO ] [switchToMenu] removing iconView from windowManager
+[0.942] [INFO ] [switchToMenu] attempting windowManager.addView(menuView) | menuView=android.widget.FrameLayout{2014ef5 V.E...... ......I. 0,0-0,0} mParams={(100,200)(838xwrap) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true} windowManager=android.view.WindowManagerImpl@470ebd0
+[0.991] [INFO ] [switchToMenu] menuView added OK | activeView=android.widget.FrameLayout{2014ef5 V.E...... ......I. 0,0-0,0}
+[161.843] [INFO ] [switchToIcon] called | activeView=android.widget.FrameLayout{2014ef5 V.E...... ......I. 0,0-838,961} iconView=android.widget.LinearLayout{ba878eb V.E...... ......I. 0,0-838,87} menuView=android.widget.FrameLayout{2014ef5 V.E...... ......I. 0,0-838,961}
+[161.853] [INFO ] [switchToIcon] MainHandler running
+[161.859] [INFO ] [switchToIcon] mParams.flags set to 8|32 | mParams={(100,200)(838x961) gr=TOP LEFT CENTER ty=APPLICATION_OVERLAY fmt=TRANSLUCENT mSaturation=-2.0
+  fl=NOT_FOCUSABLE NOT_TOUCH_MODAL
+  bhv=DEFAULT
+  fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR
+  frameRateBoostOnTouch=true
+  dvrrWindowFrameRateHint=true}
+[161.860] [INFO ] [switchToIcon] animating menuView out
+[161.860] [INFO ] [switchToIcon] attempting windowManager.addView(iconView) | iconView=android.widget.LinearLayout{ba878eb V.E...... ......I. 0,0-838,87}
+[161.876] [INFO ] [switchToIcon] iconView added OK | activeView=android.widget.LinearLayout{ba878eb V.E...... ......ID 0,0-838,87}
+[556.477] [INFO ] [switchToMenu] called | activeView=android.widget.LinearLayout{ba878eb V.E...... ......I. 0,0-838,87} menuView=android.widget.FrameLayout{2014ef5 V.E...... ......I. 0,0-838,961} iconView=android.widget.LinearLayout{ba878eb V.E...... ......I. 0,0-838,87}
+[556.478] [INFO ] [switchToMenu] MainHandler running

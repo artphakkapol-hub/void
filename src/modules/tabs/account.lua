@@ -63,18 +63,21 @@ return function(container)
         end)
     end)
 
-    local fakeVipPatches = {{
-        scan    = "h 93 D6 01 F9 68 B2 40 39 1F 01 00 71",
-        offset  = 4,
-        patch   = "h 28 00 80 52",
-        unpatch = "h 68 B2 40 39"
-    }}
-    
-    addArchModule(container, "fake_vip", "Fake VIP", "Toggle vip subscription state locally", "switch", nil, fakeVipPatches)
+    addArchModule(container, "fake_vip", "Fake VIP", "Toggle vip subscription state locally", "switch", nil, aobs.fakeVip)
     
     addModule(container, "fake_rank", "Fake Rank", "Set your rank to fake legendary automatically", "button", nil, function(done)
         scheduler:add(function(finish_task)
+            gg.setValues({{
+                address = BaseGameStatus + 0x1CC,
+                flags = 16,
+                value = 50.0
+            }, {
+                address = BaseGameStatus + 0x200,
+                flags = 16,
+                value = 50.0
+            }})
             
+            showToast("Fake Rank has been injected, please don't do this twice for safety.")
         end)
     end)
 end

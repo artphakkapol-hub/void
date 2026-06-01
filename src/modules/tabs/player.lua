@@ -8,14 +8,8 @@
 -- Dependencies: addModule, addArchModule, showToast, memory, BaseGameStatus, BaseRegion, scheduler
 
 return function(container)
-    local autoDetachPatches = {{
-        scan    = "h 08 20 20 1E 85 00 00 54 E0 03 13 AA E1 03 14 AA",
-        offset  = 4,
-        patch   = "h 1F 20 03 D5",
-        unpatch = "h 85 00 00 54"
-    }}
-
-    addArchModule(container, "auto_detach", "Auto Detach", "Automatically detach parts like the Rally Car roof", "switch", nil, autoDetachPatches)
+    
+    addArchModule(container, "auto_detach", "Auto Detach", "Automatically detach parts like the Rally Car roof", "switch", nil, aobs.autoDetach)
 
     addModule(container, "no_clip", "No-Clip", "Make your player go through objects without dying", "switch", nil,
     function(done, state)
