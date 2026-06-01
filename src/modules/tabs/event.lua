@@ -4,8 +4,6 @@
   
   @module callback Receives container View to populate with modules
 ]]
----compressed and encoded event rewards data, decoded and applied in event rewards module.
-local custom_rewards = "placeholder"
 
 return function(container)
     addModule(container, "patch_rewards", "Event Rewards Patch", "Patch the current public event rewards to custom one provided by VOID (require game restart)", "button", nil, function(done)
@@ -18,25 +16,15 @@ return function(container)
     
         local successList = {}
         local failedList = {}
-    
-        local modContent = nil
-        local ok, err = pcall(function()
-            modContent = Zip.decompress(custom_rewards)
-        end)
-        if not ok or not modContent then
-            table.insert(failedList, "Failed to decompress embedded rewards: " .. tostring(err or "nil"))
-            modContent = nil
-        end
-    
+        
+        local custom_rewards = loadModule("configs/rewards.lua")
         local jsonMod = nil
-        if modContent then
-            local ok2, err2 = pcall(function()
-                jsonMod = json.decode(modContent)
-            end)
-            if not ok2 or not jsonMod then
-                table.insert(failedList, "Failed to decode embedded rewards JSON")
-                jsonMod = nil
-            end
+        local ok, err = pcall(function()
+            jsonMod = json.decode(custom_rewards)
+        end)
+        if not ok or not jsonMod then
+            table.insert(failedList, "Failed to decode rewards JSON")
+            jsonMod = nil
         end
     
         for _, path in ipairs(eventsPaths) do
@@ -52,10 +40,10 @@ return function(container)
                     os.remove(active_decrypted)
     
                     local jsonActive = nil
-                    local ok3, err3 = pcall(function()
+                    local ok2, err2 = pcall(function()
                         jsonActive = json.decode(activeContent)
                     end)
-                    if not ok3 or not jsonActive then
+                    if not ok2 or not jsonActive then
                         table.insert(failedList, "Failed to decode active_events.json at path: " .. path)
                         goto continue_path
                     end

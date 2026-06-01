@@ -179,22 +179,7 @@ CLICK_COOLDOWN = 500
 DEVICE_ARCH = "unknown"
 DEFAULT_ARCH = "arm64-v8a"
 
-UI = {
-    BG = 0x200D001A,
-    HEADER = 0x29110022,
-    CARD = 0x331A0028,
-    ACCENT = 0x608F3BE8,
-    MUTED = 0x4D3D1060,
-    TEXT = 0xFFFFFFFF,
-    SUB = 0xDDBB99FF,
-    RED = 0xFFFF3366,
-    GREEN = 0xFF39FF14,
-    STROKE = 0x4D4400AA,
-    LOGO = 0xFFE040FB,
-    GLOW = 0xFFFFFFFF,
-    GLASS = 0x18FFFFFF,
-    OVERLAY = 0xAA000000,
-}
+UI = loadModule("configs/colors.lua")
 
 -- ── Global state ──────────────────────────────────────────────────────────────
 
@@ -300,16 +285,6 @@ function switchToIcon()
         mParams.flags = 8 | 32
         LOG.info("switchToIcon", "mParams.flags set to 8|32 | mParams=" .. tostring(mParams))
         if menuView and activeView == menuView then
-            LOG.info("switchToIcon", "animating menuView out")
-            local ok, err = _safePcall(function()
-                menuView.animate().alpha(0.0).scaleX(0.9).scaleY(0.9).setDuration(150)
-                    .withEndAction(Runnable({ run = function()
-                        local ok2, err2 = _safePcall(function() windowManager.removeView(menuView) end)
-                        if not ok2 then LOG.error("switchToIcon", "removeView(menuView) in animation: " .. tostring(err2)) end
-                    end})).start()
-            end)
-            if not ok then LOG.error("switchToIcon", "menuView animate-out failed: " .. tostring(err)) end
-        else
             LOG.info("switchToIcon", "removing menuView (no animation) | menuView=" .. tostring(menuView))
             pcall(function() windowManager.removeView(menuView) end)
         end

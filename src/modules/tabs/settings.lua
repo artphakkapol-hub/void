@@ -41,7 +41,7 @@ return function(container)
 
     -- ── Custom Colors Info ────────────────────────────────────────────────────
     -- Allow user to changes colors of this script.
-    addModule(container, "colors_info", "About Custom Colors", "Let's you customize this script menu colors, restart this script for better results.", "ro", "", nil)
+    addModule(container, "colors_info", "About Custom Colors", "Let's you customize this script menu colors, restart this script after customizing for better results.", "ro", "", nil)
     
     -- ── Background Opacity ────────────────────────────────────────────────────
     -- Writes to the alpha byte of UI.BG; HEADER, CARD, and GLASS track it at
