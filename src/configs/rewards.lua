@@ -2433,6 +2433,10 @@ return [[
                     },
                     {
                         "vehicleId": "stock",
+                        "paintId": "stock_drak_premium"
+                    },
+                    {
+                        "vehicleId": "stock",
                         "paintId": "VIP"
                     }
                 ],
@@ -4320,6 +4324,11 @@ return [[
                     {
                         "partId": "wheel",
                         "variantId": "stock_tire-6-7-premium",
+                        "vehicleId": "stock"
+                    },
+                    {
+                        "partId": "wheel",
+                        "variantId": "stock_tire-drak_premium",
                         "vehicleId": "stock"
                     },
                     {
@@ -9788,6 +9797,10 @@ return [[
                     },
                     {
                         "vehicleId": "stock",
+                        "paintId": "stock_drak_premium"
+                    },
+                    {
+                        "vehicleId": "stock",
                         "paintId": "VIP"
                     }
                 ],
@@ -11675,6 +11688,11 @@ return [[
                     {
                         "partId": "wheel",
                         "variantId": "stock_tire-6-7-premium",
+                        "vehicleId": "stock"
+                    },
+                    {
+                        "partId": "wheel",
+                        "variantId": "stock_tire-drak_premium",
                         "vehicleId": "stock"
                     },
                     {
