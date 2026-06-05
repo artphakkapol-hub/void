@@ -22,7 +22,7 @@
 --   3. No changes to core/ required.
 
 return {
-    ["1.73.0-1.73.1"] = {
+    ["1.73.0-1.73.2"] = {
         ["arm64-v8a"] = "data/arm64-v8a/v1.73.x.lua",
     }
 }

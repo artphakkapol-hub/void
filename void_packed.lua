@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-02 15:50:44
+-- Packed by bundle.py  •  2026-06-05 18:02:09
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -19849,7 +19849,7 @@ __vfs['data/manifest.lua'] = function(...)
 --   3. No changes to core/ required.
 
 return {
-    ["1.73.0-1.73.1"] = {
+    ["1.73.0-1.73.2"] = {
         ["arm64-v8a"] = "data/arm64-v8a/v1.73.x.lua",
     }
 }
@@ -19905,20 +19905,21 @@ __vfs['modules/registry.lua'] = function(...)
 -- To add a tab:
 --   1. Append an entry to TAB_DEFS.
 --   2. Create the corresponding file in modules/tabs/.
---   No other files need changing.
+--   3. Add icons to _TAB_ICONS in ui/ui.lua
 
 local TAB_DEFS = {
     -- { id, display_name }
-    { "account",   "ACCOUNT MENU"   },
-    { "player",    "PLAYER MENU"    },
+    { "account", "ACCOUNT MENU" },
+    { "player", "PLAYER MENU" },
     { "adventure", "ADVENTURE MENU" },
-    { "cups",      "CUPS MENU"      },
-    { "team",      "TEAM MENU"      },
-    { "event",     "EVENT MENU"     },
-    { "creative",  "CREATIVE MENU"  },
-    { "shop",      "SHOP MENU"      },
-    { "other",     "OTHER MENU"     },
-    { "settings",  "SETTINGS MENU"  },
+    { "cups", "CUPS MENU" },
+    { "team", "TEAM MENU" },
+    { "event", "EVENT MENU" },
+    { "creative", "CREATIVE MENU" },
+    { "shop", "SHOP MENU" },
+    { "other", "OTHER MENU" },
+    { "settings", "SETTINGS" },
+    { "about", "ABOUT" },
 }
 
 local loaded      = {}   -- id → render function (cached after first load)
@@ -19953,6 +19954,17 @@ for _, def in ipairs(TAB_DEFS) do
 end
 
 return tabHandlers, categoryHandlers
+
+end
+
+__vfs['modules/tabs/about.lua'] = function(...)
+return function(container)
+    addModule(container, "about_script", "About Script", "A powerful and highly optimized memory manipulation script built for Hill Climb Racing 2 on the custom GG: ME (GameGuardian: Memory Editor) environment.\n\nDownload ME:\nhttps://github.com/vekendianorg/me/releases/", "ro", " ", nil)
+    addModule(container, "script_owner", "Script Owner", "- Vekendian Organization (github: vekendianorg)", "ro", " ", nil)
+    addModule(container, "script_dev", "Script Developer", "- Lazor (github: lazor-git)\n- AMR (github: amr-gt)", "ro", " ", nil)
+    
+    addModule(container, "credits", "Credits (For Values, Offsets, Etc)", "- Lazor (github: lazor-git)\n- Lan9118 (discord: lan9118)\n- AMR (github: amr-gt)\n- Eomthix/Erik (discord: eomthix)", "ro", " ", nil)
+end
 
 end
 
@@ -20977,8 +20989,8 @@ return function(container)
         else return "U: Unknown" end
     end
 
-    addModule(container, "memory_range", "Memory Range", "Current selected memory range", "ro", regionName(), nil)
-    addModule(container, "gamestatus_address", "GameStatus", "Current gamestatus address", "ro", string.format("0x%X", BaseGameStatus or 0), nil)
+    addModule(container, "memory_range", "Memory Range", "Current selected memory range\n(automatically chosen by script)", "ro", regionName(), nil)
+    addModule(container, "gamestatus_address", "GameStatus", "Current gamestatus address\n(automatically chosen by script)", "ro", string.format("0x%X", BaseGameStatus or 0), nil)
 
     -- ── Custom Colors Info ────────────────────────────────────────────────────
     -- Allow user to changes colors of this script.
@@ -21325,6 +21337,12 @@ __vfs['ui/ui.lua'] = function(...)
   CATEGORY MANAGEMENT
 ==================================]]
 
+-- Sidebar tab registry: id → { container, iconTV, labelTV }
+-- Keyed by tab id string so loadCategory can recolor children without
+-- relying on Java object equality as table keys.
+local _tabData    = {}
+local _activeTabId = nil
+
 ---Loads and displays a category (tab content) by ID.
 ---Updates active tab styling and populates moduleContainer with category modules.
 ---@param id string Tab identifier to load
@@ -21339,13 +21357,23 @@ function loadCategory(id, tabView)
 
     moduleContainer.removeAllViews()
 
-    if activeTabView then
-        activeTabView.setTextColor(UI.SUB)
-        activeTabView.setBackground(getSkin(UI.BG, 20))
+    -- Deactivate previous tab (reset background + both child text colors)
+    if _activeTabId and _tabData[_activeTabId] then
+        local prev = _tabData[_activeTabId]
+        prev.container.setBackground(getSkin(UI.BG, 8))
+        prev.iconTV.setTextColor(UI.SUB)
+        prev.labelTV.setTextColor(UI.SUB)
     end
 
-    tabView.setTextColor(UI.TEXT)
-    tabView.setBackground(getSkin(UI.CARD, 50, 1, UI.STROKE))
+    -- Activate newly selected tab
+    if _tabData[id] then
+        local curr = _tabData[id]
+        curr.container.setBackground(getSkin(UI.ACCENT, 8))
+        curr.iconTV.setTextColor(UI.TEXT)
+        curr.labelTV.setTextColor(UI.TEXT)
+    end
+
+    _activeTabId  = id
     activeTabView = tabView
 
     local setCategory = categoryHandlers[id]
@@ -21369,28 +21397,73 @@ end
 -- TAB BUILDER
 -- ─────────────────────────────────────────────
 
----Creates a tab button that loads a category when clicked.
+-- Unicode icon map keyed by tab id.
+-- These are basic BMP characters that render on all Android versions.
+local _TAB_ICONS = {
+    account = "\xe2\x8a\x99",   -- ⊙  profile/user
+    player = "\xe2\x96\xb7",   -- ▷  play/game
+    adventure = "\xe2\x97\x86",   -- ◆  quest/adventure
+    cups = "\xe2\x96\xb2",   -- ▲  trophy/cups
+    team = "\xe2\x8a\x9e",   -- ⊞  grid/team
+    event = "\xe2\x96\xa3",   -- ▣  calendar/event
+    creative = "\xe2\x98\x85",   -- ★  star/creative
+    shop = "\xe2\x97\x91",   -- ◑  coin/shop
+    other = "\xe2\x8b\xaf",   -- ⋯  ellipsis/other
+    settings = "\xe2\x9a\x99",   -- ⚙  gear/settings
+    about = "\xe2\x84\xb9",   -- ℹ  info/about
+}
+
+---Creates a sidebar tab row (icon + label) that loads a category when tapped.
+---Registers icon+label refs in _tabData[id] for later recoloring by loadCategory.
 ---@param parent View Layout to add tab to
 ---@param id string Tab identifier
 ---@param name string Display name for the tab
----@return View The created tab TextView
+---@return View The created tab container
 function addTab(parent, id, name)
-    local tab = TextView(activity)
-    local params = LinLayoutParams(-2, -2)
-    params.rightMargin = dp(8)
-    tab.setLayoutParams(params)
-    tab.setText(tostring(name))
-    tab.setGravity(Gravity.CENTER)
-    tab.setPadding(dp(16), dp(6), dp(16), dp(6))
-    tab.setTextColor(UI.SUB)
-    tab.setTextSize(1, 11)
-    tab.setTypeface(Typeface.create("sans-serif", Typeface.BOLD))
-    tab.setBackground(getSkin(UI.BG, 20))
-    tab.setOnClickListener(View.OnClickListener({
-        onClick = function(v) loadCategory(id, v) end
+    local icon_char = _TAB_ICONS[id] or "\xe2\x80\xa2"  -- bullet fallback
+
+    -- Outer container (horizontal: icon | label)
+    local container = LinearLayout(activity)
+    container.setOrientation(0)
+    local params = LinLayoutParams(-1, -2)
+    params.bottomMargin = dp(2)
+    container.setLayoutParams(params)
+    container.setPadding(dp(8), dp(8), dp(6), dp(8))
+    container.setGravity(Gravity.CENTER_VERTICAL)
+    container.setBackground(getSkin(UI.BG, 8))
+
+    -- Icon column
+    local iconTV = TextView(activity)
+    local iconParams = LinLayoutParams(dp(20), dp(20))
+    iconParams.rightMargin = dp(7)
+    iconTV.setLayoutParams(iconParams)
+    iconTV.setText(icon_char)
+    iconTV.setTextColor(UI.SUB)
+    iconTV.setTextSize(1, 13)
+    iconTV.setGravity(Gravity.CENTER)
+    iconTV.setTypeface(Typeface.DEFAULT_BOLD)
+    container.addView(iconTV)
+
+    -- Label column (wraps to 2 lines for long names)
+    local labelTV = TextView(activity)
+    labelTV.setLayoutParams(LinLayoutParams(0, -2, 1.0))
+    labelTV.setText(tostring(name))
+    labelTV.setTextColor(UI.SUB)
+    labelTV.setTextSize(1, 9)
+    labelTV.setTypeface(Typeface.create("sans-serif", Typeface.BOLD))
+    labelTV.setSingleLine(false)
+    labelTV.setMaxLines(2)
+    container.addView(labelTV)
+
+    container.setOnClickListener(View.OnClickListener({
+        onClick = function(v) loadCategory(id, container) end
     }))
-    parent.addView(tab)
-    return tab
+
+    -- Register for loadCategory recoloring
+    _tabData[id] = { container = container, iconTV = iconTV, labelTV = labelTV }
+
+    parent.addView(container)
+    return container
 end
 
 -- ─────────────────────────────────────────────
@@ -22007,34 +22080,6 @@ end
 -- the next is pushed, keeping peak depth well below the limit.
 -- ─────────────────────────────────────────────
 
----Builds the root LinearLayout for the menu and wires its touch-to-dismiss listener.
----@param base FrameLayout Parent frame
----@return View root LinearLayout
-local function _buildMenuRoot(base)
-    local root = LinearLayout(activity)
-    root.setOrientation(1)
-    root.setBackground(getSkin(UI.BG, 16, 0, UI.STROKE))
-    root.setLayoutParams(FrameLayout.LayoutParams(dp(WIN_W), -2))
-    root.setFocusable(true)
-    root.setFocusableInTouchMode(true)
-    root.setOnTouchListener(View.OnTouchListener{
-        onTouch = function(v, e)
-            if e.getAction() == 4 or e.getAction() == MotionEvent.ACTION_DOWN then
-                local imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE)
-                local currentFocus = activity.getCurrentFocus()
-                if currentFocus then
-                    currentFocus.clearFocus()
-                    imm.hideSoftInputFromWindow(currentFocus.getWindowToken(), 0)
-                end
-                mParams.flags = 8 | 32 | 16
-                windowManager.updateViewLayout(menuView, mParams)
-            end
-            return false
-        end
-    })
-    return root
-end
-
 ---Builds the draggable header row (title, subtitle, ✕ button) and adds it to root.
 ---@param root View Parent LinearLayout
 local function _buildMenuHeader(root)
@@ -22128,18 +22173,40 @@ local function _buildMenuHeader(root)
     root.addView(headerGroup)
 end
 
----Builds the horizontal tab bar and adds it to root.
----@param root View Parent LinearLayout
+---Builds the vertical sidebar tab column and adds it to root.
+---@param root View Parent LinearLayout (horizontal)
 ---@return View|nil firstTab, string|nil firstTabId
 local function _buildMenuTabs(root)
-    local tabScroll = HorizontalScrollView(activity)
-    tabScroll.setHorizontalScrollBarEnabled(false)
-    tabScroll.setPadding(dp(15), dp(15), dp(15), dp(5))
+    -- Reset registry so a UI rebuild starts clean
+    _tabData     = {}
+    _activeTabId = nil
+
+    -- Sidebar wrapper: fixed width, full available height
+    local sideBar = LinearLayout(activity)
+    sideBar.setOrientation(1)
+    local sbParams = LinLayoutParams(dp(SIDEBAR_W), -1)
+    sideBar.setLayoutParams(sbParams)
+    sideBar.setBackground(getSkin(UI.BG, 0))
+
+    -- Thin right divider line
+    local divider = View(activity)
+    local dvParams = LinLayoutParams(dp(1), -1)
+    divider.setLayoutParams(dvParams)
+    divider.setBackgroundColor(UI.STROKE)
+
+    -- Scrollable tab list
+    local tabScroll = ScrollView(activity)
+    tabScroll.setVerticalScrollBarEnabled(false)
+    tabScroll.setLayoutParams(LinLayoutParams(-1, -1))
+    tabScroll.setPadding(dp(6), dp(8), dp(6), dp(8))
 
     local tabLayout = LinearLayout(activity)
-    tabLayout.setOrientation(0)
+    tabLayout.setOrientation(1)
     tabScroll.addView(tabLayout)
-    root.addView(tabScroll)
+
+    sideBar.addView(tabScroll)
+    root.addView(sideBar)
+    root.addView(divider)
 
     local firstTab, firstTabId = nil, nil
     local menuList = tabHandlers or {{"unknown", "unknown"}}
@@ -22151,13 +22218,15 @@ local function _buildMenuTabs(root)
 end
 
 ---Builds the content ScrollView + moduleContainer and adds them to root.
----@param root View Parent LinearLayout
+---@param root View Parent LinearLayout (horizontal inner row)
 ---@return View scroll The ScrollView (needed by resize handles)
 local function _buildMenuContent(root)
     local scroll = ScrollView(activity)
-    scroll.setLayoutParams(LinLayoutParams(-1, dp(WIN_H)))
+    -- Weight=1 fills remaining width after sidebar
+    local sp = LinLayoutParams(0, -1, 1.0)
+    scroll.setLayoutParams(sp)
     scroll.setVerticalScrollBarEnabled(false)
-    scroll.setPadding(dp(15), dp(10), dp(15), dp(15))
+    scroll.setPadding(dp(10), dp(10), dp(10), dp(10))
 
     moduleContainer = LinearLayout(activity)
     moduleContainer.setOrientation(1)
@@ -22167,14 +22236,16 @@ local function _buildMenuContent(root)
 end
 
 -- Window size bounds (dp).  Referenced by applyWindowResize and settings sliders.
-RESIZE_MIN_W = 200
+RESIZE_MIN_W = 400
 RESIZE_MAX_W = 650
 RESIZE_MIN_H = 200
 RESIZE_MAX_H = 650
--- Fixed dp overhead for header row + tab bar (not part of the resizable scroll area).
+-- Sidebar width (dp). Wide enough for icon + "ADVENTURE MENU" label on 2 lines.
+SIDEBAR_W = 125
+-- Fixed dp overhead for header row (not part of the resizable scroll area).
 -- Keeps mParams.height explicit so WindowManager doesn't expand the overlay to full screen.
 -- Global so switchToMenu in main.lua can restore mParams.height correctly.
-UI_CHROME_H = 95
+UI_CHROME_H = 55
 
 -- Module-level upvalues captured from createMenuView so applyWindowResize
 -- can reach the inner layout views without being nested inside createMenuView.
@@ -22252,7 +22323,7 @@ end
 -- MENU VIEW  (expanded panel)
 -- ─────────────────────────────────────────────
 
----Creates the full menu view - main UI panel with tabs, content, and header.
+---Creates the full menu view - main UI panel with header on top and [sidebar | content] below.
 ---Delegates every major section to a helper function so createMenuView itself
 ---stays shallow (few locals, few bytecodes) and never overflows the JVM stack.
 ---@return View The menu FrameLayout containing all UI elements
@@ -22262,17 +22333,46 @@ function createMenuView()
     local base = FrameLayout(activity)
     base.setLayoutParams(LayoutParams(-2, -2))
 
-    local root   = _buildMenuRoot(base)
-    _menuRoot = root
-    _buildMenuHeader(root)
-    local firstTab, firstTabId = _buildMenuTabs(root)
-    local scroll = _buildMenuContent(root)
+    -- Outer: VERTICAL — header on top, then the sidebar+content row below
+    local outer = LinearLayout(activity)
+    outer.setOrientation(1)
+    outer.setBackground(getSkin(UI.BG, 16, 0, UI.STROKE))
+    outer.setLayoutParams(FrameLayout.LayoutParams(dp(WIN_W), -2))
+    outer.setFocusable(true)
+    outer.setFocusableInTouchMode(true)
+    outer.setOnTouchListener(View.OnTouchListener{
+        onTouch = function(v, e)
+            if e.getAction() == 4 or e.getAction() == MotionEvent.ACTION_DOWN then
+                local imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE)
+                local currentFocus = activity.getCurrentFocus()
+                if currentFocus then
+                    currentFocus.clearFocus()
+                    imm.hideSoftInputFromWindow(currentFocus.getWindowToken(), 0)
+                end
+                mParams.flags = 8 | 32 | 16
+                windowManager.updateViewLayout(menuView, mParams)
+            end
+            return false
+        end
+    })
+
+    -- Header sits at the top of outer
+    _buildMenuHeader(outer)
+
+    -- Inner: HORIZONTAL — sidebar tabs on the left, content scroll on the right
+    local inner = LinearLayout(activity)
+    inner.setOrientation(0)
+    local innerParams = LinLayoutParams(-1, dp(WIN_H))
+    inner.setLayoutParams(innerParams)
+    _menuRoot = inner
+    outer.addView(inner)
+
+    local firstTab, firstTabId = _buildMenuTabs(inner)
+    local scroll = _buildMenuContent(inner)
     _menuScroll = scroll
 
     -- Defer first-tab load so createMenuView() fully returns before
-    -- addModule() closures are built. Loading synchronously here puts
-    -- createMenuView + initUI + _safePcall frames on the stack at the
-    -- same time as all the addModule closure allocations → StackOverflow.
+    -- addModule() closures are built.
     if firstTab and firstTabId then
         local _ftab, _ftabId = firstTab, firstTabId
         MainHandler.post(Runnable({ run = function()
@@ -22281,11 +22381,9 @@ function createMenuView()
         end }))
     end
 
-    base.addView(root)
+    base.addView(outer)
     menuView = base
 
-    -- _setupMenuInteraction is deferred to a fresh MainHandler callback so it
-    -- runs OUTSIDE the _safePcall Java frames that caused the StackOverflowError.
     MainHandler.post(Runnable({ run = function()
         LOG.info("createMenuView", "deferred: _setupMenuInteraction")
         _setupMenuInteraction(base)

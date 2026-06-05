@@ -8,20 +8,21 @@
 -- To add a tab:
 --   1. Append an entry to TAB_DEFS.
 --   2. Create the corresponding file in modules/tabs/.
---   No other files need changing.
+--   3. Add icons to _TAB_ICONS in ui/ui.lua
 
 local TAB_DEFS = {
     -- { id, display_name }
-    { "account",   "ACCOUNT MENU"   },
-    { "player",    "PLAYER MENU"    },
+    { "account", "ACCOUNT MENU" },
+    { "player", "PLAYER MENU" },
     { "adventure", "ADVENTURE MENU" },
-    { "cups",      "CUPS MENU"      },
-    { "team",      "TEAM MENU"      },
-    { "event",     "EVENT MENU"     },
-    { "creative",  "CREATIVE MENU"  },
-    { "shop",      "SHOP MENU"      },
-    { "other",     "OTHER MENU"     },
-    { "settings",  "SETTINGS MENU"  },
+    { "cups", "CUPS MENU" },
+    { "team", "TEAM MENU" },
+    { "event", "EVENT MENU" },
+    { "creative", "CREATIVE MENU" },
+    { "shop", "SHOP MENU" },
+    { "other", "OTHER MENU" },
+    { "settings", "SETTINGS" },
+    { "about", "ABOUT" },
 }
 
 local loaded      = {}   -- id → render function (cached after first load)

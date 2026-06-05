@@ -36,8 +36,8 @@ return function(container)
         else return "U: Unknown" end
     end
 
-    addModule(container, "memory_range", "Memory Range", "Current selected memory range", "ro", regionName(), nil)
-    addModule(container, "gamestatus_address", "GameStatus", "Current gamestatus address", "ro", string.format("0x%X", BaseGameStatus or 0), nil)
+    addModule(container, "memory_range", "Memory Range", "Current selected memory range\n(automatically chosen by script)", "ro", regionName(), nil)
+    addModule(container, "gamestatus_address", "GameStatus", "Current gamestatus address\n(automatically chosen by script)", "ro", string.format("0x%X", BaseGameStatus or 0), nil)
 
     -- ── Custom Colors Info ────────────────────────────────────────────────────
     -- Allow user to changes colors of this script.
