@@ -12,25 +12,6 @@ return function(container)
         return output or "" -- Guarantee a string is returned, never nil
     end
 
-    -- Helper: check if a file or directory exists and is readable
-    local function fileExists(path)
-        local f = io.open(path, "rb")
-        if f then
-            f:close()
-            return true
-        end
-        return false
-    end
-
-    -- Helper: get file size in bytes, returns -1 if unreadable
-    local function fileSize(path)
-        local f = io.open(path, "rb")
-        if not f then return -1 end
-        local size = f:seek("end")
-        f:close()
-        return size or -1
-    end
-
     addModule(container, "patch_rewards", "Event Rewards Patch", "Patch the current public event rewards to custom one provided by VOID (require game restart)", "button", nil, function(done)
         -- Determine if environment is natively Rooted or using a Virtual Space safely
         gg.toast("Checking environment permissions...")
@@ -71,17 +52,7 @@ return function(container)
         -- Workspace allocated for root escalation adjustments
         local safeWorkspace = "/storage/emulated/0/.void_cache/"
         if hasRoot then
-            local mkResult = shellAsRoot("mkdir -p \"" .. safeWorkspace .. "\" && echo SUCCESS || echo FAIL")
-            print("Workspace mkdir result:", mkResult)
-            local chmodResult = shellAsRoot("chmod 777 \"" .. safeWorkspace .. "\" && echo SUCCESS || echo FAIL")
-            print("Workspace chmod result:", chmodResult)
-            if not fileExists(safeWorkspace) then
-                table.insert(failedList, "FATAL: Workspace creation failed: " .. safeWorkspace)
-                showDialog("Patch Results", "FATAL: Could not create workspace directory.\n" .. safeWorkspace, {"OK"})
-                done()
-                return
-            end
-            print("Workspace verified:", safeWorkspace)
+            gg.shell("mkdir -p " .. safeWorkspace)
         end
 
         for _, path in ipairs(eventsPaths) do
@@ -90,10 +61,6 @@ return function(container)
             local targetActivePath = active
             local activeMovedViaRoot = false
 
-            print("Source:", active)
-            print("Destination:", hasRoot and (safeWorkspace .. "active_events.json") or "N/A (direct access)")
-            print("Workspace:", safeWorkspace)
-
             -- Check if file is directly readable (Virtual Space environment scenario)
             local testOpen = io.open(active, "r")
             if testOpen then
@@ -101,43 +68,13 @@ return function(container)
             elseif hasRoot then
                 -- File blocked but root exists: Pull to public space
                 local secureActiveCopy = safeWorkspace .. "active_events.json"
-
-                local cpResult = shellAsRoot("cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\" && echo SUCCESS || echo FAIL")
-                print("Copy result:", cpResult)
-
-                local chmodResult = shellAsRoot("chmod 777 \"" .. secureActiveCopy .. "\" && echo SUCCESS || echo FAIL")
-                print("Chmod result:", chmodResult)
-
-                -- Verify destination file exists after copy
-                local test = io.open(secureActiveCopy, "rb")
-                if not test then
-                    print("Root copy verification FAILED for:", secureActiveCopy)
-                    table.insert(failedList, "Root copy failed: " .. active)
-                    goto continue_path
-                end
-                test:close()
-
-                print("Copy verified. Exists:", fileExists(secureActiveCopy), "Size:", fileSize(secureActiveCopy))
-
+                shellAsRoot("cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\"")
+                shellAsRoot("chmod 777 \"" .. secureActiveCopy .. "\"")
                 targetActivePath = secureActiveCopy
                 activeMovedViaRoot = true
             else
                 -- Inaccessible and no root (Virtual Space misconfiguration or path missing)
                 table.insert(failedList, "File inaccessible at path: " .. path)
-                goto continue_path
-            end
-
-            -- Pre-decrypt verification: source must exist and be non-empty
-            print("targetActivePath:", targetActivePath)
-            print("Exists:", fileExists(targetActivePath))
-            print("Size:", fileSize(targetActivePath))
-
-            if not fileExists(targetActivePath) then
-                table.insert(failedList, "Pre-decrypt: source not found: " .. targetActivePath)
-                goto continue_path
-            end
-            if fileSize(targetActivePath) <= 0 then
-                table.insert(failedList, "Pre-decrypt: source is empty (0 bytes): " .. targetActivePath)
                 goto continue_path
             end
     
@@ -205,41 +142,12 @@ return function(container)
                                             if testEventOpen then
                                                 testEventOpen:close()
                                             elseif hasRoot then
-                                                local cpEvResult = shellAsRoot("cp \"" .. eventPath .. "\" \"" .. secureEventCopy .. "\" && echo SUCCESS || echo FAIL")
-                                                print("Event copy result [" .. eventName .. "]:", cpEvResult)
-
-                                                local chmodEvResult = shellAsRoot("chmod 777 \"" .. secureEventCopy .. "\" && echo SUCCESS || echo FAIL")
-                                                print("Event chmod result [" .. eventName .. "]:", chmodEvResult)
-
-                                                -- Verify event file copy
-                                                local evTest = io.open(secureEventCopy, "rb")
-                                                if not evTest then
-                                                    print("Root event copy FAILED for:", secureEventCopy)
-                                                    table.insert(failedList, "Root copy failed: " .. eventPath)
-                                                    goto next_event
-                                                end
-                                                evTest:close()
-
-                                                print("Event copy verified. Exists:", fileExists(secureEventCopy), "Size:", fileSize(secureEventCopy))
-
+                                                shellAsRoot("cp \"" .. eventPath .. "\" \"" .. secureEventCopy .. "\"")
+                                                shellAsRoot("chmod 777 \"" .. secureEventCopy .. "\"")
                                                 targetEventPath = secureEventCopy
                                                 eventMovedViaRoot = true
                                             else
                                                 table.insert(failedList, "Skipped unreadable event: " .. eventName)
-                                                goto next_event
-                                            end
-
-                                            -- Pre-decrypt verification for event file
-                                            print("Event targetPath:", targetEventPath)
-                                            print("Exists:", fileExists(targetEventPath))
-                                            print("Size:", fileSize(targetEventPath))
-
-                                            if not fileExists(targetEventPath) then
-                                                table.insert(failedList, "Pre-decrypt: event not found: " .. targetEventPath)
-                                                goto next_event
-                                            end
-                                            if fileSize(targetEventPath) <= 0 then
-                                                table.insert(failedList, "Pre-decrypt: event is empty (0 bytes): " .. targetEventPath)
                                                 goto next_event
                                             end
 
@@ -283,13 +191,9 @@ return function(container)
                                                             -- Encrypt back into public storage, then push back to native protected dir via root bridge
                                                             local secureEncryptedOut = safeWorkspace .. eventName .. "_patched.json"
                                                             Crypto.encrypt(decryptedPath, secureEncryptedOut, eventMeta)
-
-                                                            local pushResult = shellAsRoot("cp \"" .. secureEncryptedOut .. "\" \"" .. eventPath .. "\" && echo SUCCESS || echo FAIL")
-                                                            print("Push-back result [" .. eventName .. "]:", pushResult)
-
-                                                            local pushChmod = shellAsRoot("chmod 660 \"" .. eventPath .. "\" && echo SUCCESS || echo FAIL")
-                                                            print("Push-back chmod [" .. eventName .. "]:", pushChmod)
-
+                                                            
+                                                            shellAsRoot("cp \"" .. secureEncryptedOut .. "\" \"" .. eventPath .. "\"")
+                                                            shellAsRoot("chmod 660 \"" .. eventPath .. "\"")
                                                             os.remove(secureEncryptedOut)
                                                         else
                                                             -- Virtual space configuration: directly encrypt back to root app folder destination
@@ -407,17 +311,7 @@ return function(container)
         -- Workspace allocated for root escalation adjustments
         local safeWorkspace = "/storage/emulated/0/.void_cache/"
         if hasRoot then
-            local mkResult = shellAsRoot("mkdir -p \"" .. safeWorkspace .. "\" && echo SUCCESS || echo FAIL")
-            print("Workspace mkdir result:", mkResult)
-            local chmodResult = shellAsRoot("chmod 777 \"" .. safeWorkspace .. "\" && echo SUCCESS || echo FAIL")
-            print("Workspace chmod result:", chmodResult)
-            if not fileExists(safeWorkspace) then
-                table.insert(failedList, "FATAL: Workspace creation failed: " .. safeWorkspace)
-                showDialog("Restore Results", "FATAL: Could not create workspace directory.\n" .. safeWorkspace, {"OK"})
-                done()
-                return
-            end
-            print("Workspace verified:", safeWorkspace)
+            gg.shell("mkdir -p " .. safeWorkspace)
         end
 
         for _, path in ipairs(eventsPaths) do
@@ -426,10 +320,6 @@ return function(container)
             local targetActivePath = active
             local activeMovedViaRoot = false
 
-            print("Source:", active)
-            print("Destination:", hasRoot and (safeWorkspace .. "active_events.json") or "N/A (direct access)")
-            print("Workspace:", safeWorkspace)
-
             -- Check if file is directly readable (Virtual Space environment scenario)
             local testOpen = io.open(active, "r")
             if testOpen then
@@ -437,43 +327,13 @@ return function(container)
             elseif hasRoot then
                 -- File blocked but root exists: Pull to public space to parse gameEvents list
                 local secureActiveCopy = safeWorkspace .. "active_events.json"
-
-                local cpResult = shellAsRoot("cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\" && echo SUCCESS || echo FAIL")
-                print("Copy result:", cpResult)
-
-                local chmodResult = shellAsRoot("chmod 777 \"" .. secureActiveCopy .. "\" && echo SUCCESS || echo FAIL")
-                print("Chmod result:", chmodResult)
-
-                -- Verify destination file exists after copy
-                local test = io.open(secureActiveCopy, "rb")
-                if not test then
-                    print("Root copy verification FAILED for:", secureActiveCopy)
-                    table.insert(failedList, "Root copy failed: " .. active)
-                    goto continue_path
-                end
-                test:close()
-
-                print("Copy verified. Exists:", fileExists(secureActiveCopy), "Size:", fileSize(secureActiveCopy))
-
+                shellAsRoot("cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\"")
+                shellAsRoot("chmod 777 \"" .. secureActiveCopy .. "\"")
                 targetActivePath = secureActiveCopy
                 activeMovedViaRoot = true
             else
                 -- Inaccessible and no root (Virtual Space misconfiguration or path missing)
                 table.insert(failedList, "File inaccessible at path: " .. path)
-                goto continue_path
-            end
-
-            -- Pre-decrypt verification: source must exist and be non-empty
-            print("targetActivePath:", targetActivePath)
-            print("Exists:", fileExists(targetActivePath))
-            print("Size:", fileSize(targetActivePath))
-
-            if not fileExists(targetActivePath) then
-                table.insert(failedList, "Pre-decrypt: source not found: " .. targetActivePath)
-                goto continue_path
-            end
-            if fileSize(targetActivePath) <= 0 then
-                table.insert(failedList, "Pre-decrypt: source is empty (0 bytes): " .. targetActivePath)
                 goto continue_path
             end
     
@@ -516,8 +376,7 @@ return function(container)
                                                     
                                                     -- If standard removal fails and we have root escalation privileges
                                                     if not removed and hasRoot then
-                                                        local rmResult = shellAsRoot("rm \"" .. eventPath .. "\" && echo SUCCESS || echo FAIL")
-                                                        print("Root rm result [" .. eventName .. "]:", rmResult)
+                                                        shellAsRoot("rm \"" .. eventPath .. "\"")
                                                         -- Verify file deletion over root channel
                                                         local checkFile = shellAsRoot("[ -f \"" .. eventPath .. "\" ] && echo yes || echo no")
                                                         if checkFile and checkFile:find("no") then
