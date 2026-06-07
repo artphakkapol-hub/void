@@ -51,7 +51,8 @@ return function(container)
     
         local eventsPaths = {
             "/data/data/com.fingersoft.hcr2/files/content_cache/json/events/",
-            "/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/",
+            "/data/data/com.waxmoon.ma.gp/rootfs/data/user/0/com.fingersoft.hcr2/fcontent_cache/json/events/",
+            "/data/user/0/com.fingersoft.hcr2/fcontent_cache/json/events/",
             "/data/user/0/com.waxmoon.ma.gp/rootfs/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/"
         }
     

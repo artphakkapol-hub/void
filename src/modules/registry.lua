@@ -41,18 +41,36 @@ for _, def in ipairs(TAB_DEFS) do
     local path = "modules/tabs/" .. id .. ".lua"
 
     categoryHandlers[id] = function(container)
+        -- Already failed before, show error card and bail
+        if loaded[id] == false then
+            addModule(container, id .. "_err", id,
+                "Module failed to load. Check logs for details.", "ro", "Error", nil)
+            return
+        end
+
+        -- Load if not yet attempted
         if not loaded[id] then
-            local ok, result = pcall(function() return loadModule(path) end)
+            local ok, result = pcall(loadModule, path)
+
             if ok and type(result) == "function" then
                 loaded[id] = result
+                LOG.info("Loader", "Module loaded OK: " .. id)
             else
-                -- Surface load errors as a read-only card so the rest of the UI stays alive.
+                LOG.error("Loader", "Failed to load module [" .. id .. "]: " .. tostring(result))
+                loaded[id] = false  -- mark as permanently failed, not nil
                 addModule(container, id .. "_err", id,
-                    "Load error: " .. tostring(result), "ro", "Error", nil)
+                    "Module failed to load. Check logs for details.", "ro", "Error", nil)
                 return
             end
         end
-        loaded[id](container)
+
+        -- Execute with its own pcall so a runtime crash doesn't take down the whole UI
+        local ok, err = pcall(loaded[id], container)
+        if not ok then
+            LOG.error("Loader", "Runtime error in module [" .. id .. "]: " .. tostring(err))
+            addModule(container, id .. "_err", id,
+                "Runtime error: " .. tostring(err), "ro", "Error", nil)
+        end
     end
 end
 

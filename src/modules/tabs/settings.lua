@@ -38,7 +38,13 @@ return function(container)
 
     addModule(container, "memory_range", "Memory Range", "Current selected memory range\n(automatically chosen by script)", "ro", regionName(), nil)
     addModule(container, "gamestatus_address", "GameStatus", "Current gamestatus address\n(automatically chosen by script)", "ro", string.format("0x%X", BaseGameStatus or 0), nil)
-
+    
+    -- ── Session Control or smth ────────────────────────────────────────────────────────
+    addModule(container, "clear_memory", "Clear Saved Memory", "Clear all VOID saved memory without needed to restart the whole game.", "button", nil, function(done)
+        memory:clearAll()
+        done()
+    end)
+    
     -- ── Custom Colors Info ────────────────────────────────────────────────────
     -- Allow user to changes colors of this script.
     addModule(container, "colors_info", "About Custom Colors", "Let's you customize this script menu colors, restart this script after customizing for better results.", "ro", "", nil)

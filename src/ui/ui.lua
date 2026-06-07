@@ -150,7 +150,6 @@ end
 --- - "switch": Toggle on/off (state saved)
 --- - "button": Single action button
 --- - "ro": Read-only display (clickable to copy)
---- - "info": Static label with ⓘ indicator; tap card to open a detail dialog
 --- - "spinner": Dropdown selector (state saved)
 --- - "slider": Single or multi-slider input (state saved)
 --- - "input": Single or multi-line text input (state saved)
@@ -159,7 +158,7 @@ end
 ---@param id string Unique module identifier
 ---@param title string Display title
 ---@param desc string Description text
----@param mode string Module type: "switch" | "button" | "ro" | "info" | "spinner" | "slider" | "input"
+---@param mode string Module type: "switch" | "button" | "ro" | "spinner" | "slider" | "input"
 ---@param extra any Mode-specific data. For "info": the detail string shown in the dialog.
 ---@param callback? fun(done: fun(), ...) Function called on action. Must call done() when finished.
 ---@return nil

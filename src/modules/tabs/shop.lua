@@ -8,10 +8,10 @@
 return function(container)
     addModule(container, "free_chest", "Free Chest", "Make the chests free in Shop Tab", "switch", nil, function(done, state)
         scheduler:add(function(finish_task)
-            local preload = memory:load("free_chest")
-            if preload then
+            local cache = memory:load("free_chest")
+            if cache then
                 gg.clearResults()
-                gg.loadResults(preload)
+                gg.loadResults(cache)
                 gg.getResults(gg.getResultsCount())
             else
                 gg.clearResults()
@@ -50,10 +50,10 @@ return function(container)
             local chestIDs = {
                 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18, 19, 20
             }
-            local preload = memory:load("change_chest")
-            if preload then
+            local cache = memory:load("change_chest")
+            if cache then
                 gg.clearResults()
-                gg.loadResults(preload)
+                gg.loadResults(cache)
                 gg.getResults(gg.getResultsCount())
             else
                 gg.clearResults()

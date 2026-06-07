@@ -33,6 +33,11 @@ local ranges = gg.getRangesList("libcocos2dcpp.so")
 if #ranges > 0 then
     local val = gg.getValues({{ address = ranges[1].start + 0x10, flags = gg.TYPE_DWORD }})[1]
     DEVICE_ARCH = ARCH_MAP[val and tonumber(val.value)] or "unknown"
+    BaseLib = ranges[1].start
+end
+
+if DEVICE_ARCH == "unknown" then
+    showDialog("Architecture Warning", "Your architecture is unknown, is the lib loaded? What system you're using?", "Proceed Anyway")
 end
 
 if DEVICE_ARCH ~= "arm64-v8a" then

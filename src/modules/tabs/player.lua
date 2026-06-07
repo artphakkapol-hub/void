@@ -11,13 +11,13 @@ return function(container)
     
     addArchModule(container, "auto_detach", "Auto Detach", "Automatically detach parts like the Rally Car roof", "switch", nil, aobs.autoDetach)
 
-    addModule(container, "no_clip", "No-Clip", "Make your player go through objects without dying", "switch", nil,
+    addModule(container, "no_clip", "No-Clip", "Make your player go through objects without dying (You can go over the finish lines in cups)", "switch", nil,
     function(done, state)
         scheduler:add(function(finish_task)
-            local preload = memory:load("no_clip")
-            if preload then
+            local cache = memory:load("no_clip")
+            if cache then
                 gg.clearResults()
-                gg.loadResults(preload)
+                gg.loadResults(cache)
                 gg.getResults(gg.getResultsCount())
             else
                 gg.clearResults()
@@ -44,10 +44,10 @@ return function(container)
     addModule(container, "hide_name", "Hide Name", "Hide your player name at race", "switch", nil,
     function(done, state)
         scheduler:add(function(finish_task)
-            local preload = memory:load("hide_name")
-            if preload then
+            local cache = memory:load("hide_name")
+            if cache then
                 gg.clearResults()
-                gg.loadResults(preload)
+                gg.loadResults(cache)
                 gg.getResults(gg.getResultsCount())
             else
                 gg.clearResults()
@@ -74,10 +74,10 @@ return function(container)
     addModule(container, "hide_flag", "Hide Flag", "Hide your player flag at race", "switch", nil,
     function(done, state)
         scheduler:add(function(finish_task)
-            local preload = memory:load("hide_flag")
-            if preload then
+            local cache = memory:load("hide_flag")
+            if cache then
                 gg.clearResults()
-                gg.loadResults(preload)
+                gg.loadResults(cache)
                 gg.getResults(gg.getResultsCount())
             else
                 gg.clearResults()
@@ -93,10 +93,10 @@ return function(container)
                 gg.editAll("h 00 00 08 42 00 00 C0 41", 1)
             end
             gg.clearResults()
-            local preload2 = memory:load("hide_flag2")
-            if preload2 then
+            local cache2 = memory:load("hide_flag2")
+            if cache2 then
                 gg.clearResults()
-                gg.loadResults(preload2)
+                gg.loadResults(cache2)
                 gg.getResults(gg.getResultsCount())
             else
                 gg.clearResults()

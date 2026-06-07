@@ -174,7 +174,7 @@ MainHandler = Handler(Looper.getMainLooper())
 -- ── Constants ─────────────────────────────────────────────────────────────────
 
 FORCE_EXIT = false
-WIDTH = 300
+WIDTH = 450
 CLICK_COOLDOWN = 500
 DEVICE_ARCH = "unknown"
 DEFAULT_ARCH = "arm64-v8a"
@@ -195,6 +195,7 @@ mParams = nil
 moduleContainer = nil
 activeTabView = nil
 activeSpinner = nil
+BaseGameStatusRaw = nil
 BaseGameStatus = nil
 BaseRegion = nil
 BaseLib = nil
@@ -326,6 +327,7 @@ function isARM64() return DEVICE_ARCH == "arm64-v8a" end
 
 -- ── Core modules ──────────────────────────────────────────────────────────────
 
+cast = loadModule("core/cast.lua")
 json = loadModule("core/json.lua")
 memory = loadModule("core/memory.lua")
 scheduler = loadModule("core/scheduler.lua")
@@ -337,7 +339,7 @@ loader = loadModule("core/loader.lua")
 do
     local prefs = memory:loadGlobal("window_size")
     WIN_W = (prefs and prefs.w) or WIDTH
-    WIN_H = (prefs and prefs.h) or 220
+    WIN_H = (prefs and prefs.h) or 350
 end
 loadModule("core/patches.lua")
 
@@ -403,6 +405,21 @@ end
 
 if not awaitLib("libcocos2dcpp.so") then os.exit() end
 
+function readString(addr, maxLen)
+    maxLen = maxLen or 64
+    local reads = {}
+    for i = 0, maxLen - 1 do
+        table.insert(reads, { address = addr + i, flags = 1 })
+    end
+    local result = gg.getValues(reads)
+    local bytes = {}
+    for _, v in ipairs(result) do
+        if v.value == 0 then break end
+        local b = v.value < 0 and v.value + 256 or v.value
+        table.insert(bytes, string.char(b))
+    end
+    return table.concat(bytes)
+end
 
 -- ── GameStatus resolution ─────────────────────────────────────────────────────
 
@@ -416,7 +433,7 @@ spinnerStates = memory:load("spinner_states") or {}
 sliderStates = memory:load("slider_states") or {}
 
 if saved then
-    BaseRegion, BaseGameStatus = saved[1], saved[2]
+    BaseRegion, BaseGameStatus, BaseGameStatusRaw = saved[1], saved[2], saved[3]
 else
     for _, region in ipairs(regions) do
         gg.clearResults(); gg.setRanges(region)
@@ -425,12 +442,14 @@ else
         local res = gg.getResults(gg.getResultsCount())
         gg.clearResults()
         local hits = {}
+        local raw_hits = {}
         for _, d in ipairs(res) do
             local ptr = gg.getValues({{ address = d.address + 0x1F, flags = gg.TYPE_QWORD }})[1]
             if ptr and ptr.value ~= 0 then
                 local ver = gg.getValues({{ address = ptr.value + 0x10, flags = gg.TYPE_DWORD }})[1]
                 local v = ver and tonumber(ver.value)
                 if v == 65792 or v == 65793 or v == 16843008 or v == 16843009 then
+                    table.insert(raw_hits, ver.address)
                     local tp = gg.getValues({{ address = ptr.value + 0x80, flags = gg.TYPE_QWORD }})[1]
                     if tp and tp.value ~= 0 then
                         local td = gg.getValues({{ address = tp.value, flags = gg.TYPE_DWORD }})[1]
@@ -440,8 +459,8 @@ else
             end
         end
         if #hits > 0 then
-            BaseRegion, BaseGameStatus = region, hits[1]
-            memory:save("gamestatus", { region, hits[1] })
+            BaseRegion, BaseGameStatus, BaseGameStatusRaw = region, hits[1], raw_hits[1]
+            memory:save("gamestatus", { region, hits[1], raw_hits[1] })
             break
         end
     end

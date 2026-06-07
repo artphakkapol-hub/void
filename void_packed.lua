@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-05 18:10:03
+-- Packed by bundle.py  •  2026-06-07 17:36:36
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -7,8 +7,8 @@ local __vfs = {}
 
 __vfs['configs/colors.lua'] = function(...)
 UI = {
-    BG = 0x200D001A,
-    HEADER = 0x29110022,
+    BG = 0x600D001A,
+    HEADER = 0x60110022,
     CARD = 0x331A0028,
     ACCENT = 0x608F3BE8,
     MUTED = 0x4D3D1060,
@@ -36,7 +36,7 @@ return [[
                 "type": "score"
             },
             "lootDefinition": {
-                "id": "event_reward_All",
+                "id": "event_reward_all",
                 "unlockVehicleLevel": 20,
                 "unlockVehicles": [
                     "scooter",
@@ -4369,2559 +4369,2559 @@ return [[
                 "tuningParts": [
                     {
                         "id": "jeep_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "gliderfume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_echo",
-                        "amount": 1
+                        "amount": 2048
                     }
                 ],
                 "unlockAdventureMaps": [
@@ -11743,2559 +11743,2559 @@ return [[
                 "tuningParts": [
                     {
                         "id": "jeep_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "jeep_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "scooter_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "bus_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superjeep_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "tractor_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "motocross_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "dunebuggy_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "sportscar_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monster_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "upsidedown_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "pickup_truck_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "chopper_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "minitank_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lowrider_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "snowmobile_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "monowheel_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "beast_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rally_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "formula_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "musclecar_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "racing_truck_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hotrod_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "electric_car_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "superbike_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "lambo_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "moonlander_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "rockbouncer_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "hoverbike_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "raider_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "gliderfume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "glider_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "trusty_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_rollcage",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_spoiler",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "atv_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "super_offroad_echo",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_magnet",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_heavyweight",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_glide",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_air_control",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_winter_tyres",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_start_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_wheelie_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_fume_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_flip_speed_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_jump",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_perfect_landing_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_turbo_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_afterburner",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_thrusters",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_fuel_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_coin_boost",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_nitro",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_amplifier",
-                        "amount": 1
+                        "amount": 2048
                     },
                     {
                         "id": "stock_echo",
-                        "amount": 1
+                        "amount": 2048
                     }
                 ]
             },
@@ -19124,6 +19124,11 @@ local ranges = gg.getRangesList("libcocos2dcpp.so")
 if #ranges > 0 then
     local val = gg.getValues({{ address = ranges[1].start + 0x10, flags = gg.TYPE_DWORD }})[1]
     DEVICE_ARCH = ARCH_MAP[val and tonumber(val.value)] or "unknown"
+    BaseLib = ranges[1].start
+end
+
+if DEVICE_ARCH == "unknown" then
+    showDialog("Architecture Warning", "Your architecture is unknown, is the lib loaded? What system you're using?", "Proceed Anyway")
 end
 
 if DEVICE_ARCH ~= "arm64-v8a" then
@@ -19164,6 +19169,115 @@ end
 
 aobs    = data.aobs    or {}
 offsets = data.offsets or {}
+
+end
+
+__vfs['core/cast.lua'] = function(...)
+--[[
+  Architecture-aware type conversion and memory manipulation library.
+  Optimized for high-performance hex scanning using the "h" prefix.
+  Supports signed/unsigned integer logic, floating point, and architecture-specific opcodes.
+]]
+
+local cast = {}
+
+-- ==========================================
+-- INTERNAL HELPERS
+-- ==========================================
+
+---Converts binary strings to "h XX XX XX" format for high-speed scanning.
+---@param binary_str string
+---@return string
+local function to_h(binary_str)
+    local hex = {}
+    for i = 1, #binary_str do
+        hex[i] = string.format("%02X", string.byte(binary_str, i))
+    end
+    return "h " .. table.concat(hex, " ")
+end
+
+-- ==========================================
+-- SIGNED / UNSIGNED LOGIC (Conversion)
+-- ==========================================
+
+function cast.to_uint8(val)  return val & 0xFF end
+function cast.to_int8(val)   val = val & 0xFF; return (val >= 0x80) and (val - 0x100) or val end
+function cast.to_uint16(val) return val & 0xFFFF end
+function cast.to_int16(val)  val = val & 0xFFFF; return (val >= 0x8000) and (val - 0x10000) or val end
+function cast.to_uint32(val) return val & 0xFFFFFFFF end
+function cast.to_int32(val)  val = val & 0xFFFFFFFF; return (val >= 0x80000000) and (val - 0x100000000) or val end
+
+-- ==========================================
+-- NUMERIC HEX PACKERS (Fast H-Format)
+-- ==========================================
+
+---@param val number
+function cast.byte(val)   return to_h(string.pack((val < 0) and "<b" or "<B", val)) end
+---@param val number
+function cast.word(val)   return to_h(string.pack((val < 0) and "<h" or "<H", val)) end
+---@param val number
+function cast.dword(val)  return to_h(string.pack((val < 0) and "<i4" or "<I4", val)) end
+---@param val number
+function cast.qword(val)  return to_h(string.pack((val < 0) and "<i8" or "<I8", val)) end
+---@param val number
+function cast.float(val)  return to_h(string.pack("<f", val)) end
+---@param val number
+function cast.double(val) return to_h(string.pack("<d", val)) end
+
+---@param val number
+---@param key number
+function cast.xor(val, key)
+    return to_h(string.pack("<I4", (val & 0xFFFFFFFF) ~ (key & 0xFFFFFFFF)))
+end
+
+-- ==========================================
+-- TEXT & ENCODING TYPES
+-- ==========================================
+
+---@param text string
+function cast.utf8(text) return to_h(text) end
+
+---@param text string
+function cast.utf16le(text)
+    local output = ""
+    for i = 1, #text do output = output .. string.pack("<I2", string.byte(text, i)) end
+    return to_h(output)
+end
+
+---@param hex_str string
+function cast.hex(hex_str)
+    local c = hex_str:gsub("%s+", ""):upper()
+    local f = {}
+    for i = 1, #c, 2 do table.insert(f, c:sub(i, i+1)) end
+    return "h " .. table.concat(f, " ")
+end
+
+-- ==========================================
+-- ARCHITECTURE / OPCODE TYPES
+-- ==========================================
+
+---@param opcode number
+function cast.arm32(opcode) return to_h(string.pack("<I4", opcode & 0xFFFFFFFF)) end
+---@param opcode number
+function cast.thumb(opcode) return to_h(string.pack("<I2", opcode & 0xFFFF)) end
+---@param opcode number
+function cast.arm64(opcode) return to_h(string.pack("<I4", opcode & 0xFFFFFFFF)) end
+
+-- ==========================================
+-- AOB UTILITY
+-- ==========================================
+
+---Combines multiple cast values into one sequence.
+---@param values table
+function cast.aob(values)
+    local combined = ""
+    for _, v in ipairs(values) do
+        combined = combined .. v:sub(3) .. " "
+    end
+    return "h " .. combined:sub(1, -2)
+end
+
+return cast
 
 end
 
@@ -19652,14 +19766,14 @@ end
 ---@return number Number of patch entries that failed to apply
 local function applyPatch(id, entries, enable)
     local failed = 0
-    local preload = memory:load(id)
+    local cache = memory:load(id)
 
-    if preload then
+    if cache then
         local values = {}
         for i, entry in ipairs(entries) do
-            if preload[i] then
+            if cache[i] then
                 table.insert(values, {
-                    address = preload[i],
+                    address = cache[i],
                     flags = gg.TYPE_DWORD,
                     value = enable and entry.patch or entry.unpatch
                 })
@@ -19938,18 +20052,36 @@ for _, def in ipairs(TAB_DEFS) do
     local path = "modules/tabs/" .. id .. ".lua"
 
     categoryHandlers[id] = function(container)
+        -- Already failed before, show error card and bail
+        if loaded[id] == false then
+            addModule(container, id .. "_err", id,
+                "Module failed to load. Check logs for details.", "ro", "Error", nil)
+            return
+        end
+
+        -- Load if not yet attempted
         if not loaded[id] then
-            local ok, result = pcall(function() return loadModule(path) end)
+            local ok, result = pcall(loadModule, path)
+
             if ok and type(result) == "function" then
                 loaded[id] = result
+                LOG.info("Loader", "Module loaded OK: " .. id)
             else
-                -- Surface load errors as a read-only card so the rest of the UI stays alive.
+                LOG.error("Loader", "Failed to load module [" .. id .. "]: " .. tostring(result))
+                loaded[id] = false  -- mark as permanently failed, not nil
                 addModule(container, id .. "_err", id,
-                    "Load error: " .. tostring(result), "ro", "Error", nil)
+                    "Module failed to load. Check logs for details.", "ro", "Error", nil)
                 return
             end
         end
-        loaded[id](container)
+
+        -- Execute with its own pcall so a runtime crash doesn't take down the whole UI
+        local ok, err = pcall(loaded[id], container)
+        if not ok then
+            LOG.error("Loader", "Runtime error in module [" .. id .. "]: " .. tostring(err))
+            addModule(container, id .. "_err", id,
+                "Runtime error: " .. tostring(err), "ro", "Error", nil)
+        end
     end
 end
 
@@ -19962,8 +20094,9 @@ return function(container)
     addModule(container, "about_script", "About Script", "A powerful and highly optimized memory manipulation script built for Hill Climb Racing 2 on the custom GG: ME (GameGuardian: Memory Editor) environment.\n\nDownload ME:\nhttps://github.com/vekendianorg/me/releases/", "ro", " ", nil)
     addModule(container, "script_owner", "Script Owner", "- Vekendian Organization (github: vekendianorg)", "ro", " ", nil)
     addModule(container, "script_dev", "Script Developer", "- Lazor (github: lazor-git)\n- AMR (github: amr-gt)", "ro", " ", nil)
+    addModule(container, "credits", "Credits", "- Lazor (github: lazor-git)\n- Lan9118 (discord: lan9118)\n- AMR (github: amr-gt)\n- Eomthix/Erik (discord: eomthix)\n- Sr Romero", "ro", " ", nil)
+    addModule(container, "special_thanks", "Special Thanks", "- Aryan/KokushiboModz", "ro", " ", nil)
     
-    addModule(container, "credits", "Credits (For Values, Offsets, Etc)", "- Lazor (github: lazor-git)\n- Lan9118 (discord: lan9118)\n- AMR (github: amr-gt)\n- Eomthix/Erik (discord: eomthix)", "ro", " ", nil)
 end
 
 end
@@ -20053,6 +20186,148 @@ return function(container)
             done()
         end)
     end)
+    
+    addModule(container, "max_mastery", "Max Mastery", "Max all vehicles masteries instantly.", "button", nil,
+    function(done)
+        local TAG = "MaxMastery"
+
+        LOG.info(TAG, "Module activated.")
+
+        scheduler:add(function(finish_task)
+            local masteryTimeStamp = os.time(os.date("!*t"))
+
+            -- Resolve vehicle list
+            local getVehicleList = gg.getValues({{
+                address = BaseGameStatus + 0xB8,
+                flags = 32
+            }})
+
+            if not getVehicleList or not getVehicleList[1] or getVehicleList[1].value == 0 then
+                showToast("Failed to max masteries")
+                LOG.fatal(TAG, "Failed to resolve vehicle list pointer.")
+                finish_task()
+                done()
+                return
+            end
+
+            local vehicleListPtr = getVehicleList[1].value
+
+            local getTotalVehicles = gg.getValues({{
+                address = BaseGameStatus + 0xC0,
+                flags = 4
+            }})
+
+            if not getTotalVehicles or not getTotalVehicles[1] or getTotalVehicles[1].value == 0 then
+                showToast("Failed to max masteries")
+                LOG.fatal(TAG, "Failed to resolve total vehicles count.")
+                finish_task()
+                done()
+                return
+            end
+
+            local totalVehicles = getTotalVehicles[1].value
+            LOG.dbg(TAG, "Total vehicles found: " .. tostring(totalVehicles))
+
+            local successCount = 0
+            local skipCount = 0
+
+            for i = 1, totalVehicles do
+                local getVehiclePtr = gg.getValues({{
+                    address = vehicleListPtr + (i - 1) * 8,
+                    flags = 32
+                }})
+
+                if not getVehiclePtr or not getVehiclePtr[1] or getVehiclePtr[1].value == 0 then
+                    skipCount = skipCount + 1
+                    goto continue
+                end
+
+                local vehicleAddress = getVehiclePtr[1].value
+
+                -- Read vehicle name for logging
+                local getNamePtr = gg.getValues({{
+                    address = vehicleAddress + 0x18,
+                    flags = 32
+                }})
+                local vehicleName = "Unknown"
+                if getNamePtr and getNamePtr[1] and getNamePtr[1].value ~= 0 then
+                    vehicleName = readString(getNamePtr[1].value + 1)
+                end
+
+                -- Check masteryPointer
+                local getMasteryPtr = gg.getValues({{
+                    address = vehicleAddress + 0x120,
+                    flags = 32
+                }})
+
+                if not getMasteryPtr or not getMasteryPtr[1] or getMasteryPtr[1].value == 0 then
+                    LOG.dbg(TAG, "[" .. vehicleName .. "] masteryPointer is 0. Skipping (not maxed).")
+                    skipCount = skipCount + 1
+                    goto continue
+                end
+
+                local masteryPointer = getMasteryPtr[1].value
+
+                -- Read 4 caPointers
+                local caPointerReads = {}
+                for j = 0, 3 do
+                    table.insert(caPointerReads, { address = masteryPointer + j * 8, flags = 32 })
+                end
+
+                local caPointers = gg.getValues(caPointerReads)
+                local validCaPointers = {}
+
+                if caPointers then
+                    for _, p in ipairs(caPointers) do
+                        if p and p.value and p.value ~= 0 then
+                            table.insert(validCaPointers, p.value)
+                        end
+                    end
+                end
+
+                if #validCaPointers == 0 then
+                    LOG.dbg(TAG, "[" .. vehicleName .. "] No valid caPointers. Skipping (no mastery).")
+                    skipCount = skipCount + 1
+                    goto continue
+                end
+
+                -- Write mastery
+                local toEdit = {}
+                for _, p in ipairs(validCaPointers) do
+                    table.insert(toEdit, { address = p + 0x18, flags = 4, value = 65793 })
+                    table.insert(toEdit, { address = p + 0x1C, flags = 4, value = masteryTimeStamp })
+                end
+
+                gg.setValues({{
+                    address = vehicleAddress + 0x120, flags = 32, value = masteryPointer
+                }, {
+                    address = vehicleAddress + 0x128, flags = 4, value = 4
+                }, {
+                    address = vehicleAddress + 0x12C, flags = 4, value = 4
+                }, {
+                    address = vehicleAddress + 0x130, flags = 4, value = 4
+                }})
+
+                gg.setValues(toEdit)
+
+                LOG.info(TAG, "[" .. vehicleName .. "] Mastery maxed successfully.")
+                successCount = successCount + 1
+
+                ::continue::
+            end
+
+            LOG.info(TAG, string.format("Complete. Success: %d | Skipped: %d", successCount, skipCount))
+
+            if successCount > 0 then
+                showToast("All masteries maxed")
+            else
+                showToast("Failed to max masteries")
+            end
+
+            finish_task()
+            done()
+        end)
+    end)
 end
 
 end
@@ -20060,15 +20335,120 @@ end
 __vfs['modules/tabs/adventure.lua'] = function(...)
 --[[
   Adventure Tab - Adventure mode features
-  Status: TODO - Not yet implemented
+  Status: Set Distance 
   
   @module callback Receives container View to populate with modules
 ]]
 
 return function(container)
-    -- TODO: add adventure modules
-end
+    addModule(container, "set_distance", "Set Distance", "Sets your Adventure race distance to a custom value. Must be in an active race. Higher distance can gain more stars. Max stars that can be gained is 5000. (Not a teleport function)", "slider",
+    {title="Meters", min=0, max=5000, current=0},
+    function(done, vals)
+        local target_meters = vals
+        local TAG = "SetDistance"
 
+        LOG.info(TAG, "Module activated. Target meters: " .. tostring(target_meters))
+
+        scheduler:add(function(finish_task)
+            local activeTab = gg.getValues({{ address = BaseGameStatusRaw - 0xD4, flags = 4 }})
+            local isAdventureTab = (type(activeTab) == "table" and activeTab[1] and activeTab[1].value == 0)
+
+            if not isAdventureTab then
+                showToast("Go to Adventure tab and start a race first")
+                LOG.warn(TAG, "User is not in Adventure tab. Aborting.")
+                finish_task()
+                done()
+                return
+            end
+
+            LOG.dbg(TAG, "Adventure tab confirmed. Resolving lib anchor...")
+
+            local anchorTarget = BaseLib + 0x2009C28
+            LOG.dbg(TAG, string.format("Lib base: 0x%X | Anchor target: 0x%X", BaseLib, anchorTarget))
+
+            gg.clearResults()
+            gg.setRanges(BaseRegion)
+            gg.searchNumber(anchorTarget, 32)
+
+            local level1Results = gg.getResults(gg.getResultsCount())
+            gg.clearResults()
+            LOG.dbg(TAG, "Level 1 references found: " .. tostring(#level1Results))
+
+            if #level1Results == 0 then
+                showToast("Start a race first")
+                LOG.warn(TAG, "No references found for anchor. User likely not in a race.")
+                finish_task()
+                done()
+                return
+            end
+
+            local distanceBase = nil
+
+            for _, ref1 in ipairs(level1Results) do
+                gg.clearResults()
+                gg.setRanges(BaseRegion)
+                gg.searchNumber(ref1.address, 32)
+
+                local level2Results = gg.getResults(gg.getResultsCount())
+                gg.clearResults()
+                
+                for _, ref2 in ipairs(level2Results) do
+                    local offsetAddr = ref2.address - 0xAC
+
+                    gg.clearResults()
+                    gg.setRanges(gg.REGION_C_ALLOC)
+                    gg.searchNumber(offsetAddr, 32)
+
+                    local level3Results = gg.getResults(gg.getResultsCount())
+                    gg.clearResults()
+                    
+                    if #level3Results > 0 then
+                        local pointerReads = {}
+                        for _, ref3 in ipairs(level3Results) do
+                            table.insert(pointerReads, { address = ref3.address, flags = 32 })
+                        end
+
+                        local resolvedPointers = gg.getValues(pointerReads)
+                        if resolvedPointers then
+                            for _, ptr in ipairs(resolvedPointers) do
+                                if ptr and ptr.value and ptr.value ~= 0 then
+                                    distanceBase = ptr.value
+                                    LOG.info(TAG, string.format("distanceBase resolved: 0x%X", distanceBase))
+                                    break
+                                end
+                            end
+                        end
+                    end
+
+                    if distanceBase then break end
+                end
+
+                if distanceBase then break end
+            end
+
+            if not distanceBase then
+                showToast("Start a race first")
+                LOG.fatal(TAG, "Failed to resolve distanceBase. Pointer chain dropped.")
+                finish_task()
+                done()
+                return
+            end
+            
+            gg.clearResults()
+            
+            gg.setValues({
+                { address = distanceBase + 0x0,  flags = 4,  value = target_meters },
+                { address = distanceBase + 0x10, flags = 16, value = 2000000000 },
+                { address = distanceBase + 0x14, flags = 16, value = 2000000000 }
+            })
+            
+            showToast("Distance set to: " .. tostring(target_meters) .. "m")
+            LOG.info(TAG, "Distance set to: " .. tostring(target_meters) .. "m")
+            finish_task()
+            done()
+        end)
+    end)
+end
 end
 
 __vfs['modules/tabs/creative.lua'] = function(...)
@@ -20100,11 +20480,749 @@ return function(container)
     }
 
     --addArchModule(container, "auto_win", "Auto Win", "Automatically win no matter what your race results is", "switch", nil, autoWinPatches)
+
+    addModule(container, "countdown_adjust", "Countdown Adjust", "Adjust the countdown before starting race", "slider",
+    {title="Seconds", min=0, max=10, current=3},
+    function(done, vals)
+        local countdown_value = vals 
+
+        scheduler:add(function(finish_task)
+            local cache = memory:load("countdown_adjust")
+            
+            if cache and #cache > 0 then
+                gg.clearResults()
+                gg.loadResults(cache)
+                gg.getResults(gg.getResultsCount())
+            else
+                gg.clearResults()
+                gg.setRanges(16) 
+                gg.searchNumber("h 00 00 40 40 00 00 80 40 00 00 40 41", 1)
+                gg.refineNumber("h 00 00 40 40", 1)
+                local results = gg.getResults(gg.getResultsCount())
+                memory:save("countdown_adjust", results)
+            end
+            
+            gg.editAll(cast.float(countdown_value), 1)
+            
+            showToast("Countdown adjusted to " .. tostring(countdown_value) .. "s", true)
+            gg.clearResults()
+            finish_task()
+            done()
+        end)
+    end)
+    
+    addModule(container, "force_cup", "Force Cup", "Forces a single cup", "switch", nil,
+    function(done, state)
+        local TAG = "ForceCup"
+
+        scheduler:add(function(finish_task)
+            if state then
+                LOG.info(TAG, "Enabling Force Cup...")
+
+                local cache = memory:load("force_cup_cache")
+
+                -- Verify cache is still valid
+                if cache then
+                    LOG.dbg(TAG, string.format("Cache found. Verifying base address: 0x%X", cache.base))
+                    local verify = gg.getValues({{ address = cache.base, flags = 1 }})
+                    if not verify or not verify[1] or verify[1].value ~= 0xB8 then
+                        LOG.warn(TAG, "Base address moved. Invalidating cache and re-searching...")
+                        cache = nil
+                        memory:save("force_cup_cache", nil)
+                    else
+                        LOG.dbg(TAG, "Base address valid. Using cache.")
+                    end
+                end
+
+                -- Search if no cache
+                if not cache then
+                    LOG.dbg(TAG, "No cache. Executing pattern search...")
+                    gg.clearResults()
+                    gg.setRanges(BaseRegion)
+                    gg.searchNumber("h B8 1E 85 3F CD CC 4C 3F", 1)
+
+                    local results = gg.getResults(10)
+                    gg.clearResults()
+
+                    if #results == 0 then
+                        showToast("Force Cup not found. Try again later.")
+                        LOG.error(TAG, "Pattern not found in memory.")
+                        finish_task()
+                        done()
+                        return
+                    end
+
+                    local base = results[1].address
+                    LOG.info(TAG, string.format("Pattern found at: 0x%X", base))
+
+                    cache = {
+                        base = base,
+                        items = {
+                            { address = base - 0x308, flags = 4, value = 1953063706 },
+                            { address = base - 0x304, flags = 4, value = 1869373305 },
+                            { address = base - 0x300, flags = 4, value = 1667196782 },
+                            { address = base - 0x2FC, flags = 4, value = 28789     },
+                            { address = base - 0x2F8, flags = 4, value = 0         },
+                        }
+                    }
+
+                    memory:save("force_cup_cache", cache)
+                    LOG.info(TAG, "Cache saved.")
+                end
+
+                -- Freeze
+                local freezeItems = {}
+                for _, item in ipairs(cache.items) do
+                    table.insert(freezeItems, {
+                        address = item.address,
+                        flags   = item.flags,
+                        value   = item.value,
+                        freeze  = true
+                    })
+                end
+
+                gg.addListItems(freezeItems)
+                showToast("Force Cup Enabled")
+                LOG.info(TAG, "Force Cup enabled. Items frozen.")
+
+            else
+                LOG.info(TAG, "Disabling Force Cup...")
+
+                local cache = memory:load("force_cup_cache")
+
+                if cache then
+                    local unfreezeItems = {}
+                    for _, item in ipairs(cache.items) do
+                        table.insert(unfreezeItems, {
+                            address = item.address,
+                            flags   = item.flags,
+                            value   = item.value,
+                            freeze  = false
+                        })
+                    end
+
+                    gg.removeListItems(unfreezeItems)
+                    LOG.info(TAG, "Force Cup disabled. Items unfrozen.")
+                else
+                    LOG.warn(TAG, "No cache found on disable. Nothing to unfreeze.")
+                end
+
+                showToast("Force Cup Disabled")
+            end
+
+            finish_task()
+            done()
+        end)
+    end)
 end
 
 end
 
 __vfs['modules/tabs/event.lua'] = function(...)
+--[[
+  Event Tab - Event mode features
+  Features: Event Rewards Patch / Restore
+  
+  @module callback Receives container View to populate with modules
+]]
+
+return function(container)
+    -- Helper function to safely execute root commands across both modules
+    local function shellAsRoot(cmd)
+        local output = gg.shell("su -c '" .. cmd .. "'")
+        return output or "" -- Guarantee a string is returned, never nil
+    end
+
+    -- Helper: check if a file or directory exists and is readable
+    local function fileExists(path)
+        local f = io.open(path, "rb")
+        if f then
+            f:close()
+            return true
+        end
+        return false
+    end
+
+    -- Helper: get file size in bytes, returns -1 if unreadable
+    local function fileSize(path)
+        local f = io.open(path, "rb")
+        if not f then return -1 end
+        local size = f:seek("end")
+        f:close()
+        return size or -1
+    end
+
+    addModule(container, "patch_rewards", "Event Rewards Patch", "Patch the current public event rewards to custom one provided by VOID (require game restart)", "button", nil, function(done)
+        -- Determine if environment is natively Rooted or using a Virtual Space safely
+        gg.toast("Checking environment permissions...")
+        local suCheck = shellAsRoot("id")
+        
+        local hasRoot = false
+        if suCheck and suCheck:find("uid=0") then
+            hasRoot = true
+        end
+        
+        if hasRoot then
+            memory:save("shell_states", {root=true})
+        else
+            memory:save("shell_states", {root=false})
+        end
+
+        gg.toast("Scanning active files...")
+    
+        local eventsPaths = {
+            "/data/data/com.fingersoft.hcr2/files/content_cache/json/events/",
+            "/data/data/com.waxmoon.ma.gp/rootfs/data/user/0/com.fingersoft.hcr2/fcontent_cache/json/events/",
+            "/data/user/0/com.fingersoft.hcr2/fcontent_cache/json/events/",
+            "/data/user/0/com.waxmoon.ma.gp/rootfs/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/"
+        }
+    
+        local successList = {}
+        local failedList = {}
+        
+        local custom_rewards = loadModule("configs/rewards.lua")
+        local jsonMod = nil
+        local ok, err = pcall(function()
+            jsonMod = json.decode(custom_rewards)
+        end)
+        if not ok or not jsonMod then
+            table.insert(failedList, "Failed to decode rewards JSON")
+            jsonMod = nil
+        end
+    
+        -- Workspace allocated for root escalation adjustments
+        local safeWorkspace = "/storage/emulated/0/.void_cache/"
+        if hasRoot then
+            local mkResult = shellAsRoot("mkdir -p \"" .. safeWorkspace .. "\" && echo SUCCESS || echo FAIL")
+            print("Workspace mkdir result:", mkResult)
+            local chmodResult = shellAsRoot("chmod 777 \"" .. safeWorkspace .. "\" && echo SUCCESS || echo FAIL")
+            print("Workspace chmod result:", chmodResult)
+            if not fileExists(safeWorkspace) then
+                table.insert(failedList, "FATAL: Workspace creation failed: " .. safeWorkspace)
+                showDialog("Patch Results", "FATAL: Could not create workspace directory.\n" .. safeWorkspace, {"OK"})
+                done()
+                return
+            end
+            print("Workspace verified:", safeWorkspace)
+        end
+
+        for _, path in ipairs(eventsPaths) do
+            local active = path .. "active_events.json"
+            local active_decrypted = hasRoot and (safeWorkspace .. ".active_events") or (path .. ".active_events")
+            local targetActivePath = active
+            local activeMovedViaRoot = false
+
+            print("Source:", active)
+            print("Destination:", hasRoot and (safeWorkspace .. "active_events.json") or "N/A (direct access)")
+            print("Workspace:", safeWorkspace)
+
+            -- Check if file is directly readable (Virtual Space environment scenario)
+            local testOpen = io.open(active, "r")
+            if testOpen then
+                testOpen:close()
+            elseif hasRoot then
+                -- File blocked but root exists: Pull to public space
+                local secureActiveCopy = safeWorkspace .. "active_events.json"
+
+                local cpResult = shellAsRoot("cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\" && echo SUCCESS || echo FAIL")
+                print("Copy result:", cpResult)
+
+                local chmodResult = shellAsRoot("chmod 777 \"" .. secureActiveCopy .. "\" && echo SUCCESS || echo FAIL")
+                print("Chmod result:", chmodResult)
+
+                -- Verify destination file exists after copy
+                local test = io.open(secureActiveCopy, "rb")
+                if not test then
+                    print("Root copy verification FAILED for:", secureActiveCopy)
+                    table.insert(failedList, "Root copy failed: " .. active)
+                    goto continue_path
+                end
+                test:close()
+
+                print("Copy verified. Exists:", fileExists(secureActiveCopy), "Size:", fileSize(secureActiveCopy))
+
+                targetActivePath = secureActiveCopy
+                activeMovedViaRoot = true
+            else
+                -- Inaccessible and no root (Virtual Space misconfiguration or path missing)
+                table.insert(failedList, "File inaccessible at path: " .. path)
+                goto continue_path
+            end
+
+            -- Pre-decrypt verification: source must exist and be non-empty
+            print("targetActivePath:", targetActivePath)
+            print("Exists:", fileExists(targetActivePath))
+            print("Size:", fileSize(targetActivePath))
+
+            if not fileExists(targetActivePath) then
+                table.insert(failedList, "Pre-decrypt: source not found: " .. targetActivePath)
+                goto continue_path
+            end
+            if fileSize(targetActivePath) <= 0 then
+                table.insert(failedList, "Pre-decrypt: source is empty (0 bytes): " .. targetActivePath)
+                goto continue_path
+            end
+    
+            local meta = Crypto.decrypt(targetActivePath, active_decrypted)
+            if activeMovedViaRoot then os.remove(targetActivePath) end
+
+            if meta then
+                local activeFile = io.open(active_decrypted, "r")
+                if activeFile then
+                    local activeContent = activeFile:read("*a")
+                    activeFile:close()
+                    os.remove(active_decrypted)
+    
+                    local jsonActive = nil
+                    local ok2, err2 = pcall(function()
+                        jsonActive = json.decode(activeContent)
+                    end)
+                    if not ok2 or not jsonActive then
+                        table.insert(failedList, "Failed to decode active_events.json at path: " .. path)
+                        goto continue_path
+                    end
+    
+                    local gameEvents = jsonActive.gameEvents or {}
+                    if #gameEvents == 0 then
+                        table.insert(failedList, "No active events found at path: " .. path)
+                        goto continue_path
+                    end
+    
+                    local labels = {}
+                    for i = 1, #gameEvents do labels[i] = tostring(gameEvents[i]) end
+    
+                    local selections = gg.multiChoice(labels, nil, "Select events to patch:\nPath: " .. path)
+                    if not selections then
+                        table.insert(failedList, "User cancelled selection for path: " .. path)
+                        goto continue_path
+                    end
+    
+                    if not jsonMod then
+                        table.insert(failedList, "Embedded rewards not available, skipping patches for path: " .. path)
+                        goto continue_path
+                    end
+                    local eventRewards = jsonMod.eventRewards
+    
+                    local selectionsExist = false
+                    for _, selected in pairs(selections) do
+                        if selected then selectionsExist = true; break end
+                    end
+
+                    if selectionsExist then
+                        local fileTaskDone = false
+                        
+                        scheduler:add(function(finish_task)
+                            local loopOk, loopErr = pcall(function()
+                                for idx, selected in pairs(selections) do
+                                    if selected then
+                                        local eventName = gameEvents[idx]
+                                        if eventName then
+                                            local eventPath = path .. eventName .. ".json"
+                                            local targetEventPath = eventPath
+                                            local secureEventCopy = safeWorkspace .. eventName .. ".json"
+                                            local decryptedPath = hasRoot and (safeWorkspace .. "." .. eventName) or (path .. "." .. eventName)
+                                            local eventMovedViaRoot = false
+            
+                                            local testEventOpen = io.open(eventPath, "r")
+                                            if testEventOpen then
+                                                testEventOpen:close()
+                                            elseif hasRoot then
+                                                local cpEvResult = shellAsRoot("cp \"" .. eventPath .. "\" \"" .. secureEventCopy .. "\" && echo SUCCESS || echo FAIL")
+                                                print("Event copy result [" .. eventName .. "]:", cpEvResult)
+
+                                                local chmodEvResult = shellAsRoot("chmod 777 \"" .. secureEventCopy .. "\" && echo SUCCESS || echo FAIL")
+                                                print("Event chmod result [" .. eventName .. "]:", chmodEvResult)
+
+                                                -- Verify event file copy
+                                                local evTest = io.open(secureEventCopy, "rb")
+                                                if not evTest then
+                                                    print("Root event copy FAILED for:", secureEventCopy)
+                                                    table.insert(failedList, "Root copy failed: " .. eventPath)
+                                                    goto next_event
+                                                end
+                                                evTest:close()
+
+                                                print("Event copy verified. Exists:", fileExists(secureEventCopy), "Size:", fileSize(secureEventCopy))
+
+                                                targetEventPath = secureEventCopy
+                                                eventMovedViaRoot = true
+                                            else
+                                                table.insert(failedList, "Skipped unreadable event: " .. eventName)
+                                                goto next_event
+                                            end
+
+                                            -- Pre-decrypt verification for event file
+                                            print("Event targetPath:", targetEventPath)
+                                            print("Exists:", fileExists(targetEventPath))
+                                            print("Size:", fileSize(targetEventPath))
+
+                                            if not fileExists(targetEventPath) then
+                                                table.insert(failedList, "Pre-decrypt: event not found: " .. targetEventPath)
+                                                goto next_event
+                                            end
+                                            if fileSize(targetEventPath) <= 0 then
+                                                table.insert(failedList, "Pre-decrypt: event is empty (0 bytes): " .. targetEventPath)
+                                                goto next_event
+                                            end
+
+                                            local eventMeta = Crypto.decrypt(targetEventPath, decryptedPath)
+                                            if eventMovedViaRoot then os.remove(targetEventPath) end
+            
+                                            if eventMeta then
+                                                local eventFile = io.open(decryptedPath, "r+")
+                                                if eventFile then
+                                                    local writeOk, writeErr = pcall(function()
+                                                        local eventContent = eventFile:read("*a")
+                                                        local jsonEvent = json.decode(eventContent)
+                                                        
+                                                        jsonEvent.eventRewards = eventRewards
+                                                        jsonEvent.minRankToJoin = 0
+                                                        jsonEvent.rankBrackets = 2
+                                                        local function patchText(v)
+                                                            if type(v) == "table" then
+                                                                return {
+                                                                    value = (v.value or "") .. " (Patched)",
+                                                                    localize = v.localize or ""
+                                                                }
+                                                            end
+                                                        
+                                                            return {
+                                                                value = (v or "") .. " (Patched)",
+                                                                localize = ""
+                                                            }
+                                                        end
+                                                        
+                                                        jsonEvent.name = patchText(jsonEvent.name)
+                                                        jsonEvent.description = patchText(jsonEvent.description)
+                                                        
+                                                        local encodedEvent = json.encode(jsonEvent)
+                                                        eventFile:seek("set", 0)
+                                                        eventFile:write(encodedEvent)
+                                                        eventFile:flush()
+                                                        eventFile:close()
+                                                        
+                                                        if eventMovedViaRoot and hasRoot then
+                                                            -- Encrypt back into public storage, then push back to native protected dir via root bridge
+                                                            local secureEncryptedOut = safeWorkspace .. eventName .. "_patched.json"
+                                                            Crypto.encrypt(decryptedPath, secureEncryptedOut, eventMeta)
+
+                                                            local pushResult = shellAsRoot("cp \"" .. secureEncryptedOut .. "\" \"" .. eventPath .. "\" && echo SUCCESS || echo FAIL")
+                                                            print("Push-back result [" .. eventName .. "]:", pushResult)
+
+                                                            local pushChmod = shellAsRoot("chmod 660 \"" .. eventPath .. "\" && echo SUCCESS || echo FAIL")
+                                                            print("Push-back chmod [" .. eventName .. "]:", pushChmod)
+
+                                                            os.remove(secureEncryptedOut)
+                                                        else
+                                                            -- Virtual space configuration: directly encrypt back to root app folder destination
+                                                            Crypto.encrypt(decryptedPath, eventPath, eventMeta)
+                                                        end
+                                                        
+                                                        table.insert(successList, eventName)
+                                                    end)
+            
+                                                    if not writeOk then
+                                                        pcall(function() eventFile:close() end)
+                                                        table.insert(failedList, "Failed processing " .. eventName .. ": " .. tostring(writeErr))
+                                                    end
+                                                    os.remove(decryptedPath)
+                                                else
+                                                    table.insert(failedList, "Cannot open decrypted file: " .. decryptedPath)
+                                                end
+                                            else
+                                                table.insert(failedList, "Failed to decrypt event: " .. eventName)
+                                            end
+                                        end
+                                    end
+                                    ::next_event::
+                                end
+                            end)
+                    
+                            if not loopOk then
+                                table.insert(failedList, "Critical file processing loop crash: " .. tostring(loopErr))
+                            end
+                            
+                            finish_task()
+                            fileTaskDone = true
+                        end)
+
+                        while not fileTaskDone do gg.sleep(50) end
+                    end
+                else
+                    table.insert(failedList, "Cannot open active_events.json at path: " .. path)
+                end
+            else
+                table.insert(failedList, "Failed to decrypt active_events.json at path: " .. path)
+            end
+            ::continue_path::
+        end
+    
+        -- Final Clean up workspace if created
+        if hasRoot then
+            gg.shell("rm -rf " .. safeWorkspace)
+        end
+
+        local resultMsg = ""
+        if #successList > 0 then
+            resultMsg = resultMsg .. "Successfully:\n"
+            for _, name in ipairs(successList) do
+                resultMsg = resultMsg .. "- " .. name .. "\n"
+            end
+            resultMsg = resultMsg .. "\n"
+        end
+        if #failedList > 0 then
+            resultMsg = resultMsg .. "Failed:\n"
+            for _, e in ipairs(failedList) do
+                resultMsg = resultMsg .. "- " .. e .. "\n"
+            end
+        end
+    
+        showDialog("Patch Results", resultMsg, {"OK"})
+        done()
+        
+        if #successList > 0 then
+            print(resultMsg)
+            showDialog("Restart Required", "Game is killed and this script gonna exit, start it again and see the patch effects", {"OK"})
+            
+            if scheduler:getQueueCount() > 0 or scheduler:isProcessing() then
+                gg.toast("Finishing pending background tasks... Please wait.")
+                while scheduler:getQueueCount() > 0 or scheduler:isProcessing() do
+                    gg.sleep(100)
+                end
+            end
+
+            gg.processKill()
+            gg.sleep(1000)
+            exitScript()
+        else
+            showDialog("Failed", "Failed to patch, try again.", {"OK"})
+        end
+    end)
+
+    addModule(container, "restore_events", "Event Rewards Restore", "Delete modified event JSONs to force game server recovery (requires game restart)", "button", nil, function(done)
+        -- Determine if environment is natively Rooted or using a Virtual Space safely
+        gg.toast("Checking environment permissions...")
+        local suCheck = shellAsRoot("id")
+        
+        local hasRoot = false
+        if suCheck and suCheck:find("uid=0") then
+            hasRoot = true
+        end
+        
+        if hasRoot then
+            memory:save("shell_states", {root=true})
+        else
+            memory:save("shell_states", {root=false})
+        end
+
+        gg.toast("Scanning active files...")
+    
+        local eventsPaths = {
+            "/data/data/com.fingersoft.hcr2/files/content_cache/json/events/",
+            "/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/",
+            "/data/user/0/com.waxmoon.ma.gp/rootfs/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/"
+        }
+    
+        local successList = {}
+        local failedList = {}
+    
+        -- Workspace allocated for root escalation adjustments
+        local safeWorkspace = "/storage/emulated/0/.void_cache/"
+        if hasRoot then
+            local mkResult = shellAsRoot("mkdir -p \"" .. safeWorkspace .. "\" && echo SUCCESS || echo FAIL")
+            print("Workspace mkdir result:", mkResult)
+            local chmodResult = shellAsRoot("chmod 777 \"" .. safeWorkspace .. "\" && echo SUCCESS || echo FAIL")
+            print("Workspace chmod result:", chmodResult)
+            if not fileExists(safeWorkspace) then
+                table.insert(failedList, "FATAL: Workspace creation failed: " .. safeWorkspace)
+                showDialog("Restore Results", "FATAL: Could not create workspace directory.\n" .. safeWorkspace, {"OK"})
+                done()
+                return
+            end
+            print("Workspace verified:", safeWorkspace)
+        end
+
+        for _, path in ipairs(eventsPaths) do
+            local active = path .. "active_events.json"
+            local active_decrypted = hasRoot and (safeWorkspace .. ".active_events") or (path .. ".active_events")
+            local targetActivePath = active
+            local activeMovedViaRoot = false
+
+            print("Source:", active)
+            print("Destination:", hasRoot and (safeWorkspace .. "active_events.json") or "N/A (direct access)")
+            print("Workspace:", safeWorkspace)
+
+            -- Check if file is directly readable (Virtual Space environment scenario)
+            local testOpen = io.open(active, "r")
+            if testOpen then
+                testOpen:close()
+            elseif hasRoot then
+                -- File blocked but root exists: Pull to public space to parse gameEvents list
+                local secureActiveCopy = safeWorkspace .. "active_events.json"
+
+                local cpResult = shellAsRoot("cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\" && echo SUCCESS || echo FAIL")
+                print("Copy result:", cpResult)
+
+                local chmodResult = shellAsRoot("chmod 777 \"" .. secureActiveCopy .. "\" && echo SUCCESS || echo FAIL")
+                print("Chmod result:", chmodResult)
+
+                -- Verify destination file exists after copy
+                local test = io.open(secureActiveCopy, "rb")
+                if not test then
+                    print("Root copy verification FAILED for:", secureActiveCopy)
+                    table.insert(failedList, "Root copy failed: " .. active)
+                    goto continue_path
+                end
+                test:close()
+
+                print("Copy verified. Exists:", fileExists(secureActiveCopy), "Size:", fileSize(secureActiveCopy))
+
+                targetActivePath = secureActiveCopy
+                activeMovedViaRoot = true
+            else
+                -- Inaccessible and no root (Virtual Space misconfiguration or path missing)
+                table.insert(failedList, "File inaccessible at path: " .. path)
+                goto continue_path
+            end
+
+            -- Pre-decrypt verification: source must exist and be non-empty
+            print("targetActivePath:", targetActivePath)
+            print("Exists:", fileExists(targetActivePath))
+            print("Size:", fileSize(targetActivePath))
+
+            if not fileExists(targetActivePath) then
+                table.insert(failedList, "Pre-decrypt: source not found: " .. targetActivePath)
+                goto continue_path
+            end
+            if fileSize(targetActivePath) <= 0 then
+                table.insert(failedList, "Pre-decrypt: source is empty (0 bytes): " .. targetActivePath)
+                goto continue_path
+            end
+    
+            local meta = Crypto.decrypt(targetActivePath, active_decrypted)
+            if activeMovedViaRoot then os.remove(targetActivePath) end
+
+            if meta then
+                local activeFile = io.open(active_decrypted, "r")
+                if activeFile then
+                    local activeContent = activeFile:read("*a")
+                    activeFile:close()
+                    os.remove(active_decrypted)
+    
+                    local jsonActive = nil
+                    local ok, err = pcall(function()
+                        jsonActive = json.decode(activeContent)
+                    end)
+    
+                    if ok and jsonActive then
+                        local gameEvents = jsonActive.gameEvents or {}
+                        if #gameEvents > 0 then
+                            local labels = {}
+                            for i = 1, #gameEvents do labels[i] = tostring(gameEvents[i]) end
+                            
+                            local selections = gg.multiChoice(labels, nil, "Select files to restore (delete):\nPath: " .. path)
+                            
+                            if selections then
+                                local fileTaskDone = false
+                                
+                                scheduler:add(function(finish_task)
+                                    pcall(function()
+                                        for idx, selected in pairs(selections) do
+                                            if selected then
+                                                local eventName = gameEvents[idx]
+                                                if eventName then
+                                                    local eventPath = path .. eventName .. ".json"
+                                                    
+                                                    -- Try standard removal first (Virtual Space handling)
+                                                    local removed, remErr = os.remove(eventPath)
+                                                    
+                                                    -- If standard removal fails and we have root escalation privileges
+                                                    if not removed and hasRoot then
+                                                        local rmResult = shellAsRoot("rm \"" .. eventPath .. "\" && echo SUCCESS || echo FAIL")
+                                                        print("Root rm result [" .. eventName .. "]:", rmResult)
+                                                        -- Verify file deletion over root channel
+                                                        local checkFile = shellAsRoot("[ -f \"" .. eventPath .. "\" ] && echo yes || echo no")
+                                                        if checkFile and checkFile:find("no") then
+                                                            removed = true
+                                                        else
+                                                            remErr = "Root removal failed or rejected"
+                                                        end
+                                                    end
+
+                                                    if removed then
+                                                        table.insert(successList, eventName)
+                                                    else
+                                                        table.insert(failedList, "Failed to delete " .. eventName .. ": " .. tostring(remErr))
+                                                    end
+                                                end
+                                            end
+                                        end
+                                    end)
+                                    finish_task()
+                                    fileTaskDone = true
+                                end)
+    
+                                while not fileTaskDone do gg.sleep(50) end
+                            end
+                        else
+                            table.insert(failedList, "No active events found at path: " .. path)
+                        end
+                    else
+                        table.insert(failedList, "Failed to decode active_events.json at path: " .. path)
+                    end
+                else
+                    table.insert(failedList, "Cannot open active_events.json at path: " .. path)
+                end
+            else
+                table.insert(failedList, "Failed to decrypt active_events.json at path: " .. path)
+            end
+            ::continue_path::
+        end
+        
+        -- Final Clean up workspace if created
+        if hasRoot then
+            gg.shell("rm -rf " .. safeWorkspace)
+        end
+
+        local resultMsg = ""
+        if #successList > 0 then
+            resultMsg = resultMsg .. "Successfully Removed (Will Restore on Restart):\n"
+            for _, name in ipairs(successList) do
+                resultMsg = resultMsg .. "- " .. name .. ".json\n"
+            end
+            resultMsg = resultMsg .. "\n"
+        end
+        if #failedList > 0 then
+            resultMsg = resultMsg .. "Failed:\n"
+            for _, e in ipairs(failedList) do
+                resultMsg = resultMsg .. "- " .. e .. "\n"
+            end
+        end
+    
+        showDialog("Restore Results", resultMsg, {"OK"})
+        done()
+    
+        if #successList > 0 then
+            print(resultMsg)
+            showDialog("Restart Required", "Game will now close to allow server file synchronization.", {"OK"})
+            
+            if scheduler:getQueueCount() > 0 or scheduler:isProcessing() then
+                gg.toast("Finishing pending background tasks...")
+                while scheduler:getQueueCount() > 0 or scheduler:isProcessing() do
+                    gg.sleep(100)
+                end
+            end
+    
+            gg.processKill()
+            gg.sleep(1000)
+            exitScript()
+        end
+    end)
+end
+
+end
+
+__vfs['modules/tabs/event_old.lua'] = function(...)
 --[[
   Event Tab - Event mode features
   Features: Event Rewards Patch / Restore
@@ -20271,6 +21389,22 @@ return function(container)
                                                         jsonEvent.eventRewards = eventRewards
                                                         jsonEvent.minRankToJoin = 0
                                                         jsonEvent.rankBrackets = 2
+                                                        local function patchText(v)
+                                                            if type(v) == "table" then
+                                                                return {
+                                                                    value = (v.value or "") .. " (Patched)",
+                                                                    localize = v.localize or ""
+                                                                }
+                                                            end
+                                                        
+                                                            return {
+                                                                value = (v or "") .. " (Patched)",
+                                                                localize = ""
+                                                            }
+                                                        end
+                                                        
+                                                        jsonEvent.name = patchText(jsonEvent.name)
+                                                        jsonEvent.description = patchText(jsonEvent.description)
                                                         
                                                         local encodedEvent = json.encode(jsonEvent)
                                                         eventFile:seek("set", 0)
@@ -20741,13 +21875,13 @@ return function(container)
     
     addArchModule(container, "auto_detach", "Auto Detach", "Automatically detach parts like the Rally Car roof", "switch", nil, aobs.autoDetach)
 
-    addModule(container, "no_clip", "No-Clip", "Make your player go through objects without dying", "switch", nil,
+    addModule(container, "no_clip", "No-Clip", "Make your player go through objects without dying (You can go over the finish lines in cups)", "switch", nil,
     function(done, state)
         scheduler:add(function(finish_task)
-            local preload = memory:load("no_clip")
-            if preload then
+            local cache = memory:load("no_clip")
+            if cache then
                 gg.clearResults()
-                gg.loadResults(preload)
+                gg.loadResults(cache)
                 gg.getResults(gg.getResultsCount())
             else
                 gg.clearResults()
@@ -20774,10 +21908,10 @@ return function(container)
     addModule(container, "hide_name", "Hide Name", "Hide your player name at race", "switch", nil,
     function(done, state)
         scheduler:add(function(finish_task)
-            local preload = memory:load("hide_name")
-            if preload then
+            local cache = memory:load("hide_name")
+            if cache then
                 gg.clearResults()
-                gg.loadResults(preload)
+                gg.loadResults(cache)
                 gg.getResults(gg.getResultsCount())
             else
                 gg.clearResults()
@@ -20804,10 +21938,10 @@ return function(container)
     addModule(container, "hide_flag", "Hide Flag", "Hide your player flag at race", "switch", nil,
     function(done, state)
         scheduler:add(function(finish_task)
-            local preload = memory:load("hide_flag")
-            if preload then
+            local cache = memory:load("hide_flag")
+            if cache then
                 gg.clearResults()
-                gg.loadResults(preload)
+                gg.loadResults(cache)
                 gg.getResults(gg.getResultsCount())
             else
                 gg.clearResults()
@@ -20823,10 +21957,10 @@ return function(container)
                 gg.editAll("h 00 00 08 42 00 00 C0 41", 1)
             end
             gg.clearResults()
-            local preload2 = memory:load("hide_flag2")
-            if preload2 then
+            local cache2 = memory:load("hide_flag2")
+            if cache2 then
                 gg.clearResults()
-                gg.loadResults(preload2)
+                gg.loadResults(cache2)
                 gg.getResults(gg.getResultsCount())
             else
                 gg.clearResults()
@@ -20991,7 +22125,13 @@ return function(container)
 
     addModule(container, "memory_range", "Memory Range", "Current selected memory range\n(automatically chosen by script)", "ro", regionName(), nil)
     addModule(container, "gamestatus_address", "GameStatus", "Current gamestatus address\n(automatically chosen by script)", "ro", string.format("0x%X", BaseGameStatus or 0), nil)
-
+    
+    -- ── Session Control or smth ────────────────────────────────────────────────────────
+    addModule(container, "clear_memory", "Clear Saved Memory", "Clear all VOID saved memory without needed to restart the whole game.", "button", nil, function(done)
+        memory:clearAll()
+        done()
+    end)
+    
     -- ── Custom Colors Info ────────────────────────────────────────────────────
     -- Allow user to changes colors of this script.
     addModule(container, "colors_info", "About Custom Colors", "Let's you customize this script menu colors, restart this script after customizing for better results.", "ro", "", nil)
@@ -21188,10 +22328,10 @@ __vfs['modules/tabs/shop.lua'] = function(...)
 return function(container)
     addModule(container, "free_chest", "Free Chest", "Make the chests free in Shop Tab", "switch", nil, function(done, state)
         scheduler:add(function(finish_task)
-            local preload = memory:load("free_chest")
-            if preload then
+            local cache = memory:load("free_chest")
+            if cache then
                 gg.clearResults()
-                gg.loadResults(preload)
+                gg.loadResults(cache)
                 gg.getResults(gg.getResultsCount())
             else
                 gg.clearResults()
@@ -21230,10 +22370,10 @@ return function(container)
             local chestIDs = {
                 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18, 19, 20
             }
-            local preload = memory:load("change_chest")
-            if preload then
+            local cache = memory:load("change_chest")
+            if cache then
                 gg.clearResults()
-                gg.loadResults(preload)
+                gg.loadResults(cache)
                 gg.getResults(gg.getResultsCount())
             else
                 gg.clearResults()
@@ -21476,7 +22616,6 @@ end
 --- - "switch": Toggle on/off (state saved)
 --- - "button": Single action button
 --- - "ro": Read-only display (clickable to copy)
---- - "info": Static label with ⓘ indicator; tap card to open a detail dialog
 --- - "spinner": Dropdown selector (state saved)
 --- - "slider": Single or multi-slider input (state saved)
 --- - "input": Single or multi-line text input (state saved)
@@ -21485,7 +22624,7 @@ end
 ---@param id string Unique module identifier
 ---@param title string Display title
 ---@param desc string Description text
----@param mode string Module type: "switch" | "button" | "ro" | "info" | "spinner" | "slider" | "input"
+---@param mode string Module type: "switch" | "button" | "ro" | "spinner" | "slider" | "input"
 ---@param extra any Mode-specific data. For "info": the detail string shown in the dialog.
 ---@param callback? fun(done: fun(), ...) Function called on action. Must call done() when finished.
 ---@return nil
@@ -22596,7 +23735,7 @@ MainHandler = Handler(Looper.getMainLooper())
 -- ── Constants ─────────────────────────────────────────────────────────────────
 
 FORCE_EXIT = false
-WIDTH = 300
+WIDTH = 450
 CLICK_COOLDOWN = 500
 DEVICE_ARCH = "unknown"
 DEFAULT_ARCH = "arm64-v8a"
@@ -22617,6 +23756,7 @@ mParams = nil
 moduleContainer = nil
 activeTabView = nil
 activeSpinner = nil
+BaseGameStatusRaw = nil
 BaseGameStatus = nil
 BaseRegion = nil
 BaseLib = nil
@@ -22748,6 +23888,7 @@ function isARM64() return DEVICE_ARCH == "arm64-v8a" end
 
 -- ── Core modules ──────────────────────────────────────────────────────────────
 
+cast = loadModule("core/cast.lua")
 json = loadModule("core/json.lua")
 memory = loadModule("core/memory.lua")
 scheduler = loadModule("core/scheduler.lua")
@@ -22759,7 +23900,7 @@ loader = loadModule("core/loader.lua")
 do
     local prefs = memory:loadGlobal("window_size")
     WIN_W = (prefs and prefs.w) or WIDTH
-    WIN_H = (prefs and prefs.h) or 220
+    WIN_H = (prefs and prefs.h) or 350
 end
 loadModule("core/patches.lua")
 
@@ -22825,6 +23966,21 @@ end
 
 if not awaitLib("libcocos2dcpp.so") then os.exit() end
 
+function readString(addr, maxLen)
+    maxLen = maxLen or 64
+    local reads = {}
+    for i = 0, maxLen - 1 do
+        table.insert(reads, { address = addr + i, flags = 1 })
+    end
+    local result = gg.getValues(reads)
+    local bytes = {}
+    for _, v in ipairs(result) do
+        if v.value == 0 then break end
+        local b = v.value < 0 and v.value + 256 or v.value
+        table.insert(bytes, string.char(b))
+    end
+    return table.concat(bytes)
+end
 
 -- ── GameStatus resolution ─────────────────────────────────────────────────────
 
@@ -22838,7 +23994,7 @@ spinnerStates = memory:load("spinner_states") or {}
 sliderStates = memory:load("slider_states") or {}
 
 if saved then
-    BaseRegion, BaseGameStatus = saved[1], saved[2]
+    BaseRegion, BaseGameStatus, BaseGameStatusRaw = saved[1], saved[2], saved[3]
 else
     for _, region in ipairs(regions) do
         gg.clearResults(); gg.setRanges(region)
@@ -22847,12 +24003,14 @@ else
         local res = gg.getResults(gg.getResultsCount())
         gg.clearResults()
         local hits = {}
+        local raw_hits = {}
         for _, d in ipairs(res) do
             local ptr = gg.getValues({{ address = d.address + 0x1F, flags = gg.TYPE_QWORD }})[1]
             if ptr and ptr.value ~= 0 then
                 local ver = gg.getValues({{ address = ptr.value + 0x10, flags = gg.TYPE_DWORD }})[1]
                 local v = ver and tonumber(ver.value)
                 if v == 65792 or v == 65793 or v == 16843008 or v == 16843009 then
+                    table.insert(raw_hits, ver.address)
                     local tp = gg.getValues({{ address = ptr.value + 0x80, flags = gg.TYPE_QWORD }})[1]
                     if tp and tp.value ~= 0 then
                         local td = gg.getValues({{ address = tp.value, flags = gg.TYPE_DWORD }})[1]
@@ -22862,8 +24020,8 @@ else
             end
         end
         if #hits > 0 then
-            BaseRegion, BaseGameStatus = region, hits[1]
-            memory:save("gamestatus", { region, hits[1] })
+            BaseRegion, BaseGameStatus, BaseGameStatusRaw = region, hits[1], raw_hits[1]
+            memory:save("gamestatus", { region, hits[1], raw_hits[1] })
             break
         end
     end

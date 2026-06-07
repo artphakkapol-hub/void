@@ -46,14 +46,14 @@ end
 ---@return number Number of patch entries that failed to apply
 local function applyPatch(id, entries, enable)
     local failed = 0
-    local preload = memory:load(id)
+    local cache = memory:load(id)
 
-    if preload then
+    if cache then
         local values = {}
         for i, entry in ipairs(entries) do
-            if preload[i] then
+            if cache[i] then
                 table.insert(values, {
-                    address = preload[i],
+                    address = cache[i],
                     flags = gg.TYPE_DWORD,
                     value = enable and entry.patch or entry.unpatch
                 })
