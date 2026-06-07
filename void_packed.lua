@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-07 20:38:03
+-- Packed by bundle.py  •  2026-06-07 23:26:07
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -19994,17 +19994,16 @@ return {
             {scan = "h 08 20 20 1E 85 00 00 54 E0 03 13 AA E1 03 14 AA", offset = 4, patch = "h 1F 20 03 D5", unpatch = "h 85 00 00 54"},
         },
         
-
+        autoWinPatches = {
+            {scan = "h E8 5F 5D A9 16 61 40 B9", offset = 4, patch = "h 55 00 80 52", unpatch = "h 16 61 40 B9"},
+            {scan = "h E0 5F 40 F9 09 4D 40 BD", offset = 4, patch = "h 0A 90 32 1E", unpatch = "h 09 4D 40 BD"}
+        },
         -- Add new AoBs here. Each key maps to a flat array of patch entries.
         -- Grouped features can use subtables: e.g. aobs.speedHack = { {…}, {…} }
     },
 
     offsets = {
-        -- Offsets from BaseGameStatus unless prefixed (e.g. "lib_someField").
-        -- coins       = 0x1A0,
-        -- gems        = 0x1A8,
-        -- playerLevel = 0x2B4,
-        setDistanceBase = 0x2009C28
+        lib_setDistanceBase = 0x2009C28,
     },
 }
 
@@ -20189,7 +20188,65 @@ return function(container)
         end)
     end)
     
-    addModule(container, "max_mastery", "Max Mastery", "Max all vehicles masteries instantly.", "button", nil,
+    addModule(container, "max_vehicles", "Max Vehicles", "Max all unlocked vehicles upgrade levels instantly.", "button", nil,
+    function(done)
+        local TAG = "MaxVehicles"
+        LOG.info(TAG, "Module activated.")
+
+        scheduler:add(function(finish_task)
+            local vehicleListPtr = gg.getValues({{ address = BaseGameStatus + 0xB8, flags = 32 }})[1].value
+            local totalVehicles  = gg.getValues({{ address = BaseGameStatus + 0xC0, flags = 4  }})[1].value
+
+            if not vehicleListPtr or vehicleListPtr == 0 then
+                showToast("Failed to resolve vehicle list")
+                LOG.fatal(TAG, "vehicleListPtr is nil or 0.")
+                finish_task()
+                done()
+                return
+            end
+
+            LOG.dbg(TAG, "Total vehicles: " .. tostring(totalVehicles))
+
+            local upgradeList = {}
+
+            for i = 0, totalVehicles - 1 do
+                local vehiclePtr = gg.getValues({{ address = vehicleListPtr + i * 8, flags = 32 }})[1].value
+                if vehiclePtr and vehiclePtr ~= 0 then
+                    local namePtr    = gg.getValues({{ address = vehiclePtr + 0x18, flags = 32 }})[1].value
+                    local vehicleName = namePtr ~= 0 and readString(namePtr + 1) or "unknown"
+                    local isLowrider  = vehicleName:find("lowrider") ~= nil
+                    local upgradeSlots = isLowrider and 5 or 4
+
+                    local upgradeListPtr = gg.getValues({{ address = vehiclePtr + 0x20, flags = 32 }})[1].value
+
+                    if upgradeListPtr and upgradeListPtr ~= 0 then
+                        for j = 0, upgradeSlots - 1 do
+                            local upgradePtr = gg.getValues({{ address = upgradeListPtr + j * 8, flags = 32 }})[1].value
+                            if upgradePtr and upgradePtr ~= 0 then
+                                table.insert(upgradeList, { address = upgradePtr + 0x20, flags = 4, value = 19 })
+                                table.insert(upgradeList, { address = upgradePtr + 0x24, flags = 4, value = 19 })
+                            end
+                        end
+                        LOG.dbg(TAG, "[" .. vehicleName .. "] queued " .. tostring(upgradeSlots) .. " upgrade slots.")
+                    end
+                end
+            end
+
+            if #upgradeList > 0 then
+                gg.setValues(upgradeList)
+                showToast("All vehicles maxed")
+                LOG.info(TAG, "Done. Total writes: " .. tostring(#upgradeList))
+            else
+                showToast("Failed to max vehicles")
+                LOG.warn(TAG, "upgradeList is empty.")
+            end
+
+            finish_task()
+            done()
+        end)
+    end)
+
+    addModule(container, "max_mastery", "Max Mastery", "Max all unlocked and maxed vehicles masteries instantly.", "button", nil,
     function(done)
         local TAG = "MaxMastery"
 
@@ -20330,6 +20387,106 @@ return function(container)
             done()
         end)
     end)
+    
+        local partMaxLevel = {
+        start_boost            = 10,
+        perfect_landing_boost  = 7,
+        jump                   = 10,
+        wheelie_boost          = 10,
+        afterburner            = 7,
+        fume_boost             = 10,
+        thrusters              = 4,
+        glide                  = 15,
+        fuel_boost             = 4,
+        coin_boost             = 4,
+        winter_tyres           = 15,
+        magnet                 = 15,
+        spoiler                = 7,
+        turbo_boost            = 7,
+        flip_speed_boost       = 10,
+        nitro                  = 4,
+        air_control            = 15,
+        heavyweight            = 15,
+        rollcage               = 15,
+        echo                   = 3,
+        amplifier              = 3,
+    }
+
+    addModule(container, "max_parts", "Max Parts", "Max all unlocked parts levels for all vehicles instantly.", "button", nil,
+    function(done)
+        local TAG = "MaxParts"
+        LOG.info(TAG, "Module activated.")
+
+        scheduler:add(function(finish_task)
+            local vehicleListPtr = gg.getValues({{ address = BaseGameStatus + 0xB8, flags = 32 }})[1].value
+            local totalVehicles  = gg.getValues({{ address = BaseGameStatus + 0xBC, flags = 4  }})[1].value
+
+            if not vehicleListPtr or vehicleListPtr == 0 then
+                showToast("Failed to resolve vehicle list")
+                LOG.fatal(TAG, "vehicleListPtr is nil or 0.")
+                finish_task()
+                done()
+                return
+            end
+
+            LOG.dbg(TAG, "Total vehicles: " .. tostring(totalVehicles))
+
+            local upgradeList = {}
+
+            for i = 0, totalVehicles - 1 do
+                local vehiclePtr = gg.getValues({{ address = vehicleListPtr + i * 8, flags = 32 }})[1].value
+                if vehiclePtr and vehiclePtr ~= 0 then
+                    local partsListPtr = gg.getValues({{ address = vehiclePtr + 0x58, flags = 32 }})[1].value
+                    local totalParts   = gg.getValues({{ address = vehiclePtr + 0x60, flags = 4  }})[1].value
+
+                    if partsListPtr and partsListPtr ~= 0 and totalParts and totalParts > 0 then
+                        for j = 0, totalParts - 1 do
+                            local partPtr = gg.getValues({{ address = partsListPtr + j * 8, flags = 32 }})[1].value
+                            if partPtr and partPtr ~= 0 then
+                                local namePtr    = gg.getValues({{ address = partPtr + 0x18, flags = 32 }})[1].value
+                                local partName   = "unknown"
+
+                                if namePtr and namePtr ~= 0 then
+                                    local header = gg.getValues({{ address = namePtr, flags = 4 }})[1].value
+                                    if header == 49 then
+                                        local namePtr2 = gg.getValues({{ address = namePtr + 0x10, flags = 32 }})[1].value
+                                        partName = namePtr2 ~= 0 and readString(namePtr2 + 1) or "unknown"
+                                    else
+                                        partName = readString(namePtr + 1)
+                                    end
+                                end
+
+                                local levelEdit = 3 -- default for unknown
+                                for key, maxLvl in pairs(partMaxLevel) do
+                                    if partName:find(key) then
+                                        levelEdit = maxLvl
+                                        break
+                                    end
+                                end
+
+                                LOG.dbg(TAG, "[" .. partName .. "] max level: " .. tostring(levelEdit))
+                                table.insert(upgradeList, { address = partPtr + 0x20, flags = 4, value = levelEdit })
+                                table.insert(upgradeList, { address = partPtr + 0x34, flags = 4, value = levelEdit })
+                            end
+                        end
+                    end
+                end
+            end
+
+            if #upgradeList > 0 then
+                gg.setValues(upgradeList)
+                showToast("All parts maxed")
+                LOG.info(TAG, "Done. Total writes: " .. tostring(#upgradeList))
+            else
+                showToast("Failed to max parts")
+                LOG.warn(TAG, "upgradeList is empty.")
+            end
+
+            finish_task()
+            done()
+        end)
+    end)
+    
 end
 
 end
@@ -20365,7 +20522,7 @@ return function(container)
 
             LOG.dbg(TAG, "Adventure tab confirmed. Resolving lib anchor...")
 
-            local anchorTarget = BaseLib + 0x2009C28
+            local anchorTarget = BaseLib + offsets.lib_setDistanceBase
             LOG.dbg(TAG, string.format("Lib base: 0x%X | Anchor target: 0x%X", BaseLib, anchorTarget))
 
             gg.clearResults()
@@ -20475,14 +20632,7 @@ __vfs['modules/tabs/cups.lua'] = function(...)
 ]]
 
 return function(container)
-    local autoWinPatches = {
-        {scan = "h E8 5F 5B A9 15 61 40 B9", offset = 4, patch = "h 55 00 80 52", unpatch = "h 15 61 40 B9"},
-        {scan = "h E8 2B 40 F9 0A 4D 40 BD", offset = 4, patch = "h 0A 90 32 1E", unpatch = "h 0A 4D 40 BD"},
-        {scan = "h 00 00 48 42 00 00 40 40 00 00 C8 42", offset = 4, patch = "h 00 00 00 00", unpatch = "h 00 00 40 40"},
-    }
-
-    --addArchModule(container, "auto_win", "Auto Win", "Automatically win no matter what your race results is", "switch", nil, autoWinPatches)
-
+    
     addModule(container, "countdown_adjust", "Countdown Adjust", "Adjust the countdown before starting race", "slider",
     {title="Seconds", min=0, max=10, current=3},
     function(done, vals)
@@ -20512,6 +20662,8 @@ return function(container)
             done()
         end)
     end)
+    
+    addArchModule(container, "auto_win", "Auto Win", "Automatically win no matter what your race results is", "switch", nil, aobs.autoWinPatches)
     
     addModule(container, "force_cup", "Force Cup", "Forces a single cup", "switch", nil,
     function(done, state)
@@ -21142,468 +21294,6 @@ return function(container)
                                                     if not removed and hasRoot then
                                                         local rmResult = shellAsRoot("rm \"" .. eventPath .. "\" && echo SUCCESS || echo FAIL")
                                                         print("Root rm result [" .. eventName .. "]:", rmResult)
-                                                        -- Verify file deletion over root channel
-                                                        local checkFile = shellAsRoot("[ -f \"" .. eventPath .. "\" ] && echo yes || echo no")
-                                                        if checkFile and checkFile:find("no") then
-                                                            removed = true
-                                                        else
-                                                            remErr = "Root removal failed or rejected"
-                                                        end
-                                                    end
-
-                                                    if removed then
-                                                        table.insert(successList, eventName)
-                                                    else
-                                                        table.insert(failedList, "Failed to delete " .. eventName .. ": " .. tostring(remErr))
-                                                    end
-                                                end
-                                            end
-                                        end
-                                    end)
-                                    finish_task()
-                                    fileTaskDone = true
-                                end)
-    
-                                while not fileTaskDone do gg.sleep(50) end
-                            end
-                        else
-                            table.insert(failedList, "No active events found at path: " .. path)
-                        end
-                    else
-                        table.insert(failedList, "Failed to decode active_events.json at path: " .. path)
-                    end
-                else
-                    table.insert(failedList, "Cannot open active_events.json at path: " .. path)
-                end
-            else
-                table.insert(failedList, "Failed to decrypt active_events.json at path: " .. path)
-            end
-            ::continue_path::
-        end
-        
-        -- Final Clean up workspace if created
-        if hasRoot then
-            gg.shell("rm -rf " .. safeWorkspace)
-        end
-
-        local resultMsg = ""
-        if #successList > 0 then
-            resultMsg = resultMsg .. "Successfully Removed (Will Restore on Restart):\n"
-            for _, name in ipairs(successList) do
-                resultMsg = resultMsg .. "- " .. name .. ".json\n"
-            end
-            resultMsg = resultMsg .. "\n"
-        end
-        if #failedList > 0 then
-            resultMsg = resultMsg .. "Failed:\n"
-            for _, e in ipairs(failedList) do
-                resultMsg = resultMsg .. "- " .. e .. "\n"
-            end
-        end
-    
-        showDialog("Restore Results", resultMsg, {"OK"})
-        done()
-    
-        if #successList > 0 then
-            print(resultMsg)
-            showDialog("Restart Required", "Game will now close to allow server file synchronization.", {"OK"})
-            
-            if scheduler:getQueueCount() > 0 or scheduler:isProcessing() then
-                gg.toast("Finishing pending background tasks...")
-                while scheduler:getQueueCount() > 0 or scheduler:isProcessing() do
-                    gg.sleep(100)
-                end
-            end
-    
-            gg.processKill()
-            gg.sleep(1000)
-            exitScript()
-        end
-    end)
-end
-
-end
-
-__vfs['modules/tabs/event_old.lua'] = function(...)
---[[
-  Event Tab - Event mode features
-  Features: Event Rewards Patch / Restore
-  
-  @module callback Receives container View to populate with modules
-]]
-
-return function(container)
-    -- Helper function to safely execute root commands across both modules
-    local function shellAsRoot(cmd)
-        local output = gg.shell("su -c '" .. cmd .. "'")
-        return output or "" -- Guarantee a string is returned, never nil
-    end
-
-    addModule(container, "patch_rewards", "Event Rewards Patch", "Patch the current public event rewards to custom one provided by VOID (require game restart)", "button", nil, function(done)
-        -- Determine if environment is natively Rooted or using a Virtual Space safely
-        gg.toast("Checking environment permissions...")
-        local suCheck = shellAsRoot("id")
-        
-        local hasRoot = false
-        if suCheck and suCheck:find("uid=0") then
-            hasRoot = true
-        end
-        
-        if hasRoot then
-            memory:save("shell_states", {root=true})
-        else
-            memory:save("shell_states", {root=false})
-        end
-
-        gg.toast("Scanning active files...")
-    
-        local eventsPaths = {
-            "/data/data/com.fingersoft.hcr2/files/content_cache/json/events/",
-            "/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/",
-            "/data/user/0/com.waxmoon.ma.gp/rootfs/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/"
-        }
-    
-        local successList = {}
-        local failedList = {}
-        
-        local custom_rewards = loadModule("configs/rewards.lua")
-        local jsonMod = nil
-        local ok, err = pcall(function()
-            jsonMod = json.decode(custom_rewards)
-        end)
-        if not ok or not jsonMod then
-            table.insert(failedList, "Failed to decode rewards JSON")
-            jsonMod = nil
-        end
-    
-        -- Workspace allocated for root escalation adjustments
-        local safeWorkspace = "/storage/emulated/0/.void_cache/"
-        if hasRoot then
-            gg.shell("mkdir -p " .. safeWorkspace)
-        end
-
-        for _, path in ipairs(eventsPaths) do
-            local active = path .. "active_events.json"
-            local active_decrypted = hasRoot and (safeWorkspace .. ".active_events") or (path .. ".active_events")
-            local targetActivePath = active
-            local activeMovedViaRoot = false
-
-            -- Check if file is directly readable (Virtual Space environment scenario)
-            local testOpen = io.open(active, "r")
-            if testOpen then
-                testOpen:close()
-            elseif hasRoot then
-                -- File blocked but root exists: Pull to public space
-                local secureActiveCopy = safeWorkspace .. "active_events.json"
-                shellAsRoot("cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\"")
-                shellAsRoot("chmod 777 \"" .. secureActiveCopy .. "\"")
-                targetActivePath = secureActiveCopy
-                activeMovedViaRoot = true
-            else
-                -- Inaccessible and no root (Virtual Space misconfiguration or path missing)
-                table.insert(failedList, "File inaccessible at path: " .. path)
-                goto continue_path
-            end
-    
-            local meta = Crypto.decrypt(targetActivePath, active_decrypted)
-            if activeMovedViaRoot then os.remove(targetActivePath) end
-
-            if meta then
-                local activeFile = io.open(active_decrypted, "r")
-                if activeFile then
-                    local activeContent = activeFile:read("*a")
-                    activeFile:close()
-                    os.remove(active_decrypted)
-    
-                    local jsonActive = nil
-                    local ok2, err2 = pcall(function()
-                        jsonActive = json.decode(activeContent)
-                    end)
-                    if not ok2 or not jsonActive then
-                        table.insert(failedList, "Failed to decode active_events.json at path: " .. path)
-                        goto continue_path
-                    end
-    
-                    local gameEvents = jsonActive.gameEvents or {}
-                    if #gameEvents == 0 then
-                        table.insert(failedList, "No active events found at path: " .. path)
-                        goto continue_path
-                    end
-    
-                    local labels = {}
-                    for i = 1, #gameEvents do labels[i] = tostring(gameEvents[i]) end
-    
-                    local selections = gg.multiChoice(labels, nil, "Select events to patch:\nPath: " .. path)
-                    if not selections then
-                        table.insert(failedList, "User cancelled selection for path: " .. path)
-                        goto continue_path
-                    end
-    
-                    if not jsonMod then
-                        table.insert(failedList, "Embedded rewards not available, skipping patches for path: " .. path)
-                        goto continue_path
-                    end
-                    local eventRewards = jsonMod.eventRewards
-    
-                    local selectionsExist = false
-                    for _, selected in pairs(selections) do
-                        if selected then selectionsExist = true; break end
-                    end
-
-                    if selectionsExist then
-                        local fileTaskDone = false
-                        
-                        scheduler:add(function(finish_task)
-                            local loopOk, loopErr = pcall(function()
-                                for idx, selected in pairs(selections) do
-                                    if selected then
-                                        local eventName = gameEvents[idx]
-                                        if eventName then
-                                            local eventPath = path .. eventName .. ".json"
-                                            local targetEventPath = eventPath
-                                            local secureEventCopy = safeWorkspace .. eventName .. ".json"
-                                            local decryptedPath = hasRoot and (safeWorkspace .. "." .. eventName) or (path .. "." .. eventName)
-                                            local eventMovedViaRoot = false
-            
-                                            local testEventOpen = io.open(eventPath, "r")
-                                            if testEventOpen then
-                                                testEventOpen:close()
-                                            elseif hasRoot then
-                                                shellAsRoot("cp \"" .. eventPath .. "\" \"" .. secureEventCopy .. "\"")
-                                                shellAsRoot("chmod 777 \"" .. secureEventCopy .. "\"")
-                                                targetEventPath = secureEventCopy
-                                                eventMovedViaRoot = true
-                                            else
-                                                table.insert(failedList, "Skipped unreadable event: " .. eventName)
-                                                goto next_event
-                                            end
-
-                                            local eventMeta = Crypto.decrypt(targetEventPath, decryptedPath)
-                                            if eventMovedViaRoot then os.remove(targetEventPath) end
-            
-                                            if eventMeta then
-                                                local eventFile = io.open(decryptedPath, "r+")
-                                                if eventFile then
-                                                    local writeOk, writeErr = pcall(function()
-                                                        local eventContent = eventFile:read("*a")
-                                                        local jsonEvent = json.decode(eventContent)
-                                                        
-                                                        jsonEvent.eventRewards = eventRewards
-                                                        jsonEvent.minRankToJoin = 0
-                                                        jsonEvent.rankBrackets = 2
-                                                        local function patchText(v)
-                                                            if type(v) == "table" then
-                                                                return {
-                                                                    value = (v.value or "") .. " (Patched)",
-                                                                    localize = v.localize or ""
-                                                                }
-                                                            end
-                                                        
-                                                            return {
-                                                                value = (v or "") .. " (Patched)",
-                                                                localize = ""
-                                                            }
-                                                        end
-                                                        
-                                                        jsonEvent.name = patchText(jsonEvent.name)
-                                                        jsonEvent.description = patchText(jsonEvent.description)
-                                                        
-                                                        local encodedEvent = json.encode(jsonEvent)
-                                                        eventFile:seek("set", 0)
-                                                        eventFile:write(encodedEvent)
-                                                        eventFile:flush()
-                                                        eventFile:close()
-                                                        
-                                                        if eventMovedViaRoot and hasRoot then
-                                                            -- Encrypt back into public storage, then push back to native protected dir via root bridge
-                                                            local secureEncryptedOut = safeWorkspace .. eventName .. "_patched.json"
-                                                            Crypto.encrypt(decryptedPath, secureEncryptedOut, eventMeta)
-                                                            
-                                                            shellAsRoot("cp \"" .. secureEncryptedOut .. "\" \"" .. eventPath .. "\"")
-                                                            shellAsRoot("chmod 660 \"" .. eventPath .. "\"")
-                                                            os.remove(secureEncryptedOut)
-                                                        else
-                                                            -- Virtual space configuration: directly encrypt back to root app folder destination
-                                                            Crypto.encrypt(decryptedPath, eventPath, eventMeta)
-                                                        end
-                                                        
-                                                        table.insert(successList, eventName)
-                                                    end)
-            
-                                                    if not writeOk then
-                                                        pcall(function() eventFile:close() end)
-                                                        table.insert(failedList, "Failed processing " .. eventName .. ": " .. tostring(writeErr))
-                                                    end
-                                                    os.remove(decryptedPath)
-                                                else
-                                                    table.insert(failedList, "Cannot open decrypted file: " .. decryptedPath)
-                                                end
-                                            else
-                                                table.insert(failedList, "Failed to decrypt event: " .. eventName)
-                                            end
-                                        end
-                                    end
-                                    ::next_event::
-                                end
-                            end)
-                    
-                            if not loopOk then
-                                table.insert(failedList, "Critical file processing loop crash: " .. tostring(loopErr))
-                            end
-                            
-                            finish_task()
-                            fileTaskDone = true
-                        end)
-
-                        while not fileTaskDone do gg.sleep(50) end
-                    end
-                else
-                    table.insert(failedList, "Cannot open active_events.json at path: " .. path)
-                end
-            else
-                table.insert(failedList, "Failed to decrypt active_events.json at path: " .. path)
-            end
-            ::continue_path::
-        end
-    
-        -- Final Clean up workspace if created
-        if hasRoot then
-            gg.shell("rm -rf " .. safeWorkspace)
-        end
-
-        local resultMsg = ""
-        if #successList > 0 then
-            resultMsg = resultMsg .. "Successfully:\n"
-            for _, name in ipairs(successList) do
-                resultMsg = resultMsg .. "- " .. name .. "\n"
-            end
-            resultMsg = resultMsg .. "\n"
-        end
-        if #failedList > 0 then
-            resultMsg = resultMsg .. "Failed:\n"
-            for _, e in ipairs(failedList) do
-                resultMsg = resultMsg .. "- " .. e .. "\n"
-            end
-        end
-    
-        showDialog("Patch Results", resultMsg, {"OK"})
-        done()
-        
-        if #successList > 0 then
-            print(resultMsg)
-            showDialog("Restart Required", "Game is killed and this script gonna exit, start it again and see the patch effects", {"OK"})
-            
-            if scheduler:getQueueCount() > 0 or scheduler:isProcessing() then
-                gg.toast("Finishing pending background tasks... Please wait.")
-                while scheduler:getQueueCount() > 0 or scheduler:isProcessing() do
-                    gg.sleep(100)
-                end
-            end
-
-            gg.processKill()
-            gg.sleep(1000)
-            exitScript()
-        else
-            showDialog("Failed", "Failed to patch, try again.", {"OK"})
-        end
-    end)
-
-    addModule(container, "restore_events", "Event Rewards Restore", "Delete modified event JSONs to force game server recovery (requires game restart)", "button", nil, function(done)
-        -- Determine if environment is natively Rooted or using a Virtual Space safely
-        gg.toast("Checking environment permissions...")
-        local suCheck = shellAsRoot("id")
-        
-        local hasRoot = false
-        if suCheck and suCheck:find("uid=0") then
-            hasRoot = true
-        end
-        
-        if hasRoot then
-            memory:save("shell_states", {root=true})
-        else
-            memory:save("shell_states", {root=false})
-        end
-
-        gg.toast("Scanning active files...")
-    
-        local eventsPaths = {
-            "/data/data/com.fingersoft.hcr2/files/content_cache/json/events/",
-            "/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/",
-            "/data/user/0/com.waxmoon.ma.gp/rootfs/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/"
-        }
-    
-        local successList = {}
-        local failedList = {}
-    
-        -- Workspace allocated for root escalation adjustments
-        local safeWorkspace = "/storage/emulated/0/.void_cache/"
-        if hasRoot then
-            gg.shell("mkdir -p " .. safeWorkspace)
-        end
-
-        for _, path in ipairs(eventsPaths) do
-            local active = path .. "active_events.json"
-            local active_decrypted = hasRoot and (safeWorkspace .. ".active_events") or (path .. ".active_events")
-            local targetActivePath = active
-            local activeMovedViaRoot = false
-
-            -- Check if file is directly readable (Virtual Space environment scenario)
-            local testOpen = io.open(active, "r")
-            if testOpen then
-                testOpen:close()
-            elseif hasRoot then
-                -- File blocked but root exists: Pull to public space to parse gameEvents list
-                local secureActiveCopy = safeWorkspace .. "active_events.json"
-                shellAsRoot("cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\"")
-                shellAsRoot("chmod 777 \"" .. secureActiveCopy .. "\"")
-                targetActivePath = secureActiveCopy
-                activeMovedViaRoot = true
-            else
-                -- Inaccessible and no root (Virtual Space misconfiguration or path missing)
-                table.insert(failedList, "File inaccessible at path: " .. path)
-                goto continue_path
-            end
-    
-            local meta = Crypto.decrypt(targetActivePath, active_decrypted)
-            if activeMovedViaRoot then os.remove(targetActivePath) end
-
-            if meta then
-                local activeFile = io.open(active_decrypted, "r")
-                if activeFile then
-                    local activeContent = activeFile:read("*a")
-                    activeFile:close()
-                    os.remove(active_decrypted)
-    
-                    local jsonActive = nil
-                    local ok, err = pcall(function()
-                        jsonActive = json.decode(activeContent)
-                    end)
-    
-                    if ok and jsonActive then
-                        local gameEvents = jsonActive.gameEvents or {}
-                        if #gameEvents > 0 then
-                            local labels = {}
-                            for i = 1, #gameEvents do labels[i] = tostring(gameEvents[i]) end
-                            
-                            local selections = gg.multiChoice(labels, nil, "Select files to restore (delete):\nPath: " .. path)
-                            
-                            if selections then
-                                local fileTaskDone = false
-                                
-                                scheduler:add(function(finish_task)
-                                    pcall(function()
-                                        for idx, selected in pairs(selections) do
-                                            if selected then
-                                                local eventName = gameEvents[idx]
-                                                if eventName then
-                                                    local eventPath = path .. eventName .. ".json"
-                                                    
-                                                    -- Try standard removal first (Virtual Space handling)
-                                                    local removed, remErr = os.remove(eventPath)
-                                                    
-                                                    -- If standard removal fails and we have root escalation privileges
-                                                    if not removed and hasRoot then
-                                                        shellAsRoot("rm \"" .. eventPath .. "\"")
                                                         -- Verify file deletion over root channel
                                                         local checkFile = shellAsRoot("[ -f \"" .. eventPath .. "\" ] && echo yes || echo no")
                                                         if checkFile and checkFile:find("no") then
@@ -22380,11 +22070,14 @@ return function(container)
             else
                 gg.clearResults()
                 gg.setRanges(BaseRegion)
-                gg.searchNumber("h 2A 48 75 67 65 20 43 68 65 73 74 20 6F 66 20 47 6F 6F 64 69 65 73 00 00 E8 03 00 00 07 00 00 00", 1)
-                gg.refineNumber("h 07 00 00 00", 1)
-                gg.refineNumber("h 07", 1)
+                gg.searchNumber("h 2A 48 75 67 65 20 43 68 65 73 74 20 6F 66 20 47 6F 6F 64 69", 1)
+                gg.refineNumber("h 2A", 1)
                 local results = gg.getResults(gg.getResultsCount())
-                memory:save("change_chest", results)
+                if #results > 0 then
+                    gg.loadResults(gg.getValues({{ address = results[1].address + 0x4C, flags = 1 }}))
+                    local results2 = gg.getResults(gg.getResultsCount())
+                    memory:save("change_chest", results2)
+                end
             end
             
             gg.editAll(chestIDs[index], 1)
@@ -22421,7 +22114,7 @@ return function(container)
                     gg.searchNumber(tostring(r.address), 32, false, gg.SIGN_EQUAL, min, max, 0)
                     local ptrs = gg.getResults(gg.getResultsCount())
                     for _, sp in ipairs(ptrs) do
-                        table.insert(tptrs, {sp.address + 0x18, flags = 4})
+                        table.insert(tptrs, {address = sp.address + 0x18, flags = 4})
                     end
                     counter = counter + 1
                     showToast(tostring(counter) .. "/" .. tostring(totalres), true)

@@ -58,11 +58,14 @@ return function(container)
             else
                 gg.clearResults()
                 gg.setRanges(BaseRegion)
-                gg.searchNumber("h 2A 48 75 67 65 20 43 68 65 73 74 20 6F 66 20 47 6F 6F 64 69 65 73 00 00 E8 03 00 00 07 00 00 00", 1)
-                gg.refineNumber("h 07 00 00 00", 1)
-                gg.refineNumber("h 07", 1)
+                gg.searchNumber("h 2A 48 75 67 65 20 43 68 65 73 74 20 6F 66 20 47 6F 6F 64 69", 1)
+                gg.refineNumber("h 2A", 1)
                 local results = gg.getResults(gg.getResultsCount())
-                memory:save("change_chest", results)
+                if #results > 0 then
+                    gg.loadResults(gg.getValues({{ address = results[1].address + 0x4C, flags = 1 }}))
+                    local results2 = gg.getResults(gg.getResultsCount())
+                    memory:save("change_chest", results2)
+                end
             end
             
             gg.editAll(chestIDs[index], 1)
@@ -99,7 +102,7 @@ return function(container)
                     gg.searchNumber(tostring(r.address), 32, false, gg.SIGN_EQUAL, min, max, 0)
                     local ptrs = gg.getResults(gg.getResultsCount())
                     for _, sp in ipairs(ptrs) do
-                        table.insert(tptrs, {sp.address + 0x18, flags = 4})
+                        table.insert(tptrs, {address = sp.address + 0x18, flags = 4})
                     end
                     counter = counter + 1
                     showToast(tostring(counter) .. "/" .. tostring(totalres), true)

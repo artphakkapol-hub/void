@@ -83,7 +83,65 @@ return function(container)
         end)
     end)
     
-    addModule(container, "max_mastery", "Max Mastery", "Max all vehicles masteries instantly.", "button", nil,
+    addModule(container, "max_vehicles", "Max Vehicles", "Max all unlocked vehicles upgrade levels instantly.", "button", nil,
+    function(done)
+        local TAG = "MaxVehicles"
+        LOG.info(TAG, "Module activated.")
+
+        scheduler:add(function(finish_task)
+            local vehicleListPtr = gg.getValues({{ address = BaseGameStatus + 0xB8, flags = 32 }})[1].value
+            local totalVehicles  = gg.getValues({{ address = BaseGameStatus + 0xC0, flags = 4  }})[1].value
+
+            if not vehicleListPtr or vehicleListPtr == 0 then
+                showToast("Failed to resolve vehicle list")
+                LOG.fatal(TAG, "vehicleListPtr is nil or 0.")
+                finish_task()
+                done()
+                return
+            end
+
+            LOG.dbg(TAG, "Total vehicles: " .. tostring(totalVehicles))
+
+            local upgradeList = {}
+
+            for i = 0, totalVehicles - 1 do
+                local vehiclePtr = gg.getValues({{ address = vehicleListPtr + i * 8, flags = 32 }})[1].value
+                if vehiclePtr and vehiclePtr ~= 0 then
+                    local namePtr    = gg.getValues({{ address = vehiclePtr + 0x18, flags = 32 }})[1].value
+                    local vehicleName = namePtr ~= 0 and readString(namePtr + 1) or "unknown"
+                    local isLowrider  = vehicleName:find("lowrider") ~= nil
+                    local upgradeSlots = isLowrider and 5 or 4
+
+                    local upgradeListPtr = gg.getValues({{ address = vehiclePtr + 0x20, flags = 32 }})[1].value
+
+                    if upgradeListPtr and upgradeListPtr ~= 0 then
+                        for j = 0, upgradeSlots - 1 do
+                            local upgradePtr = gg.getValues({{ address = upgradeListPtr + j * 8, flags = 32 }})[1].value
+                            if upgradePtr and upgradePtr ~= 0 then
+                                table.insert(upgradeList, { address = upgradePtr + 0x20, flags = 4, value = 19 })
+                                table.insert(upgradeList, { address = upgradePtr + 0x24, flags = 4, value = 19 })
+                            end
+                        end
+                        LOG.dbg(TAG, "[" .. vehicleName .. "] queued " .. tostring(upgradeSlots) .. " upgrade slots.")
+                    end
+                end
+            end
+
+            if #upgradeList > 0 then
+                gg.setValues(upgradeList)
+                showToast("All vehicles maxed")
+                LOG.info(TAG, "Done. Total writes: " .. tostring(#upgradeList))
+            else
+                showToast("Failed to max vehicles")
+                LOG.warn(TAG, "upgradeList is empty.")
+            end
+
+            finish_task()
+            done()
+        end)
+    end)
+
+    addModule(container, "max_mastery", "Max Mastery", "Max all unlocked and maxed vehicles masteries instantly.", "button", nil,
     function(done)
         local TAG = "MaxMastery"
 
@@ -224,4 +282,104 @@ return function(container)
             done()
         end)
     end)
+    
+        local partMaxLevel = {
+        start_boost            = 10,
+        perfect_landing_boost  = 7,
+        jump                   = 10,
+        wheelie_boost          = 10,
+        afterburner            = 7,
+        fume_boost             = 10,
+        thrusters              = 4,
+        glide                  = 15,
+        fuel_boost             = 4,
+        coin_boost             = 4,
+        winter_tyres           = 15,
+        magnet                 = 15,
+        spoiler                = 7,
+        turbo_boost            = 7,
+        flip_speed_boost       = 10,
+        nitro                  = 4,
+        air_control            = 15,
+        heavyweight            = 15,
+        rollcage               = 15,
+        echo                   = 3,
+        amplifier              = 3,
+    }
+
+    addModule(container, "max_parts", "Max Parts", "Max all unlocked parts levels for all vehicles instantly.", "button", nil,
+    function(done)
+        local TAG = "MaxParts"
+        LOG.info(TAG, "Module activated.")
+
+        scheduler:add(function(finish_task)
+            local vehicleListPtr = gg.getValues({{ address = BaseGameStatus + 0xB8, flags = 32 }})[1].value
+            local totalVehicles  = gg.getValues({{ address = BaseGameStatus + 0xBC, flags = 4  }})[1].value
+
+            if not vehicleListPtr or vehicleListPtr == 0 then
+                showToast("Failed to resolve vehicle list")
+                LOG.fatal(TAG, "vehicleListPtr is nil or 0.")
+                finish_task()
+                done()
+                return
+            end
+
+            LOG.dbg(TAG, "Total vehicles: " .. tostring(totalVehicles))
+
+            local upgradeList = {}
+
+            for i = 0, totalVehicles - 1 do
+                local vehiclePtr = gg.getValues({{ address = vehicleListPtr + i * 8, flags = 32 }})[1].value
+                if vehiclePtr and vehiclePtr ~= 0 then
+                    local partsListPtr = gg.getValues({{ address = vehiclePtr + 0x58, flags = 32 }})[1].value
+                    local totalParts   = gg.getValues({{ address = vehiclePtr + 0x60, flags = 4  }})[1].value
+
+                    if partsListPtr and partsListPtr ~= 0 and totalParts and totalParts > 0 then
+                        for j = 0, totalParts - 1 do
+                            local partPtr = gg.getValues({{ address = partsListPtr + j * 8, flags = 32 }})[1].value
+                            if partPtr and partPtr ~= 0 then
+                                local namePtr    = gg.getValues({{ address = partPtr + 0x18, flags = 32 }})[1].value
+                                local partName   = "unknown"
+
+                                if namePtr and namePtr ~= 0 then
+                                    local header = gg.getValues({{ address = namePtr, flags = 4 }})[1].value
+                                    if header == 49 then
+                                        local namePtr2 = gg.getValues({{ address = namePtr + 0x10, flags = 32 }})[1].value
+                                        partName = namePtr2 ~= 0 and readString(namePtr2 + 1) or "unknown"
+                                    else
+                                        partName = readString(namePtr + 1)
+                                    end
+                                end
+
+                                local levelEdit = 3 -- default for unknown
+                                for key, maxLvl in pairs(partMaxLevel) do
+                                    if partName:find(key) then
+                                        levelEdit = maxLvl
+                                        break
+                                    end
+                                end
+
+                                LOG.dbg(TAG, "[" .. partName .. "] max level: " .. tostring(levelEdit))
+                                table.insert(upgradeList, { address = partPtr + 0x20, flags = 4, value = levelEdit })
+                                table.insert(upgradeList, { address = partPtr + 0x34, flags = 4, value = levelEdit })
+                            end
+                        end
+                    end
+                end
+            end
+
+            if #upgradeList > 0 then
+                gg.setValues(upgradeList)
+                showToast("All parts maxed")
+                LOG.info(TAG, "Done. Total writes: " .. tostring(#upgradeList))
+            else
+                showToast("Failed to max parts")
+                LOG.warn(TAG, "upgradeList is empty.")
+            end
+
+            finish_task()
+            done()
+        end)
+    end)
+    
 end

@@ -28,7 +28,7 @@ return function(container)
 
             LOG.dbg(TAG, "Adventure tab confirmed. Resolving lib anchor...")
 
-            local anchorTarget = BaseLib + 0x2009C28
+            local anchorTarget = BaseLib + offsets.lib_setDistanceBase
             LOG.dbg(TAG, string.format("Lib base: 0x%X | Anchor target: 0x%X", BaseLib, anchorTarget))
 
             gg.clearResults()
