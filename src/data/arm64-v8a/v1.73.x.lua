@@ -20,6 +20,7 @@ return {
         autoDetach = {
             {scan = "h 08 20 20 1E 85 00 00 54 E0 03 13 AA E1 03 14 AA", offset = 4, patch = "h 1F 20 03 D5", unpatch = "h 85 00 00 54"},
         },
+        
 
         -- Add new AoBs here. Each key maps to a flat array of patch entries.
         -- Grouped features can use subtables: e.g. aobs.speedHack = { {…}, {…} }
@@ -30,5 +31,6 @@ return {
         -- coins       = 0x1A0,
         -- gems        = 0x1A8,
         -- playerLevel = 0x2B4,
+        setDistanceBase = 0x2009C28
     },
 }
