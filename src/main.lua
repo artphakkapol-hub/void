@@ -174,7 +174,7 @@ MainHandler = Handler(Looper.getMainLooper())
 -- ── Constants ─────────────────────────────────────────────────────────────────
 
 FORCE_EXIT = false
-WIDTH = 450
+WIDTH = 480
 CLICK_COOLDOWN = 500
 DEVICE_ARCH = "unknown"
 DEFAULT_ARCH = "arm64-v8a"
@@ -334,12 +334,12 @@ scheduler = loadModule("core/scheduler.lua")
 loader = loadModule("core/loader.lua")
 
 -- Window size preferences (persisted globally across restarts)
--- WIN_W : panel width in dp  (default = WIDTH = 300)
--- WIN_H : scroll-area height in dp  (default = 220)
+-- WIN_W : panel width in dp
+-- WIN_H : scroll-area height in dp 
 do
     local prefs = memory:loadGlobal("window_size")
     WIN_W = (prefs and prefs.w) or WIDTH
-    WIN_H = (prefs and prefs.h) or 350
+    WIN_H = (prefs and prefs.h) or 333
 end
 loadModule("core/patches.lua")
 

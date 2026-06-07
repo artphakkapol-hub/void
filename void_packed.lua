@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-07 23:26:07
+-- Packed by bundle.py  •  2026-06-08 05:51:27
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -19164,7 +19164,6 @@ local data = resolveData(pkgVersion, DEVICE_ARCH)
 if not data then
     showDialog("Unsupported Version",
         ("No data found for v%s on %s.\nCheck manifest.lua."):format(pkgVersion, DEVICE_ARCH), "OK")
-    os.exit()
 end
 
 aobs    = data.aobs    or {}
@@ -21033,17 +21032,14 @@ return function(container)
                                                         jsonEvent.minRankToJoin = 0
                                                         jsonEvent.rankBrackets = 2
                                                         local function patchText(v)
-                                                            if type(v) == "table" then
-                                                                return {
-                                                                    value = (v.value or "") .. " (Patched)",
-                                                                    localize = v.localize or ""
-                                                                }
-                                                            end
-                                                        
-                                                            return {
-                                                                value = (v or "") .. " (Patched)",
-                                                                localize = ""
-                                                            }
+                                                            local text = type(v) == "table" and (v.value or "") or (v or "")
+                                                            local localize = type(v) == "table" and (v.localize or "") or ""
+                                                            
+                                                            text = text:gsub("%s*%(Patched%)", "")
+                                                            
+                                                            text = text .. " (Patched)"
+                                                            
+                                                            return { value = text, localize = localize }
                                                         end
                                                         
                                                         jsonEvent.name = patchText(jsonEvent.name)
@@ -23430,7 +23426,7 @@ MainHandler = Handler(Looper.getMainLooper())
 -- ── Constants ─────────────────────────────────────────────────────────────────
 
 FORCE_EXIT = false
-WIDTH = 450
+WIDTH = 480
 CLICK_COOLDOWN = 500
 DEVICE_ARCH = "unknown"
 DEFAULT_ARCH = "arm64-v8a"
@@ -23590,12 +23586,12 @@ scheduler = loadModule("core/scheduler.lua")
 loader = loadModule("core/loader.lua")
 
 -- Window size preferences (persisted globally across restarts)
--- WIN_W : panel width in dp  (default = WIDTH = 300)
--- WIN_H : scroll-area height in dp  (default = 220)
+-- WIN_W : panel width in dp
+-- WIN_H : scroll-area height in dp 
 do
     local prefs = memory:loadGlobal("window_size")
     WIN_W = (prefs and prefs.w) or WIDTH
-    WIN_H = (prefs and prefs.h) or 350
+    WIN_H = (prefs and prefs.h) or 333
 end
 loadModule("core/patches.lua")
 

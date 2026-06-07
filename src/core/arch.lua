@@ -73,7 +73,6 @@ local data = resolveData(pkgVersion, DEVICE_ARCH)
 if not data then
     showDialog("Unsupported Version",
         ("No data found for v%s on %s.\nCheck manifest.lua."):format(pkgVersion, DEVICE_ARCH), "OK")
-    os.exit()
 end
 
 aobs    = data.aobs    or {}

@@ -258,17 +258,14 @@ return function(container)
                                                         jsonEvent.minRankToJoin = 0
                                                         jsonEvent.rankBrackets = 2
                                                         local function patchText(v)
-                                                            if type(v) == "table" then
-                                                                return {
-                                                                    value = (v.value or "") .. " (Patched)",
-                                                                    localize = v.localize or ""
-                                                                }
-                                                            end
-                                                        
-                                                            return {
-                                                                value = (v or "") .. " (Patched)",
-                                                                localize = ""
-                                                            }
+                                                            local text = type(v) == "table" and (v.value or "") or (v or "")
+                                                            local localize = type(v) == "table" and (v.localize or "") or ""
+                                                            
+                                                            text = text:gsub("%s*%(Patched%)", "")
+                                                            
+                                                            text = text .. " (Patched)"
+                                                            
+                                                            return { value = text, localize = localize }
                                                         end
                                                         
                                                         jsonEvent.name = patchText(jsonEvent.name)
