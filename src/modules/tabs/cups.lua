@@ -142,4 +142,68 @@ return function(container)
             done()
         end)
     end)
+    
+    addModule(container, "unlimited_tasks", "Unlimited Tasks", "Freeze all tasks as completed and always claimable. Claim rewards repeatedly.", "switch", nil,
+    function(done, state)
+        local TAG = "UnlimitedTasks"
+
+        scheduler:add(function(finish_task)
+            local ptr1 = gg.getValues({{ address = BaseGameStatus + 0x6F8, flags = 32 }})[1].value
+
+            if not ptr1 or ptr1 == 0 then
+                showToast("Failed to resolve task list")
+                LOG.fatal(TAG, "Ptr1 is nil or 0.")
+                finish_task()
+                done()
+                return
+            end
+
+            local totalTasks = gg.getValues({{ address = BaseGameStatus + 0x700, flags = 4 }})[1].value
+
+            if not totalTasks or totalTasks == 0 then
+                showToast("No tasks found")
+                LOG.warn(TAG, "totalTasks is 0.")
+                finish_task()
+                done()
+                return
+            end
+
+            LOG.dbg(TAG, "Total tasks: " .. tostring(totalTasks))
+
+            local freezeItems = {}
+
+            for i = 0, totalTasks - 1 do
+                local ptr2 = gg.getValues({{ address = ptr1 + i * 8, flags = 32 }})[1].value
+
+                if ptr2 and ptr2 ~= 0 then
+                    local completeTarget = gg.getValues({{ address = ptr2 + 0x1C, flags = 4 }})[1].value
+
+                    if completeTarget and completeTarget > 0 then
+                        table.insert(freezeItems, { address = ptr2 + 0x1C, flags = 4, value = completeTarget, freeze = state })
+                        table.insert(freezeItems, { address = ptr2 + 0x20, flags = 4, value = completeTarget, freeze = state })
+                        table.insert(freezeItems, { address = ptr2 + 0x24, flags = 4, value = 0,             freeze = state })
+                        LOG.dbg(TAG, string.format("Task [%d] queued. completeTarget: %d", i, completeTarget))
+                    end
+                end
+            end
+
+            if #freezeItems > 0 then
+                if state then
+                    gg.addListItems(freezeItems)
+                    showToast("Unlimited Tasks Enabled")
+                    LOG.info(TAG, "Enabled. Frozen " .. tostring(#freezeItems / 3) .. " tasks.")
+                else
+                    gg.removeListItems(freezeItems)
+                    showToast("Unlimited Tasks Disabled")
+                    LOG.info(TAG, "Disabled. Unfrozen " .. tostring(#freezeItems / 3) .. " tasks.")
+                end
+            else
+                showToast("No tasks to freeze")
+                LOG.warn(TAG, "freezeItems is empty.")
+            end
+
+            finish_task()
+            done()
+        end)
+    end)
 end

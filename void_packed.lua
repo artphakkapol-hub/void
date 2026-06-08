@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-08 05:51:27
+-- Packed by bundle.py  •  2026-06-08 16:03:00
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -20767,6 +20767,70 @@ return function(container)
             done()
         end)
     end)
+    
+    addModule(container, "unlimited_tasks", "Unlimited Tasks", "Freeze all tasks as completed and always claimable. Claim rewards repeatedly.", "switch", nil,
+    function(done, state)
+        local TAG = "UnlimitedTasks"
+
+        scheduler:add(function(finish_task)
+            local ptr1 = gg.getValues({{ address = BaseGameStatus + 0x6F8, flags = 32 }})[1].value
+
+            if not ptr1 or ptr1 == 0 then
+                showToast("Failed to resolve task list")
+                LOG.fatal(TAG, "Ptr1 is nil or 0.")
+                finish_task()
+                done()
+                return
+            end
+
+            local totalTasks = gg.getValues({{ address = BaseGameStatus + 0x700, flags = 4 }})[1].value
+
+            if not totalTasks or totalTasks == 0 then
+                showToast("No tasks found")
+                LOG.warn(TAG, "totalTasks is 0.")
+                finish_task()
+                done()
+                return
+            end
+
+            LOG.dbg(TAG, "Total tasks: " .. tostring(totalTasks))
+
+            local freezeItems = {}
+
+            for i = 0, totalTasks - 1 do
+                local ptr2 = gg.getValues({{ address = ptr1 + i * 8, flags = 32 }})[1].value
+
+                if ptr2 and ptr2 ~= 0 then
+                    local completeTarget = gg.getValues({{ address = ptr2 + 0x1C, flags = 4 }})[1].value
+
+                    if completeTarget and completeTarget > 0 then
+                        table.insert(freezeItems, { address = ptr2 + 0x1C, flags = 4, value = completeTarget, freeze = state })
+                        table.insert(freezeItems, { address = ptr2 + 0x20, flags = 4, value = completeTarget, freeze = state })
+                        table.insert(freezeItems, { address = ptr2 + 0x24, flags = 4, value = 0,             freeze = state })
+                        LOG.dbg(TAG, string.format("Task [%d] queued. completeTarget: %d", i, completeTarget))
+                    end
+                end
+            end
+
+            if #freezeItems > 0 then
+                if state then
+                    gg.addListItems(freezeItems)
+                    showToast("Unlimited Tasks Enabled")
+                    LOG.info(TAG, "Enabled. Frozen " .. tostring(#freezeItems / 3) .. " tasks.")
+                else
+                    gg.removeListItems(freezeItems)
+                    showToast("Unlimited Tasks Disabled")
+                    LOG.info(TAG, "Disabled. Unfrozen " .. tostring(#freezeItems / 3) .. " tasks.")
+                end
+            else
+                showToast("No tasks to freeze")
+                LOG.warn(TAG, "freezeItems is empty.")
+            end
+
+            finish_task()
+            done()
+        end)
+    end)
 end
 
 end
@@ -20844,7 +20908,7 @@ return function(container)
         end
     
         -- Workspace allocated for root escalation adjustments
-        local safeWorkspace = "/storage/emulated/0/.void_cache/"
+        local safeWorkspace = gg.FILES_DIR .. "/.void_cache/"
         if hasRoot then
             local mkResult = shellAsRoot("mkdir -p \"" .. safeWorkspace .. "\" && echo SUCCESS || echo FAIL")
             print("Workspace mkdir result:", mkResult)
@@ -21177,7 +21241,7 @@ return function(container)
         local failedList = {}
     
         -- Workspace allocated for root escalation adjustments
-        local safeWorkspace = "/storage/emulated/0/.void_cache/"
+        local safeWorkspace = gg.FILES_DIR .. "/.void_cache/"
         if hasRoot then
             local mkResult = shellAsRoot("mkdir -p \"" .. safeWorkspace .. "\" && echo SUCCESS || echo FAIL")
             print("Workspace mkdir result:", mkResult)
@@ -23065,18 +23129,6 @@ local function _buildMenuContent(root)
     return scroll
 end
 
--- Window size bounds (dp).  Referenced by applyWindowResize and settings sliders.
-RESIZE_MIN_W = 400
-RESIZE_MAX_W = 650
-RESIZE_MIN_H = 200
-RESIZE_MAX_H = 650
--- Sidebar width (dp). Wide enough for icon + "ADVENTURE MENU" label on 2 lines.
-SIDEBAR_W = 125
--- Fixed dp overhead for header row (not part of the resizable scroll area).
--- Keeps mParams.height explicit so WindowManager doesn't expand the overlay to full screen.
--- Global so switchToMenu in main.lua can restore mParams.height correctly.
-UI_CHROME_H = 55
-
 -- Module-level upvalues captured from createMenuView so applyWindowResize
 -- can reach the inner layout views without being nested inside createMenuView.
 local _menuRoot   = nil
@@ -23468,6 +23520,12 @@ local _dpDensity = nil
 function dp(v)
     if not _dpDensity then
         _dpDensity = activity.getResources().getDisplayMetrics().density
+        local metrics = activity.getResources().getDisplayMetrics()
+        local screenWdp = math.floor(metrics.widthPixels / metrics.density)
+        local screenHdp = math.floor(metrics.heightPixels / metrics.density)
+        
+        RESIZE_MAX_W = math.floor(screenWdp * 0.85)
+        RESIZE_MAX_H = math.floor(screenHdp * 0.75)
         LOG.info("dp", "density cached: " .. tostring(_dpDensity))
     end
     return math.floor(v * _dpDensity + 0.5)
@@ -23585,13 +23643,32 @@ memory = loadModule("core/memory.lua")
 scheduler = loadModule("core/scheduler.lua")
 loader = loadModule("core/loader.lua")
 
+-- Window size bounds (dp).  Referenced by applyWindowResize and settings sliders.
+RESIZE_MIN_W = 400
+RESIZE_MAX_W = 650
+RESIZE_MIN_H = 200
+RESIZE_MAX_H = 650
+-- Sidebar width (dp). Wide enough for icon + "ADVENTURE MENU" label on 2 lines.
+SIDEBAR_W = 125
+-- Fixed dp overhead for header row (not part of the resizable scroll area).
+-- Keeps mParams.height explicit so WindowManager doesn't expand the overlay to full screen.
+-- Global so switchToMenu in main.lua can restore mParams.height correctly.
+UI_CHROME_H = 55
+
 -- Window size preferences (persisted globally across restarts)
 -- WIN_W : panel width in dp
 -- WIN_H : scroll-area height in dp 
 do
+    local metrics = activity.getResources().getDisplayMetrics()
+    local screenWdp = math.floor(metrics.widthPixels / metrics.density)
+    local screenHdp = math.floor(metrics.heightPixels / metrics.density)
+
+    RESIZE_MAX_W = math.min(RESIZE_MAX_W, math.floor(screenWdp * 0.85))
+    RESIZE_MAX_H = math.min(RESIZE_MAX_H, math.floor(screenHdp * 0.75))
+
     local prefs = memory:loadGlobal("window_size")
-    WIN_W = (prefs and prefs.w) or WIDTH
-    WIN_H = (prefs and prefs.h) or 333
+    WIN_W = math.min(math.max((prefs and prefs.w) or WIDTH, RESIZE_MIN_W), RESIZE_MAX_W)
+    WIN_H = math.min(math.max((prefs and prefs.h) or 333, RESIZE_MIN_H), RESIZE_MAX_H)
 end
 loadModule("core/patches.lua")
 

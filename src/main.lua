@@ -216,6 +216,12 @@ local _dpDensity = nil
 function dp(v)
     if not _dpDensity then
         _dpDensity = activity.getResources().getDisplayMetrics().density
+        local metrics = activity.getResources().getDisplayMetrics()
+        local screenWdp = math.floor(metrics.widthPixels / metrics.density)
+        local screenHdp = math.floor(metrics.heightPixels / metrics.density)
+        
+        RESIZE_MAX_W = math.floor(screenWdp * 0.85)
+        RESIZE_MAX_H = math.floor(screenHdp * 0.75)
         LOG.info("dp", "density cached: " .. tostring(_dpDensity))
     end
     return math.floor(v * _dpDensity + 0.5)
@@ -333,13 +339,32 @@ memory = loadModule("core/memory.lua")
 scheduler = loadModule("core/scheduler.lua")
 loader = loadModule("core/loader.lua")
 
+-- Window size bounds (dp).  Referenced by applyWindowResize and settings sliders.
+RESIZE_MIN_W = 400
+RESIZE_MAX_W = 650
+RESIZE_MIN_H = 200
+RESIZE_MAX_H = 650
+-- Sidebar width (dp). Wide enough for icon + "ADVENTURE MENU" label on 2 lines.
+SIDEBAR_W = 125
+-- Fixed dp overhead for header row (not part of the resizable scroll area).
+-- Keeps mParams.height explicit so WindowManager doesn't expand the overlay to full screen.
+-- Global so switchToMenu in main.lua can restore mParams.height correctly.
+UI_CHROME_H = 55
+
 -- Window size preferences (persisted globally across restarts)
 -- WIN_W : panel width in dp
 -- WIN_H : scroll-area height in dp 
 do
+    local metrics = activity.getResources().getDisplayMetrics()
+    local screenWdp = math.floor(metrics.widthPixels / metrics.density)
+    local screenHdp = math.floor(metrics.heightPixels / metrics.density)
+
+    RESIZE_MAX_W = math.min(RESIZE_MAX_W, math.floor(screenWdp * 0.85))
+    RESIZE_MAX_H = math.min(RESIZE_MAX_H, math.floor(screenHdp * 0.75))
+
     local prefs = memory:loadGlobal("window_size")
-    WIN_W = (prefs and prefs.w) or WIDTH
-    WIN_H = (prefs and prefs.h) or 333
+    WIN_W = math.min(math.max((prefs and prefs.w) or WIDTH, RESIZE_MIN_W), RESIZE_MAX_W)
+    WIN_H = math.min(math.max((prefs and prefs.h) or 333, RESIZE_MIN_H), RESIZE_MAX_H)
 end
 loadModule("core/patches.lua")
 

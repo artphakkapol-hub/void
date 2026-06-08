@@ -908,18 +908,6 @@ local function _buildMenuContent(root)
     return scroll
 end
 
--- Window size bounds (dp).  Referenced by applyWindowResize and settings sliders.
-RESIZE_MIN_W = 400
-RESIZE_MAX_W = 650
-RESIZE_MIN_H = 200
-RESIZE_MAX_H = 650
--- Sidebar width (dp). Wide enough for icon + "ADVENTURE MENU" label on 2 lines.
-SIDEBAR_W = 125
--- Fixed dp overhead for header row (not part of the resizable scroll area).
--- Keeps mParams.height explicit so WindowManager doesn't expand the overlay to full screen.
--- Global so switchToMenu in main.lua can restore mParams.height correctly.
-UI_CHROME_H = 55
-
 -- Module-level upvalues captured from createMenuView so applyWindowResize
 -- can reach the inner layout views without being nested inside createMenuView.
 local _menuRoot   = nil
