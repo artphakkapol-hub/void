@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-08 17:05:46
+-- Packed by bundle.py  •  2026-06-08 16:30:55
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -20908,7 +20908,7 @@ return function(container)
         end
     
         -- Workspace allocated for root escalation adjustments
-        local safeWorkspace = gg.EXT_FILES_DIR .. "/.void_cache/"
+        local safeWorkspace = gg.FILES_DIR .. "/.void_cache/"
         if hasRoot then
             local mkResult = shellAsRoot("mkdir -p \"" .. safeWorkspace .. "\" && echo SUCCESS || echo FAIL")
             print("Workspace mkdir result:", mkResult)

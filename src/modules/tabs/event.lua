@@ -14,12 +14,15 @@ return function(container)
 
     -- Helper: check if a file or directory exists and is readable
     local function fileExists(path)
+        -- Try as file first
         local f = io.open(path, "rb")
         if f then
             f:close()
             return true
         end
-        return false
+        -- Try as directory via shell
+        local result = gg.shell("[ -e \"" .. path .. "\" ] && echo yes || echo no")
+        return result and result:find("yes") ~= nil
     end
 
     -- Helper: get file size in bytes, returns -1 if unreadable
