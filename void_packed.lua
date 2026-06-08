@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-08 16:03:00
+-- Packed by bundle.py  •  2026-06-08 16:16:23
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -22877,7 +22877,7 @@ function createIconView()
 
     -- Subtitle
     local sub = TextView(activity)
-    sub.setText(" v1.0 • By Vekendian")
+    sub.setText(scriptSubHeader)
     sub.setTextColor(UI.SUB)
     sub.setTextSize(1, 8)
     sub.setPadding(dp(6), 0, 0, dp(2))
@@ -22998,7 +22998,7 @@ local function _buildMenuHeader(root)
     titleLayout.addView(title)
 
     local sub = TextView(activity)
-    sub.setText(" v1.0 • By Vekendian")
+    sub.setText(scriptSubHeader)
     sub.setTextColor(UI.SUB)
     sub.setTextSize(1, 8)
     sub.setPadding(dp(6), 0, 0, dp(2))
@@ -23325,6 +23325,8 @@ end
 
 -- VOID v1 — HCR2 Modding Framework
 -- Load order: env → imports → constants → core → arch+data → modules → ui → init → loop
+
+scriptSubHeader = " v1.0.0 • By Vekendian"
 
 do
     local LOG_TO_FILE = true

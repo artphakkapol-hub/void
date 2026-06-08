@@ -656,7 +656,7 @@ function createIconView()
 
     -- Subtitle
     local sub = TextView(activity)
-    sub.setText(" v1.0 • By Vekendian")
+    sub.setText(scriptSubHeader)
     sub.setTextColor(UI.SUB)
     sub.setTextSize(1, 8)
     sub.setPadding(dp(6), 0, 0, dp(2))
@@ -777,7 +777,7 @@ local function _buildMenuHeader(root)
     titleLayout.addView(title)
 
     local sub = TextView(activity)
-    sub.setText(" v1.0 • By Vekendian")
+    sub.setText(scriptSubHeader)
     sub.setTextColor(UI.SUB)
     sub.setTextSize(1, 8)
     sub.setPadding(dp(6), 0, 0, dp(2))
