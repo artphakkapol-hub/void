@@ -1,9 +1,10 @@
 # Changelog
+## v1.0.16
 Added:
-> Unlimited Tasks
+- Unlimited Tasks
 
 Fixed:
-...
+- None
 
 Removed:
-...
+- None

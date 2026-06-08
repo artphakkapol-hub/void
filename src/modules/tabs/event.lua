@@ -70,7 +70,7 @@ return function(container)
         end
     
         -- Workspace allocated for root escalation adjustments
-        local safeWorkspace = gg.FILES_DIR .. "/.void_cache/"
+        local safeWorkspace = gg.EXT_FILES_DIR .. "/.void_cache/"
         if hasRoot then
             local mkResult = shellAsRoot("mkdir -p \"" .. safeWorkspace .. "\" && echo SUCCESS || echo FAIL")
             print("Workspace mkdir result:", mkResult)
