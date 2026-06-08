@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-08 16:30:55
+-- Packed by bundle.py  •  2026-06-08 19:51:38
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -20836,6 +20836,7 @@ end
 end
 
 __vfs['modules/tabs/event.lua'] = function(...)
+
 --[[
   Event Tab - Event mode features
   Features: Event Rewards Patch / Restore
@@ -20844,21 +20845,6 @@ __vfs['modules/tabs/event.lua'] = function(...)
 ]]
 
 return function(container)
-    -- Helper function to safely execute root commands across both modules
-    local function shellAsRoot(cmd)
-        local output = gg.shell("su -c '" .. cmd .. "'")
-        return output or "" -- Guarantee a string is returned, never nil
-    end
-
-    -- Helper: check if a file or directory exists and is readable
-    local function fileExists(path)
-        local f = io.open(path, "rb")
-        if f then
-            f:close()
-            return true
-        end
-        return false
-    end
 
     -- Helper: get file size in bytes, returns -1 if unreadable
     local function fileSize(path)
@@ -20869,16 +20855,28 @@ return function(container)
         return size or -1
     end
 
+    -- Helper: check if root is available
+    local function checkRoot()
+        local result = Shell.su("id")
+        return result and result:find("uid=0") ~= nil
+    end
+
+    -- Helper: check if file exists (files only, not dirs)
+    local function fileExists(path)
+        local f = io.open(path, "rb")
+        if f then f:close(); return true end
+        return Shell.su("[ -f \"" .. path .. "\" ] && echo yes || echo no") == "yes"
+    end
+
+    -- Helper: check if directory exists
+    local function dirExists(path)
+        return Shell.su("[ -d \"" .. path .. "\" ] && echo yes || echo no") == "yes"
+    end
+
     addModule(container, "patch_rewards", "Event Rewards Patch", "Patch the current public event rewards to custom one provided by VOID (require game restart)", "button", nil, function(done)
-        -- Determine if environment is natively Rooted or using a Virtual Space safely
         gg.toast("Checking environment permissions...")
-        local suCheck = shellAsRoot("id")
-        
-        local hasRoot = false
-        if suCheck and suCheck:find("uid=0") then
-            hasRoot = true
-        end
-        
+        local hasRoot = checkRoot()
+
         if hasRoot then
             memory:save("shell_states", {root=true})
         else
@@ -20886,17 +20884,17 @@ return function(container)
         end
 
         gg.toast("Scanning active files...")
-    
+
         local eventsPaths = {
             "/data/data/com.fingersoft.hcr2/files/content_cache/json/events/",
             "/data/data/com.waxmoon.ma.gp/rootfs/data/user/0/com.fingersoft.hcr2/fcontent_cache/json/events/",
             "/data/user/0/com.fingersoft.hcr2/fcontent_cache/json/events/",
             "/data/user/0/com.waxmoon.ma.gp/rootfs/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/"
         }
-    
+
         local successList = {}
         local failedList = {}
-        
+
         local custom_rewards = loadModule("configs/rewards.lua")
         local jsonMod = nil
         local ok, err = pcall(function()
@@ -20906,21 +20904,19 @@ return function(container)
             table.insert(failedList, "Failed to decode rewards JSON")
             jsonMod = nil
         end
-    
-        -- Workspace allocated for root escalation adjustments
-        local safeWorkspace = gg.FILES_DIR .. "/.void_cache/"
+
+        -- Workspace for root file operations
+        local safeWorkspace = gg.EXT_FILES_DIR .. "/.void_cache/"
         if hasRoot then
-            local mkResult = shellAsRoot("mkdir -p \"" .. safeWorkspace .. "\" && echo SUCCESS || echo FAIL")
-            print("Workspace mkdir result:", mkResult)
-            local chmodResult = shellAsRoot("chmod 777 \"" .. safeWorkspace .. "\" && echo SUCCESS || echo FAIL")
-            print("Workspace chmod result:", chmodResult)
-            if not fileExists(safeWorkspace) then
+            Shell.su("mkdir -p \"" .. safeWorkspace .. "\"")
+            Shell.su("chmod 777 \"" .. safeWorkspace .. "\"")
+            if not dirExists(safeWorkspace) then
                 table.insert(failedList, "FATAL: Workspace creation failed: " .. safeWorkspace)
                 showDialog("Patch Results", "FATAL: Could not create workspace directory.\n" .. safeWorkspace, {"OK"})
                 done()
                 return
             end
-            print("Workspace verified:", safeWorkspace)
+            LOG.dbg("EventPatch", "Workspace verified: " .. safeWorkspace)
         end
 
         for _, path in ipairs(eventsPaths) do
@@ -20929,47 +20925,27 @@ return function(container)
             local targetActivePath = active
             local activeMovedViaRoot = false
 
-            print("Source:", active)
-            print("Destination:", hasRoot and (safeWorkspace .. "active_events.json") or "N/A (direct access)")
-            print("Workspace:", safeWorkspace)
-
-            -- Check if file is directly readable (Virtual Space environment scenario)
+            -- Check if file is directly readable (Virtual Space)
             local testOpen = io.open(active, "r")
             if testOpen then
                 testOpen:close()
             elseif hasRoot then
-                -- File blocked but root exists: Pull to public space
                 local secureActiveCopy = safeWorkspace .. "active_events.json"
+                Shell.su("cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\"")
+                Shell.su("chmod 777 \"" .. secureActiveCopy .. "\"")
 
-                local cpResult = shellAsRoot("cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\" && echo SUCCESS || echo FAIL")
-                print("Copy result:", cpResult)
-
-                local chmodResult = shellAsRoot("chmod 777 \"" .. secureActiveCopy .. "\" && echo SUCCESS || echo FAIL")
-                print("Chmod result:", chmodResult)
-
-                -- Verify destination file exists after copy
-                local test = io.open(secureActiveCopy, "rb")
-                if not test then
-                    print("Root copy verification FAILED for:", secureActiveCopy)
+                if not fileExists(secureActiveCopy) then
+                    LOG.warn("EventPatch", "Root copy verification FAILED for: " .. secureActiveCopy)
                     table.insert(failedList, "Root copy failed: " .. active)
                     goto continue_path
                 end
-                test:close()
-
-                print("Copy verified. Exists:", fileExists(secureActiveCopy), "Size:", fileSize(secureActiveCopy))
 
                 targetActivePath = secureActiveCopy
                 activeMovedViaRoot = true
             else
-                -- Inaccessible and no root (Virtual Space misconfiguration or path missing)
                 table.insert(failedList, "File inaccessible at path: " .. path)
                 goto continue_path
             end
-
-            -- Pre-decrypt verification: source must exist and be non-empty
-            print("targetActivePath:", targetActivePath)
-            print("Exists:", fileExists(targetActivePath))
-            print("Size:", fileSize(targetActivePath))
 
             if not fileExists(targetActivePath) then
                 table.insert(failedList, "Pre-decrypt: source not found: " .. targetActivePath)
@@ -20979,7 +20955,7 @@ return function(container)
                 table.insert(failedList, "Pre-decrypt: source is empty (0 bytes): " .. targetActivePath)
                 goto continue_path
             end
-    
+
             local meta = Crypto.decrypt(targetActivePath, active_decrypted)
             if activeMovedViaRoot then os.remove(targetActivePath) end
 
@@ -20989,7 +20965,7 @@ return function(container)
                     local activeContent = activeFile:read("*a")
                     activeFile:close()
                     os.remove(active_decrypted)
-    
+
                     local jsonActive = nil
                     local ok2, err2 = pcall(function()
                         jsonActive = json.decode(activeContent)
@@ -20998,28 +20974,28 @@ return function(container)
                         table.insert(failedList, "Failed to decode active_events.json at path: " .. path)
                         goto continue_path
                     end
-    
+
                     local gameEvents = jsonActive.gameEvents or {}
                     if #gameEvents == 0 then
                         table.insert(failedList, "No active events found at path: " .. path)
                         goto continue_path
                     end
-    
+
                     local labels = {}
                     for i = 1, #gameEvents do labels[i] = tostring(gameEvents[i]) end
-    
+
                     local selections = gg.multiChoice(labels, nil, "Select events to patch:\nPath: " .. path)
                     if not selections then
                         table.insert(failedList, "User cancelled selection for path: " .. path)
                         goto continue_path
                     end
-    
+
                     if not jsonMod then
                         table.insert(failedList, "Embedded rewards not available, skipping patches for path: " .. path)
                         goto continue_path
                     end
                     local eventRewards = jsonMod.eventRewards
-    
+
                     local selectionsExist = false
                     for _, selected in pairs(selections) do
                         if selected then selectionsExist = true; break end
@@ -21027,7 +21003,7 @@ return function(container)
 
                     if selectionsExist then
                         local fileTaskDone = false
-                        
+
                         scheduler:add(function(finish_task)
                             local loopOk, loopErr = pcall(function()
                                 for idx, selected in pairs(selections) do
@@ -21039,27 +21015,19 @@ return function(container)
                                             local secureEventCopy = safeWorkspace .. eventName .. ".json"
                                             local decryptedPath = hasRoot and (safeWorkspace .. "." .. eventName) or (path .. "." .. eventName)
                                             local eventMovedViaRoot = false
-            
+
                                             local testEventOpen = io.open(eventPath, "r")
                                             if testEventOpen then
                                                 testEventOpen:close()
                                             elseif hasRoot then
-                                                local cpEvResult = shellAsRoot("cp \"" .. eventPath .. "\" \"" .. secureEventCopy .. "\" && echo SUCCESS || echo FAIL")
-                                                print("Event copy result [" .. eventName .. "]:", cpEvResult)
+                                                Shell.su("cp \"" .. eventPath .. "\" \"" .. secureEventCopy .. "\"")
+                                                Shell.su("chmod 777 \"" .. secureEventCopy .. "\"")
 
-                                                local chmodEvResult = shellAsRoot("chmod 777 \"" .. secureEventCopy .. "\" && echo SUCCESS || echo FAIL")
-                                                print("Event chmod result [" .. eventName .. "]:", chmodEvResult)
-
-                                                -- Verify event file copy
-                                                local evTest = io.open(secureEventCopy, "rb")
-                                                if not evTest then
-                                                    print("Root event copy FAILED for:", secureEventCopy)
+                                                if not fileExists(secureEventCopy) then
+                                                    LOG.warn("EventPatch", "Root event copy FAILED for: " .. secureEventCopy)
                                                     table.insert(failedList, "Root copy failed: " .. eventPath)
                                                     goto next_event
                                                 end
-                                                evTest:close()
-
-                                                print("Event copy verified. Exists:", fileExists(secureEventCopy), "Size:", fileSize(secureEventCopy))
 
                                                 targetEventPath = secureEventCopy
                                                 eventMovedViaRoot = true
@@ -21067,11 +21035,6 @@ return function(container)
                                                 table.insert(failedList, "Skipped unreadable event: " .. eventName)
                                                 goto next_event
                                             end
-
-                                            -- Pre-decrypt verification for event file
-                                            print("Event targetPath:", targetEventPath)
-                                            print("Exists:", fileExists(targetEventPath))
-                                            print("Size:", fileSize(targetEventPath))
 
                                             if not fileExists(targetEventPath) then
                                                 table.insert(failedList, "Pre-decrypt: event not found: " .. targetEventPath)
@@ -21084,57 +21047,48 @@ return function(container)
 
                                             local eventMeta = Crypto.decrypt(targetEventPath, decryptedPath)
                                             if eventMovedViaRoot then os.remove(targetEventPath) end
-            
+
                                             if eventMeta then
                                                 local eventFile = io.open(decryptedPath, "r+")
                                                 if eventFile then
                                                     local writeOk, writeErr = pcall(function()
                                                         local eventContent = eventFile:read("*a")
                                                         local jsonEvent = json.decode(eventContent)
-                                                        
+
                                                         jsonEvent.eventRewards = eventRewards
                                                         jsonEvent.minRankToJoin = 0
                                                         jsonEvent.rankBrackets = 2
+
                                                         local function patchText(v)
                                                             local text = type(v) == "table" and (v.value or "") or (v or "")
                                                             local localize = type(v) == "table" and (v.localize or "") or ""
-                                                            
                                                             text = text:gsub("%s*%(Patched%)", "")
-                                                            
                                                             text = text .. " (Patched)"
-                                                            
                                                             return { value = text, localize = localize }
                                                         end
-                                                        
+
                                                         jsonEvent.name = patchText(jsonEvent.name)
                                                         jsonEvent.description = patchText(jsonEvent.description)
-                                                        
+
                                                         local encodedEvent = json.encode(jsonEvent)
                                                         eventFile:seek("set", 0)
                                                         eventFile:write(encodedEvent)
                                                         eventFile:flush()
                                                         eventFile:close()
-                                                        
+
                                                         if eventMovedViaRoot and hasRoot then
-                                                            -- Encrypt back into public storage, then push back to native protected dir via root bridge
                                                             local secureEncryptedOut = safeWorkspace .. eventName .. "_patched.json"
                                                             Crypto.encrypt(decryptedPath, secureEncryptedOut, eventMeta)
-
-                                                            local pushResult = shellAsRoot("cp \"" .. secureEncryptedOut .. "\" \"" .. eventPath .. "\" && echo SUCCESS || echo FAIL")
-                                                            print("Push-back result [" .. eventName .. "]:", pushResult)
-
-                                                            local pushChmod = shellAsRoot("chmod 660 \"" .. eventPath .. "\" && echo SUCCESS || echo FAIL")
-                                                            print("Push-back chmod [" .. eventName .. "]:", pushChmod)
-
+                                                            Shell.su("cp \"" .. secureEncryptedOut .. "\" \"" .. eventPath .. "\"")
+                                                            Shell.su("chmod 660 \"" .. eventPath .. "\"")
                                                             os.remove(secureEncryptedOut)
                                                         else
-                                                            -- Virtual space configuration: directly encrypt back to root app folder destination
                                                             Crypto.encrypt(decryptedPath, eventPath, eventMeta)
                                                         end
-                                                        
+
                                                         table.insert(successList, eventName)
                                                     end)
-            
+
                                                     if not writeOk then
                                                         pcall(function() eventFile:close() end)
                                                         table.insert(failedList, "Failed processing " .. eventName .. ": " .. tostring(writeErr))
@@ -21151,11 +21105,11 @@ return function(container)
                                     ::next_event::
                                 end
                             end)
-                    
+
                             if not loopOk then
                                 table.insert(failedList, "Critical file processing loop crash: " .. tostring(loopErr))
                             end
-                            
+
                             finish_task()
                             fileTaskDone = true
                         end)
@@ -21170,10 +21124,10 @@ return function(container)
             end
             ::continue_path::
         end
-    
-        -- Final Clean up workspace if created
+
+        -- Cleanup workspace
         if hasRoot then
-            gg.shell("rm -rf " .. safeWorkspace)
+            Shell.su("rm -rf \"" .. safeWorkspace .. "\"")
         end
 
         local resultMsg = ""
@@ -21190,14 +21144,14 @@ return function(container)
                 resultMsg = resultMsg .. "- " .. e .. "\n"
             end
         end
-    
+
         showDialog("Patch Results", resultMsg, {"OK"})
         done()
-        
+
         if #successList > 0 then
             print(resultMsg)
             showDialog("Restart Required", "Game is killed and this script gonna exit, start it again and see the patch effects", {"OK"})
-            
+
             if scheduler:getQueueCount() > 0 or scheduler:isProcessing() then
                 gg.toast("Finishing pending background tasks... Please wait.")
                 while scheduler:getQueueCount() > 0 or scheduler:isProcessing() do
@@ -21214,15 +21168,9 @@ return function(container)
     end)
 
     addModule(container, "restore_events", "Event Rewards Restore", "Delete modified event JSONs to force game server recovery (requires game restart)", "button", nil, function(done)
-        -- Determine if environment is natively Rooted or using a Virtual Space safely
         gg.toast("Checking environment permissions...")
-        local suCheck = shellAsRoot("id")
-        
-        local hasRoot = false
-        if suCheck and suCheck:find("uid=0") then
-            hasRoot = true
-        end
-        
+        local hasRoot = checkRoot()
+
         if hasRoot then
             memory:save("shell_states", {root=true})
         else
@@ -21230,30 +21178,27 @@ return function(container)
         end
 
         gg.toast("Scanning active files...")
-    
+
         local eventsPaths = {
             "/data/data/com.fingersoft.hcr2/files/content_cache/json/events/",
             "/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/",
             "/data/user/0/com.waxmoon.ma.gp/rootfs/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/"
         }
-    
+
         local successList = {}
         local failedList = {}
-    
-        -- Workspace allocated for root escalation adjustments
-        local safeWorkspace = gg.FILES_DIR .. "/.void_cache/"
+
+        local safeWorkspace = gg.EXT_FILES_DIR .. "/.void_cache/"
         if hasRoot then
-            local mkResult = shellAsRoot("mkdir -p \"" .. safeWorkspace .. "\" && echo SUCCESS || echo FAIL")
-            print("Workspace mkdir result:", mkResult)
-            local chmodResult = shellAsRoot("chmod 777 \"" .. safeWorkspace .. "\" && echo SUCCESS || echo FAIL")
-            print("Workspace chmod result:", chmodResult)
-            if not fileExists(safeWorkspace) then
+            Shell.su("mkdir -p \"" .. safeWorkspace .. "\"")
+            Shell.su("chmod 777 \"" .. safeWorkspace .. "\"")
+            if not dirExists(safeWorkspace) then
                 table.insert(failedList, "FATAL: Workspace creation failed: " .. safeWorkspace)
                 showDialog("Restore Results", "FATAL: Could not create workspace directory.\n" .. safeWorkspace, {"OK"})
                 done()
                 return
             end
-            print("Workspace verified:", safeWorkspace)
+            LOG.dbg("EventRestore", "Workspace verified: " .. safeWorkspace)
         end
 
         for _, path in ipairs(eventsPaths) do
@@ -21262,47 +21207,26 @@ return function(container)
             local targetActivePath = active
             local activeMovedViaRoot = false
 
-            print("Source:", active)
-            print("Destination:", hasRoot and (safeWorkspace .. "active_events.json") or "N/A (direct access)")
-            print("Workspace:", safeWorkspace)
-
-            -- Check if file is directly readable (Virtual Space environment scenario)
             local testOpen = io.open(active, "r")
             if testOpen then
                 testOpen:close()
             elseif hasRoot then
-                -- File blocked but root exists: Pull to public space to parse gameEvents list
                 local secureActiveCopy = safeWorkspace .. "active_events.json"
+                Shell.su("cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\"")
+                Shell.su("chmod 777 \"" .. secureActiveCopy .. "\"")
 
-                local cpResult = shellAsRoot("cp \"" .. active .. "\" \"" .. secureActiveCopy .. "\" && echo SUCCESS || echo FAIL")
-                print("Copy result:", cpResult)
-
-                local chmodResult = shellAsRoot("chmod 777 \"" .. secureActiveCopy .. "\" && echo SUCCESS || echo FAIL")
-                print("Chmod result:", chmodResult)
-
-                -- Verify destination file exists after copy
-                local test = io.open(secureActiveCopy, "rb")
-                if not test then
-                    print("Root copy verification FAILED for:", secureActiveCopy)
+                if not fileExists(secureActiveCopy) then
+                    LOG.warn("EventRestore", "Root copy verification FAILED for: " .. secureActiveCopy)
                     table.insert(failedList, "Root copy failed: " .. active)
                     goto continue_path
                 end
-                test:close()
-
-                print("Copy verified. Exists:", fileExists(secureActiveCopy), "Size:", fileSize(secureActiveCopy))
 
                 targetActivePath = secureActiveCopy
                 activeMovedViaRoot = true
             else
-                -- Inaccessible and no root (Virtual Space misconfiguration or path missing)
                 table.insert(failedList, "File inaccessible at path: " .. path)
                 goto continue_path
             end
-
-            -- Pre-decrypt verification: source must exist and be non-empty
-            print("targetActivePath:", targetActivePath)
-            print("Exists:", fileExists(targetActivePath))
-            print("Size:", fileSize(targetActivePath))
 
             if not fileExists(targetActivePath) then
                 table.insert(failedList, "Pre-decrypt: source not found: " .. targetActivePath)
@@ -21312,7 +21236,7 @@ return function(container)
                 table.insert(failedList, "Pre-decrypt: source is empty (0 bytes): " .. targetActivePath)
                 goto continue_path
             end
-    
+
             local meta = Crypto.decrypt(targetActivePath, active_decrypted)
             if activeMovedViaRoot then os.remove(targetActivePath) end
 
@@ -21322,23 +21246,23 @@ return function(container)
                     local activeContent = activeFile:read("*a")
                     activeFile:close()
                     os.remove(active_decrypted)
-    
+
                     local jsonActive = nil
                     local ok, err = pcall(function()
                         jsonActive = json.decode(activeContent)
                     end)
-    
+
                     if ok and jsonActive then
                         local gameEvents = jsonActive.gameEvents or {}
                         if #gameEvents > 0 then
                             local labels = {}
                             for i = 1, #gameEvents do labels[i] = tostring(gameEvents[i]) end
-                            
+
                             local selections = gg.multiChoice(labels, nil, "Select files to restore (delete):\nPath: " .. path)
-                            
+
                             if selections then
                                 local fileTaskDone = false
-                                
+
                                 scheduler:add(function(finish_task)
                                     pcall(function()
                                         for idx, selected in pairs(selections) do
@@ -21346,17 +21270,13 @@ return function(container)
                                                 local eventName = gameEvents[idx]
                                                 if eventName then
                                                     local eventPath = path .. eventName .. ".json"
-                                                    
-                                                    -- Try standard removal first (Virtual Space handling)
+
                                                     local removed, remErr = os.remove(eventPath)
-                                                    
-                                                    -- If standard removal fails and we have root escalation privileges
+
                                                     if not removed and hasRoot then
-                                                        local rmResult = shellAsRoot("rm \"" .. eventPath .. "\" && echo SUCCESS || echo FAIL")
-                                                        print("Root rm result [" .. eventName .. "]:", rmResult)
-                                                        -- Verify file deletion over root channel
-                                                        local checkFile = shellAsRoot("[ -f \"" .. eventPath .. "\" ] && echo yes || echo no")
-                                                        if checkFile and checkFile:find("no") then
+                                                        Shell.su("rm \"" .. eventPath .. "\"")
+                                                        local check = Shell.su("[ -f \"" .. eventPath .. "\" ] && echo yes || echo no")
+                                                        if check == "no" then
                                                             removed = true
                                                         else
                                                             remErr = "Root removal failed or rejected"
@@ -21375,7 +21295,7 @@ return function(container)
                                     finish_task()
                                     fileTaskDone = true
                                 end)
-    
+
                                 while not fileTaskDone do gg.sleep(50) end
                             end
                         else
@@ -21392,10 +21312,10 @@ return function(container)
             end
             ::continue_path::
         end
-        
-        -- Final Clean up workspace if created
+
+        -- Cleanup workspace
         if hasRoot then
-            gg.shell("rm -rf " .. safeWorkspace)
+            Shell.su("rm -rf \"" .. safeWorkspace .. "\"")
         end
 
         local resultMsg = ""
@@ -21412,21 +21332,21 @@ return function(container)
                 resultMsg = resultMsg .. "- " .. e .. "\n"
             end
         end
-    
+
         showDialog("Restore Results", resultMsg, {"OK"})
         done()
-    
+
         if #successList > 0 then
             print(resultMsg)
             showDialog("Restart Required", "Game will now close to allow server file synchronization.", {"OK"})
-            
+
             if scheduler:getQueueCount() > 0 or scheduler:isProcessing() then
                 gg.toast("Finishing pending background tasks...")
                 while scheduler:getQueueCount() > 0 or scheduler:isProcessing() do
                     gg.sleep(100)
                 end
             end
-    
+
             gg.processKill()
             gg.sleep(1000)
             exitScript()
@@ -23443,6 +23363,7 @@ rx = import("android.ext.rx")
 Script = import("android.ext.Script")
 Tools = import("android.ext.Tools")
 Ui = import("org.vekendian.Ui")
+Shell = import("org.vekendian.Shell")
 Zip = import("org.vekendian.Zip")
 
 ClipData = import("android.content.ClipData")

@@ -139,6 +139,7 @@ rx = import("android.ext.rx")
 Script = import("android.ext.Script")
 Tools = import("android.ext.Tools")
 Ui = import("org.vekendian.Ui")
+Shell = import("org.vekendian.Shell")
 Zip = import("org.vekendian.Zip")
 
 ClipData = import("android.content.ClipData")
