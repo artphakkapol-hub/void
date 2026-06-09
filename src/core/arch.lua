@@ -10,7 +10,7 @@ local function semver(v)
     return tonumber(a) * 1e6 + tonumber(b) * 1e3 + tonumber(c)
 end
 
--- Parses "1.73.0" or "1.73.0-1.73.1" range keys.
+-- Parses "1.73.0" or "1.73.0-1.73.2" range keys.
 local function inRange(range, version)
     local lo, hi = range:match("^([%d%.]+)-([%d%.]+)$")
     if not lo then lo = range; hi = range end
@@ -52,7 +52,7 @@ end
 -- manifest.lua returns: { [version_range] = { [arch] = "data/path/to/file.lua" } }
 local manifest = loadModule("data/manifest.lua")
 
-local pkgVersion = (gg.getTargetInfo() or {}).versionName
+local pkgVersion = gg.getTargetInfo().versionName
 if type(pkgVersion) ~= "string" then
     showDialog("Warning", "Game version unknown. Try again after the game loads.", "OK")
     os.exit()
@@ -72,7 +72,7 @@ local data = resolveData(pkgVersion, DEVICE_ARCH)
 
 if not data then
     showDialog("Unsupported Version",
-        ("No data found for v%s on %s.\nCheck manifest.lua."):format(pkgVersion, DEVICE_ARCH), "OK")
+        ("No data found for v%s on %s."):format(pkgVersion, DEVICE_ARCH), "OK")
 end
 
 aobs    = data.aobs    or {}

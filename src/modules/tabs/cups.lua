@@ -10,7 +10,10 @@ return function(container)
     addModule(container, "countdown_adjust", "Countdown Adjust", "Adjust the countdown before starting race", "slider",
     {title="Seconds", min=0, max=10, current=3},
     function(done, vals)
-        local countdown_value = vals 
+        local countdown_value = vals
+        if countdown_value < 1 then
+            countdown_value = 0.25 --prevent crashes
+        end
 
         scheduler:add(function(finish_task)
             local cache = memory:load("countdown_adjust")

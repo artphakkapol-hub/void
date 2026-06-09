@@ -3,7 +3,7 @@
 
 local function fail(msg)
     if gg.alert("Environment check failed!\n\n" .. msg .. "\n\nUse GG: ME by Vekendian.", "Get GG: ME", "OK") == 1 then
-        gg.copyText("vekendian.org")
+        gg.copyText("https://github.com/vekendianorg/me/releases")
     end
     os.exit()
 end

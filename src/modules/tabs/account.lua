@@ -306,7 +306,7 @@ return function(container)
         echo                   = 3,
         amplifier              = 3,
     }
-
+    
     addModule(container, "max_parts", "Max Parts", "Max all unlocked parts levels for all vehicles instantly.", "button", nil,
     function(done)
         local TAG = "MaxParts"
@@ -314,7 +314,7 @@ return function(container)
 
         scheduler:add(function(finish_task)
             local vehicleListPtr = gg.getValues({{ address = BaseGameStatus + 0xB8, flags = 32 }})[1].value
-            local totalVehicles  = gg.getValues({{ address = BaseGameStatus + 0xBC, flags = 4  }})[1].value
+            local totalVehicles  = gg.getValues({{ address = BaseGameStatus + 0xC0, flags = 4  }})[1].value
 
             if not vehicleListPtr or vehicleListPtr == 0 then
                 showToast("Failed to resolve vehicle list")

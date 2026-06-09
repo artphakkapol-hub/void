@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-08 19:51:38
+-- Packed by bundle.py  •  2026-06-09 12:49:46
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -19101,7 +19101,7 @@ local function semver(v)
     return tonumber(a) * 1e6 + tonumber(b) * 1e3 + tonumber(c)
 end
 
--- Parses "1.73.0" or "1.73.0-1.73.1" range keys.
+-- Parses "1.73.0" or "1.73.0-1.73.2" range keys.
 local function inRange(range, version)
     local lo, hi = range:match("^([%d%.]+)-([%d%.]+)$")
     if not lo then lo = range; hi = range end
@@ -19143,7 +19143,7 @@ end
 -- manifest.lua returns: { [version_range] = { [arch] = "data/path/to/file.lua" } }
 local manifest = loadModule("data/manifest.lua")
 
-local pkgVersion = (gg.getTargetInfo() or {}).versionName
+local pkgVersion = gg.getTargetInfo().versionName
 if type(pkgVersion) ~= "string" then
     showDialog("Warning", "Game version unknown. Try again after the game loads.", "OK")
     os.exit()
@@ -19163,7 +19163,7 @@ local data = resolveData(pkgVersion, DEVICE_ARCH)
 
 if not data then
     showDialog("Unsupported Version",
-        ("No data found for v%s on %s.\nCheck manifest.lua."):format(pkgVersion, DEVICE_ARCH), "OK")
+        ("No data found for v%s on %s."):format(pkgVersion, DEVICE_ARCH), "OK")
 end
 
 aobs    = data.aobs    or {}
@@ -19286,7 +19286,7 @@ __vfs['core/env.lua'] = function(...)
 
 local function fail(msg)
     if gg.alert("Environment check failed!\n\n" .. msg .. "\n\nUse GG: ME by Vekendian.", "Get GG: ME", "OK") == 1 then
-        gg.copyText("vekendian.org")
+        gg.copyText("https://github.com/vekendianorg/me/releases")
     end
     os.exit()
 end
@@ -20410,7 +20410,7 @@ return function(container)
         echo                   = 3,
         amplifier              = 3,
     }
-
+    
     addModule(container, "max_parts", "Max Parts", "Max all unlocked parts levels for all vehicles instantly.", "button", nil,
     function(done)
         local TAG = "MaxParts"
@@ -20418,7 +20418,7 @@ return function(container)
 
         scheduler:add(function(finish_task)
             local vehicleListPtr = gg.getValues({{ address = BaseGameStatus + 0xB8, flags = 32 }})[1].value
-            local totalVehicles  = gg.getValues({{ address = BaseGameStatus + 0xBC, flags = 4  }})[1].value
+            local totalVehicles  = gg.getValues({{ address = BaseGameStatus + 0xC0, flags = 4  }})[1].value
 
             if not vehicleListPtr or vehicleListPtr == 0 then
                 showToast("Failed to resolve vehicle list")
@@ -20635,7 +20635,10 @@ return function(container)
     addModule(container, "countdown_adjust", "Countdown Adjust", "Adjust the countdown before starting race", "slider",
     {title="Seconds", min=0, max=10, current=3},
     function(done, vals)
-        local countdown_value = vals 
+        local countdown_value = vals
+        if countdown_value < 1 then
+            countdown_value = 0.25 --prevent crashes
+        end
 
         scheduler:add(function(finish_task)
             local cache = memory:load("countdown_adjust")
@@ -20886,10 +20889,7 @@ return function(container)
         gg.toast("Scanning active files...")
 
         local eventsPaths = {
-            "/data/data/com.fingersoft.hcr2/files/content_cache/json/events/",
-            "/data/data/com.waxmoon.ma.gp/rootfs/data/user/0/com.fingersoft.hcr2/fcontent_cache/json/events/",
-            "/data/user/0/com.fingersoft.hcr2/fcontent_cache/json/events/",
-            "/data/user/0/com.waxmoon.ma.gp/rootfs/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/"
+            hcr2path
         }
 
         local successList = {}
@@ -21180,9 +21180,7 @@ return function(container)
         gg.toast("Scanning active files...")
 
         local eventsPaths = {
-            "/data/data/com.fingersoft.hcr2/files/content_cache/json/events/",
-            "/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/",
-            "/data/user/0/com.waxmoon.ma.gp/rootfs/data/user/0/com.fingersoft.hcr2/files/content_cache/json/events/"
+            hcr2path
         }
 
         local successList = {}
@@ -23617,11 +23615,40 @@ if not targetInfo.x64 then
     os.exit()
 end
 
-if Config.E ~= "com.waxmoon.ma.gp" and Config.vSpaceReal then
-    local r = gg.alert(
-        ("Unsupported VM: %s (%s)\nOnly Multi App Ultra is supported."):format(tostring(Config.F), tostring(Config.E)),
-        "Exit", "", "Download Now")
-    if r == 3 then gg.gotoBrowser("https://vekendian.org/") end
+local function detectVirtualSpace()
+    if not Config.vSpaceReal then return 0, "/data/data/" .. PKG end
+
+    local vmPkg = tostring(Config.E)
+    local result = Shell.sh("find /data/data/" .. vmPkg .. " -maxdepth 8 -name '" .. PKG .. "' -type d 2>/dev/null | head -1")
+
+    if result and result:find("Permission denied by user") then
+        LOG.warn("detectVM", "User denied shell permission.")
+        return 3, nil
+    end
+
+    if result and result ~= "" then
+        local hcr2path = result:match("^([^\n]+)")
+        LOG.info("detectVM", "HCR2 found at: " .. tostring(hcr2path))
+        return 1, hcr2path
+    end
+
+    LOG.warn("detectVM", "HCR2 not found in VM: " .. vmPkg)
+    return 2, nil
+end
+
+local vmStatus, hcr2path = detectVirtualSpace()
+if vmStatus == 3 then
+    showDialog("Permission Error", "Please allow the script to run the terminal command. Check Void source code if you want to verify.", {"OK"})
+    os.exit()
+end
+
+if vmStatus == 2 then
+    showDialog("Unsupported VM", "Your virtual space app is not supported. Please use known virtual space like Multi App Ultra (Waxmoon).", {"OK"})
+    os.exit()
+end
+
+if hcr2path == nil then
+    showDialog("HCR2 Not Found", "Is the game installed correctly? If it's not about that, please contact us. (@vekendian)", {"OK"})
     os.exit()
 end
 

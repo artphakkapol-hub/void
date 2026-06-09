@@ -393,11 +393,40 @@ if not targetInfo.x64 then
     os.exit()
 end
 
-if Config.E ~= "com.waxmoon.ma.gp" and Config.vSpaceReal then
-    local r = gg.alert(
-        ("Unsupported VM: %s (%s)\nOnly Multi App Ultra is supported."):format(tostring(Config.F), tostring(Config.E)),
-        "Exit", "", "Download Now")
-    if r == 3 then gg.gotoBrowser("https://vekendian.org/") end
+local function detectVirtualSpace()
+    if not Config.vSpaceReal then return 0, "/data/data/" .. PKG end
+
+    local vmPkg = tostring(Config.E)
+    local result = Shell.sh("find /data/data/" .. vmPkg .. " -maxdepth 8 -name '" .. PKG .. "' -type d 2>/dev/null | head -1")
+
+    if result and result:find("Permission denied by user") then
+        LOG.warn("detectVM", "User denied shell permission.")
+        return 3, nil
+    end
+
+    if result and result ~= "" then
+        local hcr2path = result:match("^([^\n]+)")
+        LOG.info("detectVM", "HCR2 found at: " .. tostring(hcr2path))
+        return 1, hcr2path
+    end
+
+    LOG.warn("detectVM", "HCR2 not found in VM: " .. vmPkg)
+    return 2, nil
+end
+
+local vmStatus, hcr2path = detectVirtualSpace()
+if vmStatus == 3 then
+    showDialog("Permission Error", "Please allow the script to run the terminal command. Check Void source code if you want to verify.", {"OK"})
+    os.exit()
+end
+
+if vmStatus == 2 then
+    showDialog("Unsupported VM", "Your virtual space app is not supported. Please use known virtual space like Multi App Ultra (Waxmoon).", {"OK"})
+    os.exit()
+end
+
+if hcr2path == nil then
+    showDialog("HCR2 Not Found", "Is the game installed correctly? If it's not about that, please contact us. (@vekendian)", {"OK"})
     os.exit()
 end
 
