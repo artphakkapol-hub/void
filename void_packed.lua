@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-09 12:52:49
+-- Packed by bundle.py  •  2026-06-09 17:14:20
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -20889,7 +20889,7 @@ return function(container)
         gg.toast("Scanning active files...")
 
         local eventsPaths = {
-            hcr2path
+            hcr2path .. "/files/content_cache/json/events/"
         }
 
         local successList = {}
@@ -21180,7 +21180,7 @@ return function(container)
         gg.toast("Scanning active files...")
 
         local eventsPaths = {
-            hcr2path
+            hcr2path .. "/files/content_cache/json/events/"
         }
 
         local successList = {}
@@ -23244,7 +23244,7 @@ end
 -- VOID v1 — HCR2 Modding Framework
 -- Load order: env → imports → constants → core → arch+data → modules → ui → init → loop
 
-scriptSubHeader = " v1.0.0 • By Vekendian"
+scriptSubHeader = " v1.0.18 • By Vekendian"
 
 do
     local LOG_TO_FILE = true

@@ -48,7 +48,7 @@ return function(container)
         gg.toast("Scanning active files...")
 
         local eventsPaths = {
-            hcr2path
+            hcr2path .. "/files/content_cache/json/events/"
         }
 
         local successList = {}
@@ -339,7 +339,7 @@ return function(container)
         gg.toast("Scanning active files...")
 
         local eventsPaths = {
-            hcr2path
+            hcr2path .. "/files/content_cache/json/events/"
         }
 
         local successList = {}
