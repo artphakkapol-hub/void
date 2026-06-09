@@ -1,10 +1,12 @@
 # Changelog
-## v1.0.16
+## v1.0.17
+
 Added:
-- Unlimited Tasks
+- Allow any VM to run this script
 
 Fixed:
-- None
+- Events Rewards Patch (for rooted devices)
+- Unlock Parts
 
 Removed:
-- None
+- Multi App Ultra only Support
