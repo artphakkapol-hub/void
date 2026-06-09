@@ -414,7 +414,7 @@ local function detectVirtualSpace()
     return 2, nil
 end
 
-local vmStatus, hcr2path = detectVirtualSpace()
+vmStatus, hcr2path = detectVirtualSpace()
 if vmStatus == 3 then
     showDialog("Permission Error", "Please allow the script to run the terminal command. Check Void source code if you want to verify.", {"OK"})
     os.exit()
