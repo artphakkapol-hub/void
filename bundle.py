@@ -89,6 +89,20 @@ def strip_loader_block(lines):
     del lines[strip_from : end_idx + 1]
     return lines, diag
 
+parser.add_argument(
+    "-v", "--version",
+    default=None,
+    metavar="VERSION",
+    help="Inject version string into scriptSubHeader")
+
+# After strip_loader_block, before minify:
+if args.version:
+    main_src = re.sub(
+        r'scriptSubHeader\s*=\s*"[^"]*"',
+        f'scriptSubHeader = " v{args.version} • By Vekendian"',
+        main_src
+    )
+    print(f"[~] Version injected: v{args.version}")
 
 # ── Lua minifier (basic) ───────────────────────────────────────────────────────
 

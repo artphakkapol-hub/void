@@ -47,9 +47,7 @@ return function(container)
 
         gg.toast("Scanning active files...")
 
-        local eventsPaths = {
-            hcr2path .. "/files/content_cache/json/events/"
-        }
+        local eventsPath = game_path .. "/files/content_cache/json/events/"
 
         local successList = {}
         local failedList = {}
@@ -78,7 +76,8 @@ return function(container)
             LOG.dbg("EventPatch", "Workspace verified: " .. safeWorkspace)
         end
 
-        for _, path in ipairs(eventsPaths) do
+        do
+            local path = eventsPath
             local active = path .. "active_events.json"
             local active_decrypted = hasRoot and (safeWorkspace .. ".active_events") or (path .. ".active_events")
             local targetActivePath = active
@@ -163,7 +162,7 @@ return function(container)
                     if selectionsExist then
                         local fileTaskDone = false
 
-                        scheduler:add(function(finish_task)
+                        scheduler:add(function(finishTask)
                             local loopOk, loopErr = pcall(function()
                                 for idx, selected in pairs(selections) do
                                     if selected then
@@ -269,7 +268,7 @@ return function(container)
                                 table.insert(failedList, "Critical file processing loop crash: " .. tostring(loopErr))
                             end
 
-                            finish_task()
+                            finishTask()
                             fileTaskDone = true
                         end)
 
@@ -311,9 +310,9 @@ return function(container)
             print(resultMsg)
             showDialog("Restart Required", "Game is killed and this script gonna exit, start it again and see the patch effects", {"OK"})
 
-            if scheduler:getQueueCount() > 0 or scheduler:isProcessing() then
+            if scheduler:get_queue_count() > 0 or scheduler:is_processing() then
                 gg.toast("Finishing pending background tasks... Please wait.")
-                while scheduler:getQueueCount() > 0 or scheduler:isProcessing() do
+                while scheduler:get_queue_count() > 0 or scheduler:is_processing() do
                     gg.sleep(100)
                 end
             end
@@ -338,9 +337,7 @@ return function(container)
 
         gg.toast("Scanning active files...")
 
-        local eventsPaths = {
-            hcr2path .. "/files/content_cache/json/events/"
-        }
+        local eventsPath = game_path .. "/files/content_cache/json/events/"
 
         local successList = {}
         local failedList = {}
@@ -358,7 +355,8 @@ return function(container)
             LOG.dbg("EventRestore", "Workspace verified: " .. safeWorkspace)
         end
 
-        for _, path in ipairs(eventsPaths) do
+        do
+            local path = eventsPath
             local active = path .. "active_events.json"
             local active_decrypted = hasRoot and (safeWorkspace .. ".active_events") or (path .. ".active_events")
             local targetActivePath = active
@@ -420,7 +418,7 @@ return function(container)
                             if selections then
                                 local fileTaskDone = false
 
-                                scheduler:add(function(finish_task)
+                                scheduler:add(function(finishTask)
                                     pcall(function()
                                         for idx, selected in pairs(selections) do
                                             if selected then
@@ -449,7 +447,7 @@ return function(container)
                                             end
                                         end
                                     end)
-                                    finish_task()
+                                    finishTask()
                                     fileTaskDone = true
                                 end)
 
@@ -497,9 +495,9 @@ return function(container)
             print(resultMsg)
             showDialog("Restart Required", "Game will now close to allow server file synchronization.", {"OK"})
 
-            if scheduler:getQueueCount() > 0 or scheduler:isProcessing() then
+            if scheduler:get_queue_count() > 0 or scheduler:is_processing() then
                 gg.toast("Finishing pending background tasks...")
-                while scheduler:getQueueCount() > 0 or scheduler:isProcessing() do
+                while scheduler:get_queue_count() > 0 or scheduler:is_processing() do
                     gg.sleep(100)
                 end
             end

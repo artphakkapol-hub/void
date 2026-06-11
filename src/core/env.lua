@@ -8,8 +8,8 @@ local function fail(msg)
     os.exit()
 end
 
-if type(luajava) ~= "table"  then fail("LuaJava not detected.") end
-if type(import)  ~= "function" then fail("import() unavailable.") end
+if type(luajava)  ~= "table"    then fail("LuaJava not detected.") end
+if type(import)   ~= "function" then fail("import() unavailable.") end
 if not pcall(function() import("java.lang.String") end)  then fail("Core Java classes unavailable.") end
 if not pcall(function() import("android.os.Build") end)  then fail("Android API unavailable.") end
 

@@ -7,35 +7,41 @@
 
 return function(container)
     
-    addModule(container, "countdown_adjust", "Countdown Adjust", "Adjust the countdown before starting race", "slider",
+    addModule(container, "adjust_countdown", "Adjust Countdown", "Adjust the countdown before starting race", "slider",
     {title="Seconds", min=0, max=10, current=3},
     function(done, vals)
-        local countdown_value = vals
-        if countdown_value < 1 then
-            countdown_value = 0.25 --prevent crashes
+        local countdownValue = vals
+        if countdownValue < 1 then
+            countdownValue = 0.25 --prevent crashes
         end
 
-        scheduler:add(function(finish_task)
-            local cache = memory:load("countdown_adjust")
+        scheduler:add(function(finishTask)
+            local TAG = "AdjustCountdown"
+            LOG.info(TAG, "Adjusting countdown to: " .. tostring(countdownValue) .. "s")
+            local cache = memory:load("adjust_countdown")
             
             if cache and #cache > 0 then
+                LOG.dbg(TAG, "Using cached results")
                 gg.clearResults()
                 gg.loadResults(cache)
                 gg.getResults(gg.getResultsCount())
             else
+                LOG.dbg(TAG, "No cache — scanning memory")
                 gg.clearResults()
                 gg.setRanges(16) 
                 gg.searchNumber("h 00 00 40 40 00 00 80 40 00 00 40 41", 1)
                 gg.refineNumber("h 00 00 40 40", 1)
                 local results = gg.getResults(gg.getResultsCount())
-                memory:save("countdown_adjust", results)
+                LOG.info(TAG, "Scan results: " .. tostring(#results))
+                memory:save("adjust_countdown", results)
             end
             
-            gg.editAll(cast.float(countdown_value), 1)
+            gg.editAll(cast.float(countdownValue), 1)
             
-            showToast("Countdown adjusted to " .. tostring(countdown_value) .. "s", true)
+            showToast("Countdown adjusted to " .. tostring(countdownValue) .. "s", true)
+            LOG.info(TAG, "Done")
             gg.clearResults()
-            finish_task()
+            finishTask()
             done()
         end)
     end)
@@ -46,7 +52,7 @@ return function(container)
     function(done, state)
         local TAG = "ForceCup"
 
-        scheduler:add(function(finish_task)
+        scheduler:add(function(finishTask)
             if state then
                 LOG.info(TAG, "Enabling Force Cup...")
 
@@ -59,7 +65,7 @@ return function(container)
                     if not verify or not verify[1] or verify[1].value ~= 0xB8 then
                         LOG.warn(TAG, "Base address moved. Invalidating cache and re-searching...")
                         cache = nil
-                        memory:save("force_cup_cache", nil)
+                        memory:delete("force_cup_cache")
                     else
                         LOG.dbg(TAG, "Base address valid. Using cache.")
                     end
@@ -78,7 +84,7 @@ return function(container)
                     if #results == 0 then
                         showToast("Force Cup not found. Try again later.")
                         LOG.error(TAG, "Pattern not found in memory.")
-                        finish_task()
+                        finishTask()
                         done()
                         return
                     end
@@ -141,7 +147,7 @@ return function(container)
                 showToast("Force Cup Disabled")
             end
 
-            finish_task()
+            finishTask()
             done()
         end)
     end)
@@ -150,13 +156,13 @@ return function(container)
     function(done, state)
         local TAG = "UnlimitedTasks"
 
-        scheduler:add(function(finish_task)
+        scheduler:add(function(finishTask)
             local ptr1 = gg.getValues({{ address = BaseGameStatus + 0x6F8, flags = 32 }})[1].value
 
             if not ptr1 or ptr1 == 0 then
                 showToast("Failed to resolve task list")
                 LOG.fatal(TAG, "Ptr1 is nil or 0.")
-                finish_task()
+                finishTask()
                 done()
                 return
             end
@@ -166,7 +172,7 @@ return function(container)
             if not totalTasks or totalTasks == 0 then
                 showToast("No tasks found")
                 LOG.warn(TAG, "totalTasks is 0.")
-                finish_task()
+                finishTask()
                 done()
                 return
             end
@@ -205,7 +211,7 @@ return function(container)
                 LOG.warn(TAG, "freezeItems is empty.")
             end
 
-            finish_task()
+            finishTask()
             done()
         end)
     end)

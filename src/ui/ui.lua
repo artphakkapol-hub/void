@@ -922,7 +922,7 @@ local _menuScroll = nil
 function applyWindowResize(newW, newH)
     WIN_W = math.max(RESIZE_MIN_W, math.min(RESIZE_MAX_W, math.floor(newW)))
     WIN_H = math.max(RESIZE_MIN_H, math.min(RESIZE_MAX_H, math.floor(newH)))
-    memory:saveGlobal("window_size", { w = WIN_W, h = WIN_H })
+    memory:save_global("window_size", { w = WIN_W, h = WIN_H })
     showToast("Size saved! Please restart the script to apply.")
     exitScript()
 end

@@ -6,17 +6,45 @@
 ]]
 
 return function(container)
-    addModule(container, "resolution", "Resolution Adjust", "Adjust the game width and height (default is 1280x720)", "input", {
+    addModule(container, "debug_mode", "Debug Mode", "Toggle the in-game debug mode", "switch", nil, function(done, state)
+        scheduler:add(function(finishTask)
+            local TAG = "DebugMode"
+            
+            if state then
+                gg.setValues({{
+                    address = BaseGameStatusRaw + 0x3,
+                    flags = 1,
+                    value = 1
+                }})
+                showToast("Debug Mode Enabled", true)
+            else
+                gg.setValues({{
+                    address = BaseGameStatusRaw + 0x3,
+                    flags = 1,
+                    value = 0
+                }})
+                showToast("Debug Mode Disabled", true)
+            end
+            
+            finishTask()
+            done()
+        end)
+    end)
+    
+    addModule(container, "resolution", "Adjust Resolution", "Adjust the game width and height (default is 1280x720)", "input", {
         {hint = "Width", type = "number"},
         {hint = "Height", type = "number"}
     }, function(done, vals)
-        scheduler:add(function(finish_task)
+        scheduler:add(function(finishTask)
+            local TAG = "Resolution"
             local width = tonumber(vals[1]) or 1280
             local height = tonumber(vals[2]) or 720
+            LOG.info(TAG, string.format("Applying resolution: %dx%d", width, height))
 
             local results = memory:load("resolution")
 
             if not results then
+                LOG.dbg(TAG, "No cache — searching for GLSurfaceView")
                 gg.clearResults()
                 gg.setRanges(BaseRegion)
 
@@ -26,8 +54,9 @@ return function(container)
                 gg.clearResults()
 
                 if #cocos == 0 then
+                    LOG.warn(TAG, "GLSurfaceView not found in memory")
                     gg.toast("GLSurfaceView not found")
-                    finish_task()
+                    finishTask()
                     done()
                     return
                 end
@@ -51,7 +80,7 @@ return function(container)
                     results = addresses
                     memory:save("resolution", results)
                 else
-                    finish_task()
+                    finishTask()
                     done()
                     return
                 end
@@ -75,16 +104,16 @@ return function(container)
                 end
             end
 
-            finish_task()
+            finishTask()
             done()
         end)
     end)
 
-    addModule(container, "resolution_offset", "Resolution Offset Adjust", "Adjust the game width offset and height offset (default is 0x0), best for small resolution in a large screen.", "input", {
+    addModule(container, "resolution_offset", "Adjust Resolution Offset", "Adjust the game width offset and height offset (default is 0x0), best for small resolution in a large screen.", "input", {
         {hint = "Width", type = "number"},
         {hint = "Height", type = "number"}
     }, function(done, vals)
-        scheduler:add(function(finish_task)
+        scheduler:add(function(finishTask)
             local width = tonumber(vals[1]) or 0
             local height = tonumber(vals[2]) or 0
 
@@ -101,7 +130,7 @@ return function(container)
 
                 if #cocos == 0 then
                     gg.toast("GLSurfaceView not found")
-                    finish_task()
+                    finishTask()
                     done()
                     return
                 end
@@ -123,7 +152,7 @@ return function(container)
                     results = addresses
                     memory:save("resolution_offset", results) -- Fixed the bug where this overwritten the core resolution cache
                 else
-                    finish_task()
+                    finishTask()
                     done()
                     return
                 end
@@ -145,7 +174,7 @@ return function(container)
                 end
             end
 
-            finish_task()
+            finishTask()
             done()
         end)
     end)

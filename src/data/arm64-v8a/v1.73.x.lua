@@ -1,5 +1,5 @@
 -- data/arm64-v8a/v1.73.x.lua
--- Covers: 1.73.0, 1.73.1
+-- Covers: 1.73.0, 1.73.2
 -- Architecture: arm64-v8a
 --
 -- AoB entry format:

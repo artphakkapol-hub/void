@@ -13,8 +13,8 @@
 -- Arch keys must match ARCH_MAP output in core/arch.lua:
 --   "arm64-v8a", "armeabi-v7a", "x86_64", "x86"
 --
--- A fallback to DEFAULT_ARCH is applied automatically by core/arch.lua when
--- the device arch has no dedicated file for a given version range.
+-- When a device arch has no dedicated entry for a version range, core/arch.lua
+-- falls back to DEFAULT_ARCH automatically.
 --
 -- To add a new game version:
 --   1. Add a new range key below.
@@ -23,6 +23,6 @@
 
 return {
     ["1.73.0-1.73.2"] = {
-        ["arm64-v8a"] = "data/arm64-v8a/v1.73.x.lua",
-    }
+        ["arm64-v8a"] = "data/arm64-v8a/v1.73.x.lua"
+    },
 }

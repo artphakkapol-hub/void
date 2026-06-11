@@ -7,18 +7,22 @@
 
 return function(container)
     addModule(container, "free_chest", "Free Chest", "Make the chests free in Shop Tab", "switch", nil, function(done, state)
-        scheduler:add(function(finish_task)
+        scheduler:add(function(finishTask)
+            local TAG = "FreeChest"
             local cache = memory:load("free_chest")
             if cache then
+                LOG.dbg(TAG, "Using cached results")
                 gg.clearResults()
                 gg.loadResults(cache)
                 gg.getResults(gg.getResultsCount())
             else
+                LOG.dbg(TAG, "No cache — scanning memory")
                 gg.clearResults()
                 gg.setRanges(8)
                 gg.searchNumber("h CE CC 4C 3F AF 47 E1 3E FA 7E AA 3E 5B B1 BF 3C CD CC CC 3D", 1)
                 gg.refineNumber("h CD CC CC 3D", 1)
                 local results = gg.getResults(gg.getResultsCount())
+                LOG.info(TAG, "Scan results: " .. tostring(#results))
                 memory:save("free_chest", results)
             end
             
@@ -31,7 +35,7 @@ return function(container)
             end
             
             gg.clearResults()
-            finish_task()
+            finishTask()
             done()
         end)
     end)
@@ -46,7 +50,7 @@ return function(container)
         },
         default = 8
     }, function(done, item, index)
-        scheduler:add(function(finish_task)
+        scheduler:add(function(finishTask)
             local chestIDs = {
                 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18, 19, 20
             }
@@ -72,13 +76,13 @@ return function(container)
             showToast("Chest changed to " .. item)
             
             gg.clearResults()
-            finish_task()
+            finishTask()
             done()
         end)
     end)
     
     addModule(container, "free_purchases", "Free Purchases", "Make some purchases free in the shop tab (also works for special offers as popup/badges)", "button", nil, function(done)
-        scheduler:add(function(finish_task)
+        scheduler:add(function(finishTask)
             gg.clearResults()
             gg.setRanges(4)
             gg.searchNumber("h 04 65 6E 00", 1)
@@ -108,7 +112,7 @@ return function(container)
                     showToast(tostring(counter) .. "/" .. tostring(totalres), true)
                 end
                 
-                local tptrs = gg.getValues(tptrs)
+                tptrs = gg.getValues(tptrs)
                 for _, p in ipairs(tptrs) do
                     local val = p.value
                     if val > 0 and val < 100 then
@@ -125,7 +129,7 @@ return function(container)
             end
 
             gg.clearResults()
-            finish_task()
+            finishTask()
             done()
         end)
     end)

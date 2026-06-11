@@ -1,74 +1,74 @@
 -- VOID v1 — HCR2 Modding Framework
--- Load order: env → imports → constants → core → arch+data → modules → ui → init → loop
+-- Load order: env → imports → constants → core → patches → arch+data → modules → ui → init → loop
 
-scriptSubHeader = " v1.0.18 • By Vekendian"
+scriptSubHeader = " v1.0.19 • By Vekendian"
 
 do
-    local LOG_TO_FILE = true
+    local LOG_TO_FILE  = true
     local LOG_TO_TOAST = false
     local LOG_TO_PRINT = true
     local MAX_FILE_BYTES = 2 * 1024 * 1024
 
-    local _logFile = (gg.getFile():match("(.*)/") or "/sdcard") .. "/void_debug.log"
-    local _logBuf = {}
-    local _lineCount = 0
-    local _startTime = os.clock()
-    local _indent = 0
+    local _log_path   = (gg.getFile():match("(.*)/") or "/sdcard") .. "/void_debug.log"
+    local _log_buf    = {}
+    local _line_count = 0
+    local _start_time = os.clock()
+    local _indent     = 0
 
     local function _ts()
-        return ("%.3f"):format(os.clock() - _startTime)
+        return ("%.3f"):format(os.clock() - _start_time)
     end
 
     local function _write(level, tag, msg)
         local prefix = string.rep("  ", _indent)
-        local line = ("[%s] [%s] %s%s"):format(_ts(), level, prefix, tostring(msg))
+        local line   = ("[%s] [%s] %s%s"):format(_ts(), level, prefix, tostring(msg))
         if tag and tag ~= "" then
             line = ("[%s] [%s] [%s] %s%s"):format(_ts(), level, tag, prefix, tostring(msg))
         end
-        _lineCount = _lineCount + 1
-        _logBuf[#_logBuf + 1] = line
+        _line_count          = _line_count + 1
+        _log_buf[#_log_buf + 1] = line
 
         if LOG_TO_TOAST then
             pcall(gg.toast, line)
         end
 
-        if LOG_TO_FILE and (#_logBuf >= 20 or level == "FATAL") then
+        if LOG_TO_FILE and (#_log_buf >= 20 or level == "FATAL") then
             pcall(function()
-                local f = io.open(_logFile, "a")
+                local f = io.open(_log_path, "a")
                 if f then
-                    for _, l in ipairs(_logBuf) do f:write(l, "\n") end
+                    for _, l in ipairs(_log_buf) do f:write(l, "\n") end
                     f:close()
                 end
             end)
-            _logBuf = {}
+            _log_buf = {}
         end
     end
 
     LOG = {}
 
-    function LOG.info(tag, msg) _write("INFO ", tag, msg) end
-    function LOG.warn(tag, msg) _write("WARN ", tag, msg) end
+    function LOG.info(tag, msg)  _write("INFO ", tag, msg) end
+    function LOG.warn(tag, msg)  _write("WARN ", tag, msg) end
     function LOG.error(tag, msg) _write("ERROR", tag, msg) end
     function LOG.fatal(tag, msg) _write("FATAL", tag, msg) end
-    function LOG.dbg(tag, msg) _write("DEBUG", tag, msg) end
+    function LOG.dbg(tag, msg)   _write("DEBUG", tag, msg) end
 
     function LOG.flush()
-        if not LOG_TO_FILE or #_logBuf == 0 then return end
+        if not LOG_TO_FILE or #_log_buf == 0 then return end
         pcall(function()
-            local f = io.open(_logFile, "a")
+            local f = io.open(_log_path, "a")
             if f then
-                for _, l in ipairs(_logBuf) do f:write(l, "\n") end
+                for _, l in ipairs(_log_buf) do f:write(l, "\n") end
                 f:close()
             end
         end)
-        _logBuf = {}
+        _log_buf = {}
     end
 
     function LOG.dump()
         LOG.flush()
         local recent = {}
         pcall(function()
-            local f = io.open(_logFile, "r")
+            local f = io.open(_log_path, "r")
             if f then
                 for line in f:lines() do
                     recent[#recent + 1] = line
@@ -91,23 +91,22 @@ do
         return ok, err
     end
 
-    
     LOG.info("LOGGER", "══════ VOID Logger started ══════")
     LOG.info("LOGGER", "Log date: " .. os.date())
-    LOG.info("LOGGER", "Log file: " .. _logFile)
+    LOG.info("LOGGER", "Log file: " .. _log_path)
     LOG.info("LOGGER", "Script started at t=0.001")
 
     _G.__rawLoadModule = nil
-    
+
     _safePcall = pcall
 end
 
-local scriptDir = gg.getFile():match("(.*)/")
+local script_dir = gg.getFile():match("(.*)/")
 
-LOG.info("MAIN", "scriptDir resolved: " .. tostring(scriptDir))
+LOG.info("MAIN", "script_dir resolved: " .. tostring(script_dir))
 
 function loadModule(name)
-    local path = scriptDir .. "/" .. name
+    local path = script_dir .. "/" .. name
     LOG.info("loadModule", "-> loading: " .. name)
     local chunk, err = loadfile(path)
     if not chunk then
@@ -118,10 +117,10 @@ function loadModule(name)
     local results = table.pack(_safePcall(chunk))
     local ok = results[1]
     if not ok then
-        local err = results[2]
-        LOG.fatal("loadModule", "RUNTIME ERROR in: " .. name .. " | " .. tostring(err))
+        local load_err = results[2]
+        LOG.fatal("loadModule", "RUNTIME ERROR in: " .. name .. " | " .. tostring(load_err))
         LOG.flush()
-        gg.alert("Runtime error in: " .. name .. "\n" .. tostring(err)); os.exit()
+        gg.alert("Runtime error in: " .. name .. "\n" .. tostring(load_err)); os.exit()
     end
     LOG.info("loadModule", "OK loaded: " .. name .. " | returns=" .. tostring(results.n - 1))
     return table.unpack(results, 2, results.n)
@@ -131,110 +130,108 @@ loadModule("core/env.lua")
 
 -- ── Java imports (global; available to all subsequently loaded modules) ──────
 
-Build = import("android.os.Build")
-Config = import("android.ext.Config")
-Crypto = import("org.vekendian.Crypto")
+Build       = import("android.os.Build")
+Config      = import("android.ext.Config")
+Crypto      = import("org.vekendian.Crypto")
 MainService = import("android.ext.MainService")
-rx = import("android.ext.rx")
-Script = import("android.ext.Script")
-Tools = import("android.ext.Tools")
-Ui = import("org.vekendian.Ui")
-Shell = import("org.vekendian.Shell")
-Zip = import("org.vekendian.Zip")
+rx          = import("android.ext.rx")
+Script      = import("android.ext.Script")
+Tools       = import("android.ext.Tools")
+Ui          = import("org.vekendian.Ui")
+Shell       = import("org.vekendian.Shell")
+Zip         = import("org.vekendian.Zip")
 
-ClipData = import("android.content.ClipData")
-Color = import("android.graphics.Color")
-Context = import("android.content.Context")
-EditText = import("android.widget.EditText")
-File = import("java.io.File")
-FileOutputStream = import("java.io.FileOutputStream")
-FrameLayout = import("android.widget.FrameLayout")
-GradientDrawable = import("android.graphics.drawable.GradientDrawable")
-Gravity = import("android.view.Gravity")
-Handler = import("android.os.Handler")
-HorizontalScrollView = import("android.widget.HorizontalScrollView")
-InputType = import("android.text.InputType")
-LayoutParams = import("android.view.WindowManager$LayoutParams")
-LinearLayout = import("android.widget.LinearLayout")
-LinLayoutParams = import("android.widget.LinearLayout$LayoutParams")
-Looper = import("android.os.Looper")
-MotionEvent = import("android.view.MotionEvent")
+ClipData                    = import("android.content.ClipData")
+Color                       = import("android.graphics.Color")
+Context                     = import("android.content.Context")
+EditText                    = import("android.widget.EditText")
+File                        = import("java.io.File")
+FileOutputStream            = import("java.io.FileOutputStream")
+FrameLayout                 = import("android.widget.FrameLayout")
+GradientDrawable            = import("android.graphics.drawable.GradientDrawable")
+Gravity                     = import("android.view.Gravity")
+Handler                     = import("android.os.Handler")
+HorizontalScrollView        = import("android.widget.HorizontalScrollView")
+InputType                   = import("android.text.InputType")
+LayoutParams                = import("android.view.WindowManager$LayoutParams")
+LinearLayout                = import("android.widget.LinearLayout")
+LinLayoutParams             = import("android.widget.LinearLayout$LayoutParams")
+Looper                      = import("android.os.Looper")
+MotionEvent                 = import("android.view.MotionEvent")
 PasswordTransformationMethod = import("android.text.method.PasswordTransformationMethod")
-Runnable = import("java.lang.Runnable")
-ScrollView = import("android.widget.ScrollView")
-SeekBar = import("android.widget.SeekBar")
-TextWatcher = import("android.text.TextWatcher")
-TextView = import("android.widget.TextView")
-Thread = import("java.lang.Thread")
-TruncateAt = luajava.bindClass("android.text.TextUtils$TruncateAt")
-Typeface = import("android.graphics.Typeface")
-TypedValue = import("android.util.TypedValue")
-View = import("android.view.View")
-WindowManager = import("android.view.WindowManager")
-MainHandler = Handler(Looper.getMainLooper())
+Runnable                    = import("java.lang.Runnable")
+ScrollView                  = import("android.widget.ScrollView")
+SeekBar                     = import("android.widget.SeekBar")
+TextWatcher                 = import("android.text.TextWatcher")
+TextView                    = import("android.widget.TextView")
+Thread                      = import("java.lang.Thread")
+TruncateAt                  = luajava.bindClass("android.text.TextUtils$TruncateAt")
+Typeface                    = import("android.graphics.Typeface")
+TypedValue                  = import("android.util.TypedValue")
+View                        = import("android.view.View")
+WindowManager               = import("android.view.WindowManager")
+MainHandler                 = Handler(Looper.getMainLooper())
 
 
 -- ── Constants ─────────────────────────────────────────────────────────────────
 
-FORCE_EXIT = false
-WIDTH = 480
+FORCE_EXIT     = false
+DEFAULT_WIN_W  = 480
 CLICK_COOLDOWN = 500
-DEVICE_ARCH = "unknown"
-DEFAULT_ARCH = "arm64-v8a"
+DEVICE_ARCH    = "unknown"
+DEFAULT_ARCH   = "arm64-v8a"
 
 UI = loadModule("configs/colors.lua")
 
 -- ── Global state ──────────────────────────────────────────────────────────────
 
-exit = false
-WIN_W = nil    -- resolved after memory loads (see below)
-WIN_H = nil    -- resolved after memory loads (see below)
-loader = nil
-menuView = nil
-iconView = nil
-activeView = nil
-windowManager = nil
-mParams = nil
-moduleContainer = nil
-activeTabView = nil
-activeSpinner = nil
+exit             = false
+WIN_W            = nil    -- resolved after memory loads (see below)
+WIN_H            = nil    -- resolved after memory loads (see below)
+loader           = nil
+menuView         = nil
+iconView         = nil
+activeView       = nil
+windowManager    = nil
+mParams          = nil
+moduleContainer  = nil
+activeTabView    = nil
+activeSpinner    = nil
 BaseGameStatusRaw = nil
-BaseGameStatus = nil
-BaseRegion = nil
-BaseLib = nil
-toggleStates = {}
-inputStates = {}
-spinnerStates = {}
-sliderStates = {}
+BaseGameStatus   = nil
+BaseRegion       = nil
+BaseLib          = nil
+toggleStates     = {}
+inputStates      = {}
+spinnerStates    = {}
+sliderStates     = {}
 processingStates = {}
-lastClickTimes = {}
-RO_Fields = {}
+lastClickTimes   = {}
+RO_Fields        = {}
 
 
 -- ── UI utilities (global; needed by modules before ui.lua loads) ──────────────
 
 -- Cache density once so dp() is a pure Lua multiply — no Java call per use.
 -- createMenuView calls dp() ~100 times; each Java crossing burns stack space.
-local _dpDensity = nil
+--
+-- NOTE: dp() must NOT recompute RESIZE_MAX_W/H here.  Those bounds are set
+-- once in the do-block below (after memory loads) and must not be overwritten
+-- by lazy dp() calls that happen later during UI construction.
+local _dp_density = nil
 function dp(v)
-    if not _dpDensity then
-        _dpDensity = activity.getResources().getDisplayMetrics().density
-        local metrics = activity.getResources().getDisplayMetrics()
-        local screenWdp = math.floor(metrics.widthPixels / metrics.density)
-        local screenHdp = math.floor(metrics.heightPixels / metrics.density)
-        
-        RESIZE_MAX_W = math.floor(screenWdp * 0.85)
-        RESIZE_MAX_H = math.floor(screenHdp * 0.75)
-        LOG.info("dp", "density cached: " .. tostring(_dpDensity))
+    if not _dp_density then
+        _dp_density = activity.getResources().getDisplayMetrics().density
+        LOG.info("dp", "density cached: " .. tostring(_dp_density))
     end
-    return math.floor(v * _dpDensity + 0.5)
+    return math.floor(v * _dp_density + 0.5)
 end
 
-function getSkin(color, radius, strokeW, strokeC)
+function getSkin(color, radius, stroke_w, stroke_c)
     local d = GradientDrawable()
     d.setColor(color)
     d.setCornerRadius(dp(radius))
-    if strokeW and strokeC then d.setStroke(dp(strokeW), strokeC) end
+    if stroke_w and stroke_c then d.setStroke(dp(stroke_w), stroke_c) end
     return d
 end
 
@@ -244,8 +241,8 @@ function showDialog(title, msg, pos, neg, neu)
     local ctx = Tools.e()
     if not ctx then return 0 end
     local function wrap(b)
-        if type(b) == "table"  then return {tostring(b[1])}
-        elseif type(b) == "string" then return {b} end
+        if type(b) == "table"  then return { tostring(b[1]) }
+        elseif type(b) == "string" then return { b } end
     end
     local r = Ui.showDialog(ctx, title or "", msg or "", wrap(pos), wrap(neg), wrap(neu))
     local function fire(b) if type(b) == "table" and type(b[2]) == "function" then pcall(b[2]) end end
@@ -316,15 +313,16 @@ function switchToIcon()
 end
 
 function exitScript()
-    local pending = scheduler:getQueueCount() or 0
-    if pending > 0 or scheduler:isProcessing() then
+    -- FIX: use renamed public scheduler API
+    local pending = scheduler:get_queue_count() or 0
+    if pending > 0 or scheduler:is_processing() then
         showDialog("Warning: Active Operations",
-        ("There are %d background task(s) running.\nForce exit may corrupt game state."):format(pending),
-        {"Wait (Safe)", function() showToast("Waiting...") end},
-        {"Force Exit", function()
-        if activeView then pcall(function() windowManager.removeView(activeView) end) end
-            exit = true
-        end})
+            ("There are %d background task(s) running.\nForce exit may corrupt game state."):format(pending),
+            {"Wait (Safe)", function() showToast("Waiting...") end},
+            {"Force Exit",  function()
+                if activeView then pcall(function() windowManager.removeView(activeView) end) end
+                exit = true
+            end})
     else
         if activeView then pcall(function() windowManager.removeView(activeView) end) end
         exit = true
@@ -336,13 +334,17 @@ function isARM64() return DEVICE_ARCH == "arm64-v8a" end
 
 -- ── Core modules ──────────────────────────────────────────────────────────────
 
-cast = loadModule("core/cast.lua")
-json = loadModule("core/json.lua")
-memory = loadModule("core/memory.lua")
-scheduler = loadModule("core/scheduler.lua")
-loader = loadModule("core/loader.lua")
+cast      = loadModule("core/utils/cast.lua")
+json      = loadModule("core/utils/json.lua")
+memory    = loadModule("core/engines/memory.lua")
+scheduler = loadModule("core/engines/scheduler.lua")
+loader    = loadModule("core/utils/loader.lua")
+paste     = loadModule("core/utils/paste.lua")
 
--- Window size bounds (dp).  Referenced by applyWindowResize and settings sliders.
+-- ── Window size bounds (dp) ───────────────────────────────────────────────────
+-- Referenced by applyWindowResize and settings sliders.
+-- RESIZE_MAX_W/H are clamped to screen size here and must not be overwritten
+-- again later (dp() lazy-init no longer touches these).
 RESIZE_MIN_W = 400
 RESIZE_MAX_W = 650
 RESIZE_MIN_H = 200
@@ -356,23 +358,24 @@ UI_CHROME_H = 55
 
 -- Window size preferences (persisted globally across restarts)
 -- WIN_W : panel width in dp
--- WIN_H : scroll-area height in dp 
+-- WIN_H : scroll-area height in dp
 do
-    local metrics = activity.getResources().getDisplayMetrics()
-    local screenWdp = math.floor(metrics.widthPixels / metrics.density)
-    local screenHdp = math.floor(metrics.heightPixels / metrics.density)
+    local metrics   = activity.getResources().getDisplayMetrics()
+    local screen_wdp = math.floor(metrics.widthPixels  / metrics.density)
+    local screen_hdp = math.floor(metrics.heightPixels / metrics.density)
 
-    RESIZE_MAX_W = math.min(RESIZE_MAX_W, math.floor(screenWdp * 0.85))
-    RESIZE_MAX_H = math.min(RESIZE_MAX_H, math.floor(screenHdp * 0.75))
+    RESIZE_MAX_W = math.min(RESIZE_MAX_W, math.floor(screen_wdp * 0.85))
+    RESIZE_MAX_H = math.min(RESIZE_MAX_H, math.floor(screen_hdp * 0.75))
 
-    local prefs = memory:loadGlobal("window_size")
-    WIN_W = math.min(math.max((prefs and prefs.w) or WIDTH, RESIZE_MIN_W), RESIZE_MAX_W)
-    WIN_H = math.min(math.max((prefs and prefs.h) or 333, RESIZE_MIN_H), RESIZE_MAX_H)
+    local prefs = memory:load_global("window_size")
+    WIN_W = math.min(math.max((prefs and prefs.w) or DEFAULT_WIN_W, RESIZE_MIN_W), RESIZE_MAX_W)
+    WIN_H = math.min(math.max((prefs and prefs.h) or 333,           RESIZE_MIN_H), RESIZE_MAX_H)
 end
-loadModule("core/patches.lua")
+
+loadModule("core/engines/patches.lua")
 
 -- Detects arch, loads matching data from manifest → sets globals: aobs, offsets
-loadModule("core/arch.lua")
+loadModule("core/engines/arch.lua")
 
 -- Lazy tab registry → returns {tabHandlers, categoryHandlers}
 tabHandlers, categoryHandlers = loadModule("modules/registry.lua")
@@ -386,18 +389,20 @@ local PKG = "com.fingersoft.hcr2"
 gg.setVisible(false)
 showToast("Initializing...", true)
 
-local targetInfo = gg.getTargetInfo()
-if not targetInfo then gg.alert("No app found"); os.exit() end
-if not targetInfo.x64 then
+local target_info = gg.getTargetInfo()
+if not target_info then gg.alert("No app found"); os.exit() end
+if not target_info.x64 then
     showDialog("64-bit Required", "ARMv8a is mandatory. x86_64 is partially supported.")
     os.exit()
 end
 
+-- FIX: was referencing undeclared `vmPkg` in the LOG.warn line; now correctly
+-- uses `vm_package_name` which is the renamed variable throughout.
 local function detectVirtualSpace()
     if not Config.vSpaceReal then return 0, "/data/data/" .. PKG end
 
-    local vmPkg = tostring(Config.E)
-    local result = Shell.sh("find /data/data/" .. vmPkg .. " -maxdepth 8 -name '" .. PKG .. "' -type d 2>/dev/null | head -1")
+    local vm_package_name = tostring(Config.E)
+    local result = Shell.sh("find /data/data/" .. vm_package_name .. " -maxdepth 8 -name '" .. PKG .. "' -type d 2>/dev/null | head -1")
 
     if result and result:find("Permission denied by user") then
         LOG.warn("detectVM", "User denied shell permission.")
@@ -405,71 +410,80 @@ local function detectVirtualSpace()
     end
 
     if result and result ~= "" then
-        local hcr2path = result:match("^([^\n]+)")
-        LOG.info("detectVM", "HCR2 found at: " .. tostring(hcr2path))
-        return 1, hcr2path
+        local hcr2_path = result:match("^([^\n]+)")
+        LOG.info("detectVM", "HCR2 found at: " .. tostring(hcr2_path))
+        return 1, hcr2_path
     end
 
-    LOG.warn("detectVM", "HCR2 not found in VM: " .. vmPkg)
+    -- FIX: was `vmPkg` (undeclared); now correctly `vm_package_name`
+    LOG.warn("detectVM", "HCR2 not found in VM: " .. vm_package_name)
     return 2, nil
 end
 
-vmStatus, hcr2path = detectVirtualSpace()
-if vmStatus == 3 then
-    showDialog("Permission Error", "Please allow the script to run the terminal command. Check Void source code if you want to verify.", {"OK"})
+local vm_status
+vm_status, game_path = detectVirtualSpace()
+if vm_status == 3 then
+    showDialog("Permission Error",
+        "Please allow the script to run the terminal command. Check Void source code if you want to verify.",
+        {"OK"})
     os.exit()
 end
 
-if vmStatus == 2 then
-    showDialog("Unsupported VM", "Your virtual space app is not supported. Please use known virtual space like Multi App Ultra (Waxmoon).", {"OK"})
+if vm_status == 2 then
+    showDialog("Unsupported VM",
+        "Your virtual space app is not supported. Please use known virtual space like Multi App Ultra (Waxmoon).",
+        {"OK"})
     os.exit()
 end
 
-if hcr2path == nil then
-    showDialog("HCR2 Not Found", "Is the game installed correctly? If it's not about that, please contact us. (@vekendian)", {"OK"})
+if game_path == nil then
+    showDialog("HCR2 Not Found",
+        "Is the game installed correctly? If it's not about that, please contact us. (@vekendian)",
+        {"OK"})
     os.exit()
 end
 
 local function attachToProcess(pkg)
     gg.showUiButton()
-    local t, warned = 0, false
+    local tick_count = 0
+    local has_warned = false
     while gg.getTargetPackage() ~= pkg do
-        if gg.isVisible() and not warned then
-            gg.alert('Click "Sx" to stop'); warned = true
+        if gg.isVisible() and not has_warned then
+            gg.alert('Click "Sx" to stop'); has_warned = true
         end
         if gg.isClickedUiButton() then gg.hideUiButton(); return false end
-        t = t + 1
-        if t % 7 == 0 then showToast("Waiting for " .. pkg .. "...") end
+        tick_count = tick_count + 1
+        if tick_count % 7 == 0 then showToast("Waiting for " .. pkg .. "...") end
         gg.setProcess(pkg); gg.sleep(500)
     end
     gg.hideUiButton(); return true
 end
 
-if targetInfo.packageName ~= PKG then
+if target_info.packageName ~= PKG then
     if not attachToProcess(PKG) then showToast("Cancelled"); os.exit() end
 end
 
 local function awaitLib(lib)
-    local t = 0
+    local tick_count = 0
     while #gg.getRangesList(lib) == 0 do
-        t = t + 1
-        if t % 7 == 0 then showToast("Waiting for " .. lib .. "...") end
+        tick_count = tick_count + 1
+        if tick_count % 7 == 0 then showToast("Waiting for " .. lib .. "...") end
         gg.sleep(500)
-        if t > 120 then return false end
+        if tick_count > 120 then return false end
     end
     return true
 end
 
 if not awaitLib("libcocos2dcpp.so") then os.exit() end
 
-function readString(addr, maxLen)
-    maxLen = maxLen or 64
+function readString(addr, max_len)
+    max_len = max_len or 64
     local reads = {}
-    for i = 0, maxLen - 1 do
+    for i = 0, max_len - 1 do
         table.insert(reads, { address = addr + i, flags = 1 })
     end
     local result = gg.getValues(reads)
-    local bytes = {}
+    local bytes  = {}
     for _, v in ipairs(result) do
         if v.value == 0 then break end
         local b = v.value < 0 and v.value + 256 or v.value
@@ -480,44 +494,44 @@ end
 
 -- ── GameStatus resolution ─────────────────────────────────────────────────────
 
-local regions = { gg.REGION_C_ALLOC, gg.REGION_OTHER }
-local saved = memory:load("gamestatus")
+local SEARCH_REGIONS = { gg.REGION_C_ALLOC, gg.REGION_OTHER }
+local saved_status   = memory:load("gamestatus")
 
-shellStates = memory:load("shell_states") or {root=false}
-toggleStates = memory:load("toggle_states") or {}
-inputStates = memory:load("input_states") or {}
+shellStates   = memory:load("shell_states")   or { root = false }
+toggleStates  = memory:load("toggle_states")  or {}
+inputStates   = memory:load("input_states")   or {}
 spinnerStates = memory:load("spinner_states") or {}
-sliderStates = memory:load("slider_states") or {}
+sliderStates  = memory:load("slider_states")  or {}
 
-if saved then
-    BaseRegion, BaseGameStatus, BaseGameStatusRaw = saved[1], saved[2], saved[3]
+if saved_status then
+    BaseRegion, BaseGameStatus, BaseGameStatusRaw = saved_status[1], saved_status[2], saved_status[3]
 else
-    for _, region in ipairs(regions) do
+    for _, region in ipairs(SEARCH_REGIONS) do
         gg.clearResults(); gg.setRanges(region)
         gg.searchNumber("h 73 74 61 72 74 75 70 5F 63 6F 75 6E 74", gg.TYPE_BYTE)
         gg.refineNumber("h 73", gg.TYPE_BYTE)
-        local res = gg.getResults(gg.getResultsCount())
+        local scan_results = gg.getResults(gg.getResultsCount())
         gg.clearResults()
-        local hits = {}
-        local raw_hits = {}
-        for _, d in ipairs(res) do
-            local ptr = gg.getValues({{ address = d.address + 0x1F, flags = gg.TYPE_QWORD }})[1]
+        local status_hits     = {}
+        local status_raw_hits = {}
+        for _, d in ipairs(scan_results) do
+            local ptr = gg.getValues({ { address = d.address + 0x1F, flags = gg.TYPE_QWORD } })[1]
             if ptr and ptr.value ~= 0 then
-                local ver = gg.getValues({{ address = ptr.value + 0x10, flags = gg.TYPE_DWORD }})[1]
-                local v = ver and tonumber(ver.value)
+                local ver = gg.getValues({ { address = ptr.value + 0x10, flags = gg.TYPE_DWORD } })[1]
+                local v   = ver and tonumber(ver.value)
                 if v == 65792 or v == 65793 or v == 16843008 or v == 16843009 then
-                    table.insert(raw_hits, ver.address)
-                    local tp = gg.getValues({{ address = ptr.value + 0x80, flags = gg.TYPE_QWORD }})[1]
+                    table.insert(status_raw_hits, ver.address)
+                    local tp = gg.getValues({ { address = ptr.value + 0x80, flags = gg.TYPE_QWORD } })[1]
                     if tp and tp.value ~= 0 then
-                        local td = gg.getValues({{ address = tp.value, flags = gg.TYPE_DWORD }})[1]
-                        if td then table.insert(hits, td.address) end
+                        local td = gg.getValues({ { address = tp.value, flags = gg.TYPE_DWORD } })[1]
+                        if td then table.insert(status_hits, td.address) end
                     end
                 end
             end
         end
-        if #hits > 0 then
-            BaseRegion, BaseGameStatus, BaseGameStatusRaw = region, hits[1], raw_hits[1]
-            memory:save("gamestatus", { region, hits[1], raw_hits[1] })
+        if #status_hits > 0 then
+            BaseRegion, BaseGameStatus, BaseGameStatusRaw = region, status_hits[1], status_raw_hits[1]
+            memory:save("gamestatus", { region, status_hits[1], status_raw_hits[1] })
             break
         end
     end
@@ -532,15 +546,15 @@ if BaseGameStatus == nil or BaseRegion == nil then
     showToast("GameStatus Not Found"); exit = true
 else
     LOG.info("INIT", "BaseGameStatus OK=" .. tostring(BaseGameStatus) .. " | scheduling initUI() via MainHandler")
-    
-    local savedc = memory:loadGlobal("ui_prefs")
-    if savedc then
+
+    local saved_prefs = memory:load_global("ui_prefs")
+    if saved_prefs then
         LOG.info("INIT", "User preferences RE-APPLIED")
-        for k, v in pairs(savedc) do
+        for k, v in pairs(saved_prefs) do
             if UI[k] ~= nil then UI[k] = v end
         end
     end
-    
+
     MainHandler.post(function()
         LOG.info("INIT", "MainHandler: calling initUI()")
         local ok, err = _safePcall(function() initUI() end)

@@ -6,7 +6,7 @@
 ]]
 
 return function(container)
-    addModule(container, "set_distance", "Set Distance", "Sets your Adventure race distance to a custom value. Must be in an active race. Higher distance can gain more stars. Max stars that can be gained is 5000. (Not a teleport function)", "slider",
+    addArchModule(container, "set_distance", "Set Distance", "Sets your Adventure race distance to a custom value. Must be in an active race. Higher distance can gain more stars. Max stars that can be gained is 5000. (Not a teleport function)", "slider",
     {title="Meters", min=0, max=5000, current=0},
     function(done, vals)
         local target_meters = vals
@@ -14,14 +14,14 @@ return function(container)
 
         LOG.info(TAG, "Module activated. Target meters: " .. tostring(target_meters))
 
-        scheduler:add(function(finish_task)
+        scheduler:add(function(finishTask)
             local activeTab = gg.getValues({{ address = BaseGameStatusRaw - 0xD4, flags = 4 }})
             local isAdventureTab = (type(activeTab) == "table" and activeTab[1] and activeTab[1].value == 0)
 
             if not isAdventureTab then
                 showToast("Go to Adventure tab and start a race first")
                 LOG.warn(TAG, "User is not in Adventure tab. Aborting.")
-                finish_task()
+                finishTask()
                 done()
                 return
             end
@@ -42,7 +42,7 @@ return function(container)
             if #level1Results == 0 then
                 showToast("Start a race first")
                 LOG.warn(TAG, "No references found for anchor. User likely not in a race.")
-                finish_task()
+                finishTask()
                 done()
                 return
             end
@@ -94,7 +94,7 @@ return function(container)
             if not distanceBase then
                 showToast("Start a race first")
                 LOG.fatal(TAG, "Failed to resolve distanceBase. Pointer chain dropped.")
-                finish_task()
+                finishTask()
                 done()
                 return
             end
@@ -109,7 +109,7 @@ return function(container)
             
             showToast("Distance set to: " .. tostring(target_meters) .. "m")
             LOG.info(TAG, "Distance set to: " .. tostring(target_meters) .. "m")
-            finish_task()
+            finishTask()
             done()
         end)
     end)
