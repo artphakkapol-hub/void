@@ -1,12 +1,16 @@
 # Changelog
-## v1.0.17
+## v1.0.19
 
 Added:
-- Allow any VM to run this script
+- Unlock Vehicles (Unlock Vehicles)
+- In-game Debug Mode
+- Theme Sharing
+
+Changed:
+- Lower amount for Events Rewards Patch
 
 Fixed:
-- Events Rewards Patch (for rooted devices)
+- Set Distance
 - Unlock Parts
 
-Removed:
-- Multi App Ultra only Support
+and etc, couldn't remember it all.
