@@ -6,6 +6,7 @@ Usage:
   python bundle.py              # normal pack
   python bundle.py -m           # pack + strip Lua comments (minify)
   python bundle.py -o out.lua   # custom output path
+  python bundle.py -v 1.0.0     # inject version string
 """
 
 import os
@@ -89,20 +90,6 @@ def strip_loader_block(lines):
     del lines[strip_from : end_idx + 1]
     return lines, diag
 
-parser.add_argument(
-    "-v", "--version",
-    default=None,
-    metavar="VERSION",
-    help="Inject version string into scriptSubHeader")
-
-# After strip_loader_block, before minify:
-if args.version:
-    main_src = re.sub(
-        r'scriptSubHeader\s*=\s*"[^"]*"',
-        f'scriptSubHeader = " v{args.version} • By Vekendian"',
-        main_src
-    )
-    print(f"[~] Version injected: v{args.version}")
 
 # ── Lua minifier (basic) ───────────────────────────────────────────────────────
 
@@ -187,7 +174,7 @@ end
 
 # ── Main bundler ───────────────────────────────────────────────────────────────
 
-def bundle(output_file, do_minify):
+def bundle(output_file, do_minify, version=None):
     if not os.path.exists(MAIN_FILE):
         print(f"[-] Entry point not found: {MAIN_FILE}")
         print("    Run this script from the project root (folder containing 'src/').")
@@ -223,6 +210,16 @@ def bundle(output_file, do_minify):
     print(f"[~] {diag}")
 
     main_src = "".join(lines)
+
+    # ── Version Injection ─────────────────────────────────────────────────────
+    if version:
+        main_src = re.sub(
+            r'scriptSubHeader\s*=\s*"[^"]*"',
+            f'scriptSubHeader = " v{version} • By Vekendian"',
+            main_src
+        )
+        print(f"[~] Version injected: v{version}")
+
     total_src_bytes += len(main_src.encode("utf-8"))
     if do_minify:
         main_src = minify_lua(main_src)
@@ -265,6 +262,12 @@ if __name__ == "__main__":
         default=DEFAULT_OUTPUT,
         metavar="FILE",
         help=f"Output file path (default: {DEFAULT_OUTPUT})")
+    parser.add_argument(
+        "-v", "--version",
+        default=None,
+        metavar="VERSION",
+        help="Inject version string into scriptSubHeader")
+        
     args = parser.parse_args()
 
-    bundle(output_file=args.output, do_minify=args.minify)
+    bundle(output_file=args.output, do_minify=args.minify, version=args.version)
