@@ -17,6 +17,7 @@ UI = {
     GLOW = 0xFFFFFFFF,
     GLASS = 0x18FFFFFF,
     OVERLAY = 0xAA000000,
+    TABS_ICON = ">"
 }
 
 return UI

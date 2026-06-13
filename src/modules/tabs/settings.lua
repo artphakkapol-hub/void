@@ -256,187 +256,96 @@ return function(container)
     -- Allow user to changes colors of this script.
     addModuleSep(container, "UI Customizations")
     
-    -- =========================
-    -- Export Theme
-    -- =========================
-    
     addModule(container, "export_theme", "Export Theme", "Export custom theme and wallpaper to cloud.", "button", nil, function(done)
         local TAG = "ExportTheme"
         local exportUI = deepCopy(UI)
     
-        local imgData = nil
-        local imgName = nil
-    
-        if UI.BG_IMAGE and UI.BG_IMAGE.PATH and UI.BG_IMAGE.PATH ~= "no_media" then
-            local file = io.open(UI.BG_IMAGE.PATH, "rb")
-            if file then
-                imgData = file:read("*a")
-                file:close()
-    
-                imgName = getFileName(UI.BG_IMAGE.PATH)
-                LOG.info(TAG, "Wallpaper file: " .. tostring(imgName))
-                LOG.info(TAG, "Wallpaper raw bytes: " .. tostring(imgData and #imgData or 0))
-            else
-                LOG.warn(TAG, "Wallpaper path configured but file missing: " .. tostring(UI.BG_IMAGE.PATH))
-            end
-        end
-    
-        local function proceedWithUpload()
-            showToast("Preparing and uploading...")
-    
-            local imgHex = nil
-            if imgData and imgData ~= "" then
-                imgHex = bytesToHex(imgData)
-                if not imgHex or imgHex == "" then
-                    LOG.error(TAG, "Hex conversion failed.")
-                    showDialog("Failed", "Failed to encode wallpaper.", "OK")
-                    done()
-                    return
-                end
-    
-                LOG.info(TAG, "Wallpaper hex length: " .. tostring(#imgHex))
-            end
-    
-            if exportUI.BG_IMAGE then
-                if imgHex then
-                    exportUI.BG_IMAGE.PATH = imgName or "embedded_wallpaper.png"
-                else
-                    exportUI.BG_IMAGE.PATH = "no_media"
-                end
-            end
-    
+        local function finalizeExport(imageUrl)
             local exportData = {
-                version = 4,
-                kind = "theme_bundle_hex",
+                version = 5,
+                kind = "theme_bundle_url",
                 ui = exportUI,
-                img_name = imgName,
-                img_hex = imgHex
+                img_url = imageUrl
             }
     
-            LOG.info(TAG, "Serializing clean payload...")
             local payload = serializeTable(exportData)
-    
-            LOG.info(TAG, "Payload size: " .. tostring(#payload))
-            LOG.info(TAG, "Uploading payload directly to cloud host...")
-    
             local link, err = paste.post(payload)
     
             if link then
                 local pasteId = link:match("[^/]+$")
                 gg.copyText(pasteId)
-                LOG.info(TAG, "Upload successful. Share ID: " .. tostring(pasteId))
-    
-                showDialog("Success", "Share ID: " .. pasteId .. "\n\nThe ID has been copied to your clipboard.", "OK")
+                showDialog("Success", "Share ID: " .. pasteId .. "\n\nCopied to clipboard.", "OK")
             else
-                LOG.error(TAG, "Cloud upload failed: " .. tostring(err))
-                showDialog("Failed", "Failed to export bundle string to cloud:\n" .. tostring(err), "OK")
+                showDialog("Failed", "Upload failed: " .. tostring(err), "OK")
             end
+            done()
         end
     
-        if imgData then
-            local warningMsg = "A custom background image is active. Including this image will increase the export size a lot.\n\nDo you want to proceed?"
-            showDialog("Upload Size Warning", warningMsg, { "Upload Everything", proceedWithUpload }, "Cancel")
+        if UI.BG_IMAGE and UI.BG_IMAGE.PATH and UI.BG_IMAGE.PATH ~= "no_media" then
+            showDialog("Upload Size Warning", "Include custom wallpaper? It will increase the Upload Size depending what size is your image is.",
+            {"Yes", function()
+                showToast("Uploading wallpaper to Catbox...")
+                local url, err = catbox.upload(UI.BG_IMAGE.PATH)
+                if url then finalizeExport(url) else showDialog("Error", "Image upload failed: " .. err, "OK"); done() end
+            end},
+            {"No"})
         else
-            proceedWithUpload()
+            finalizeExport(nil)
         end
-    
+        
         done()
     end)
-    
-    -- =========================
-    -- Import Theme
-    -- =========================
-    
+        
     addModule(container, "import_theme", "Import Theme", "Import custom theme from cloud.", "input", {
         { hint = "Enter Share ID", value = "", type = "text" }
     }, function(done, val)
         local TAG = "ImportTheme"
         local shareId = (type(val) == "table") and val[1] or val
-        if not shareId or shareId == "" then
-            LOG.warn(TAG, "Import cancelled due to blank input field.")
-            done()
-            return
-        end
+        
+        if shareId and shareId ~= "" then
+            local rawText, err = paste.get("https://paste.rs/" .. shareId)
+            
+            if rawText then
+                local ok, exportData = pcall(load(rawText))
+                if ok and type(exportData) == "table" and exportData.version then
+                    for k, v in pairs(exportData.ui) do if UI[k] ~= nil then UI[k] = deepCopy(v) end end
     
-        showToast("Downloading theme...")
-        LOG.info(TAG, "Requesting bundle payload for ID: " .. tostring(shareId))
-    
-        local targetUrl = "https://paste.rs/" .. shareId
-        local rawText, err = paste.get(targetUrl)
-    
-        if not rawText then
-            LOG.error(TAG, "Download failed for source: " .. targetUrl .. " -> " .. tostring(err))
-            showDialog("Failed", "Failed to fetch data from cloud:\n" .. tostring(err), "OK")
-            done()
-            return
-        end
-    
-        LOG.info(TAG, "Payload downloaded. Compiling bundle structure...")
-        local loadedChunk, compileErr = load(rawText)
-    
-        if not loadedChunk then
-            LOG.error(TAG, "Lua chunk compilation failure: " .. tostring(compileErr))
-            showDialog("Failed", "Failed to parse theme data:\n" .. tostring(compileErr), "OK")
-            done()
-            return
-        end
-    
-        local ok, exportData = pcall(loadedChunk)
-        if not ok or type(exportData) ~= "table" then
-            LOG.error(TAG, "Invalid payload container returned from cloud.")
-            showDialog("Failed", "Invalid theme data format structure.", "OK")
-            done()
-            return
-        end
-    
-        local imported_prefs = exportData.ui or exportData
-        local imgHex = exportData.img_hex
-        local imgName = exportData.img_name
-    
-        LOG.dbg(TAG, "Merging layout preferences into UI state memory...")
-        if type(imported_prefs) == "table" then
-            for k, v in pairs(imported_prefs) do
-                if UI[k] ~= nil then
-                    UI[k] = deepCopy(v)
-                end
-            end
-        end
-    
-        if imgHex and imgHex ~= "" then
-            LOG.info(TAG, "Hex wallpaper found. Decoding...")
-            local imgData = hexToBytes(imgHex)
-    
-            if imgData and imgData ~= "" then
-                local finalName = getFileName(imgName or "imported_wallpaper.png")
-                local finalDestPath = safeJoinPath(gg.FILES_DIR, finalName)
-    
-                local fileWrite = io.open(finalDestPath, "wb")
-                if fileWrite then
-                    fileWrite:write(imgData)
-                    fileWrite:close()
-    
-                    if UI.BG_IMAGE then
-                        UI.BG_IMAGE.PATH = finalDestPath
+                    if exportData.img_url then
+                        showToast("Downloading wallpaper...")
+                        local dest = gg.FILES_DIR .. "/imported_bg_" .. os.time() .. ".png"
+                        local path, dErr = catbox.download(exportData.img_url, dest)
+                        if path then UI.BG_IMAGE.PATH = path else LOG.error(TAG, "Wallpaper download failed") end
+                    else
+                        UI.BG_IMAGE.PATH = "no_media"
                     end
     
-                    LOG.info(TAG, "Wallpaper written successfully to: " .. finalDestPath)
+                    memory:save_global("ui_prefs", UI)
+                    saveAndRefresh()
+                    showDialog("Success", "Theme imported!", "OK")
                 else
-                    LOG.error(TAG, "Failed to write image file to gg.FILES_DIR.")
+                    showDialog("Failed", "Invalid bundle format.", "OK")
                 end
             else
-                LOG.error(TAG, "Failed to decode wallpaper hex.")
-            end
-        else
-            if UI.BG_IMAGE then
-                UI.BG_IMAGE.PATH = "no_media"
+                showDialog("Failed", "Cloud error: " .. tostring(err), "OK")
             end
         end
     
-        memory:save_global("ui_prefs", UI)
-        saveAndRefresh()
+        done()
+        rebuildMenu()
+    end)
     
-        LOG.info(TAG, "Import completed successfully.")
-        showDialog("Success", "Theme and assets successfully imported and saved!", "OK")
+    -- Tabs icon
+    addModule(container, "tabs_icon", "Tabs Icon", "Change tabs icon", "input", {
+        { hint = "Enter Icon", value = UI.TABS_ICON, type = "text" }
+    }, function(done, val)
+        if val == nil or val == "" then
+            showToast("Cannot be empty")
+        elseif #val > 2 then
+            showToast("Length cannot be more than 2")
+        else
+            UI.TABS_ICON = val
+            saveAndRefresh()
+        end
         done()
         rebuildMenu()
     end)

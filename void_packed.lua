@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-13 09:10:26
+-- Packed by bundle.py  •  2026-06-13 13:01:11
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -25,6 +25,7 @@ UI = {
     GLOW = 0xFFFFFFFF,
     GLASS = 0x18FFFFFF,
     OVERLAY = 0xAA000000,
+    TABS_ICON = ">"
 }
 
 return UI
@@ -19822,6 +19823,157 @@ return cast
 
 end
 
+__vfs['core/utils/catbox.lua'] = function(...)
+local catbox = {}
+local TAG = "CATBOX_SERVICE"
+
+-- Helper to safely generate a primitive byte[] buffer
+local function getByteBuffer(size)
+    return Array.newInstance(Byte.TYPE, size)
+end
+
+-- ==========================================
+-- UPLOAD
+-- ==========================================
+function catbox.upload(filePath, fileName)
+    if not filePath or filePath == "" then
+        if LOG and LOG.warn then LOG.warn(TAG, "Upload Aborted: File path is missing") end
+        return nil, "File path is missing"
+    end
+
+    -- Automatically extract filename from path if not provided
+    fileName = fileName or filePath:match("[^/]+$") or "void_export_image.png"
+
+    local status, res, err = pcall(function()
+        local targetUrl = "https://catbox.moe/user/api.php"
+        local url = luajava.newInstance("java.net.URL", targetUrl)
+        local conn = url.openConnection()
+        
+        local boundary = "----VekendianVoidBoundary" .. tostring(os.time())
+        
+        conn.setDoOutput(true)
+        conn.setRequestMethod("POST")
+        conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" .. boundary)
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+        
+        local os_stream = conn.getOutputStream()
+        local dos = luajava.newInstance("java.io.DataOutputStream", os_stream)
+        
+        dos.writeBytes("--" .. boundary .. "\r\n")
+        dos.writeBytes("Content-Disposition: form-data; name=\"reqtype\"\r\n\r\n")
+        dos.writeBytes("fileupload\r\n")
+        
+        dos.writeBytes("--" .. boundary .. "\r\n")
+        dos.writeBytes("Content-Disposition: form-data; name=\"fileToUpload\"; filename=\"" .. fileName .. "\"\r\n")
+        dos.writeBytes("Content-Type: application/octet-stream\r\n\r\n")
+        
+        local fis = luajava.newInstance("java.io.FileInputStream", filePath)
+        local buffer = getByteBuffer(4096)
+        
+        local bytesRead = fis.read(buffer)
+        while bytesRead ~= -1 do
+            dos.write(buffer, 0, bytesRead)
+            bytesRead = fis.read(buffer)
+        end
+        fis.close()
+        
+        dos.writeBytes("\r\n--" .. boundary .. "--\r\n")
+        dos.flush()
+        dos.close()
+        
+        local responseCode = conn.getResponseCode()
+        if responseCode == 200 then
+            local is = conn.getInputStream()
+            local isr = luajava.newInstance("java.io.InputStreamReader", is)
+            local br = luajava.newInstance("java.io.BufferedReader", isr)
+            
+            local catboxUrl = br.readLine()
+            
+            br.close()
+            conn.disconnect()
+            return catboxUrl
+        else
+            conn.disconnect()
+            return nil, "HTTP Error Code: " .. tostring(responseCode)
+        end
+    end)
+
+    if not status then
+        if LOG and LOG.error then LOG.error(TAG, "Upload Request Crashed: " .. tostring(res)) end
+        return nil, "Crashed: " .. tostring(res)
+    end
+
+    if not res and err then
+        if LOG and LOG.warn then LOG.warn(TAG, "Catbox Server Rejected: " .. tostring(err)) end
+    end
+
+    return res, err
+end
+
+-- ==========================================
+-- DOWNLOAD
+-- ==========================================
+function catbox.download(fileUrl, destPath)
+    if not fileUrl or fileUrl == "" then
+        if LOG and LOG.warn then LOG.warn(TAG, "Download Aborted: URL is missing") end
+        return nil, "URL is missing"
+    end
+    
+    if not destPath or destPath == "" then
+        if LOG and LOG.warn then LOG.warn(TAG, "Download Aborted: Destination path missing") end
+        return nil, "Destination path is missing"
+    end
+
+    local status, res, err = pcall(function()
+        local urlInstance = luajava.newInstance("java.net.URL", fileUrl)
+        local conn = urlInstance.openConnection()
+        
+        conn.setRequestMethod("GET")
+        conn.setDoInput(true)
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+        
+        local responseCode = conn.getResponseCode()
+        if responseCode == 200 then
+            local inputStream = conn.getInputStream()
+            local fos = luajava.newInstance("java.io.FileOutputStream", destPath)
+            
+            -- Patched the buffer initialization here as well
+            local buffer = getByteBuffer(4096)
+            
+            local bytesRead = inputStream.read(buffer)
+            while bytesRead ~= -1 do
+                fos.write(buffer, 0, bytesRead)
+                bytesRead = inputStream.read(buffer)
+            end
+            
+            fos.flush()
+            fos.close()
+            inputStream.close()
+            conn.disconnect()
+            
+            return destPath
+        else
+            conn.disconnect()
+            return nil, "HTTP Error Code: " .. tostring(responseCode)
+        end
+    end)
+
+    if not status then
+        if LOG and LOG.error then LOG.error(TAG, "Download Request Crashed: " .. tostring(res)) end
+        return nil, "Crashed: " .. tostring(res)
+    end
+
+    if not res and err then
+        if LOG and LOG.warn then LOG.warn(TAG, "Catbox Server Rejected Download: " .. tostring(err)) end
+    end
+
+    return res, err
+end
+
+return catbox
+
+end
+
 __vfs['core/utils/json.lua'] = function(...)
 --[[
   JSON encoder/decoder module
@@ -20100,9 +20252,14 @@ function paste.post(content)
         conn.setDoInput(true)
         conn.setRequestProperty("Content-Type", "text/plain; charset=utf-8")
         
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+        
+        conn.setRequestProperty("Content-Length", tostring(#content))
+        
         local os = conn.getOutputStream()
         local javaString = luajava.newInstance("java.lang.String", content)
         local textBytes = javaString.getBytes("UTF-8")
+        
         os.write(textBytes)
         os.flush()
         os.close()
@@ -20125,13 +20282,11 @@ function paste.post(content)
         end
     end)
 
-    -- If pcall caught a runtime exception (e.g. UnknownHostException / No Internet)
     if not status then
         LOG.error(TAG, "POST Request Crashed: " .. tostring(res))
         return nil, tostring(res)
     end
 
-    -- If network completed but server returned an explicit HTTP error code
     if not res and err then
         LOG.warn(TAG, "POST Server Rejected: " .. tostring(err))
     end
@@ -22463,187 +22618,96 @@ return function(container)
     -- Allow user to changes colors of this script.
     addModuleSep(container, "UI Customizations")
     
-    -- =========================
-    -- Export Theme
-    -- =========================
-    
     addModule(container, "export_theme", "Export Theme", "Export custom theme and wallpaper to cloud.", "button", nil, function(done)
         local TAG = "ExportTheme"
         local exportUI = deepCopy(UI)
     
-        local imgData = nil
-        local imgName = nil
-    
-        if UI.BG_IMAGE and UI.BG_IMAGE.PATH and UI.BG_IMAGE.PATH ~= "no_media" then
-            local file = io.open(UI.BG_IMAGE.PATH, "rb")
-            if file then
-                imgData = file:read("*a")
-                file:close()
-    
-                imgName = getFileName(UI.BG_IMAGE.PATH)
-                LOG.info(TAG, "Wallpaper file: " .. tostring(imgName))
-                LOG.info(TAG, "Wallpaper raw bytes: " .. tostring(imgData and #imgData or 0))
-            else
-                LOG.warn(TAG, "Wallpaper path configured but file missing: " .. tostring(UI.BG_IMAGE.PATH))
-            end
-        end
-    
-        local function proceedWithUpload()
-            showToast("Preparing and uploading...")
-    
-            local imgHex = nil
-            if imgData and imgData ~= "" then
-                imgHex = bytesToHex(imgData)
-                if not imgHex or imgHex == "" then
-                    LOG.error(TAG, "Hex conversion failed.")
-                    showDialog("Failed", "Failed to encode wallpaper.", "OK")
-                    done()
-                    return
-                end
-    
-                LOG.info(TAG, "Wallpaper hex length: " .. tostring(#imgHex))
-            end
-    
-            if exportUI.BG_IMAGE then
-                if imgHex then
-                    exportUI.BG_IMAGE.PATH = imgName or "embedded_wallpaper.png"
-                else
-                    exportUI.BG_IMAGE.PATH = "no_media"
-                end
-            end
-    
+        local function finalizeExport(imageUrl)
             local exportData = {
-                version = 4,
-                kind = "theme_bundle_hex",
+                version = 5,
+                kind = "theme_bundle_url",
                 ui = exportUI,
-                img_name = imgName,
-                img_hex = imgHex
+                img_url = imageUrl
             }
     
-            LOG.info(TAG, "Serializing clean payload...")
             local payload = serializeTable(exportData)
-    
-            LOG.info(TAG, "Payload size: " .. tostring(#payload))
-            LOG.info(TAG, "Uploading payload directly to cloud host...")
-    
             local link, err = paste.post(payload)
     
             if link then
                 local pasteId = link:match("[^/]+$")
                 gg.copyText(pasteId)
-                LOG.info(TAG, "Upload successful. Share ID: " .. tostring(pasteId))
-    
-                showDialog("Success", "Share ID: " .. pasteId .. "\n\nThe ID has been copied to your clipboard.", "OK")
+                showDialog("Success", "Share ID: " .. pasteId .. "\n\nCopied to clipboard.", "OK")
             else
-                LOG.error(TAG, "Cloud upload failed: " .. tostring(err))
-                showDialog("Failed", "Failed to export bundle string to cloud:\n" .. tostring(err), "OK")
+                showDialog("Failed", "Upload failed: " .. tostring(err), "OK")
             end
+            done()
         end
     
-        if imgData then
-            local warningMsg = "A custom background image is active. Including this image will increase the export size a lot.\n\nDo you want to proceed?"
-            showDialog("Upload Size Warning", warningMsg, { "Upload Everything", proceedWithUpload }, "Cancel")
+        if UI.BG_IMAGE and UI.BG_IMAGE.PATH and UI.BG_IMAGE.PATH ~= "no_media" then
+            showDialog("Upload Size Warning", "Include custom wallpaper? It will increase the Upload Size depending what size is your image is.",
+            {"Yes", function()
+                showToast("Uploading wallpaper to Catbox...")
+                local url, err = catbox.upload(UI.BG_IMAGE.PATH)
+                if url then finalizeExport(url) else showDialog("Error", "Image upload failed: " .. err, "OK"); done() end
+            end},
+            {"No"})
         else
-            proceedWithUpload()
+            finalizeExport(nil)
         end
-    
+        
         done()
     end)
-    
-    -- =========================
-    -- Import Theme
-    -- =========================
-    
+        
     addModule(container, "import_theme", "Import Theme", "Import custom theme from cloud.", "input", {
         { hint = "Enter Share ID", value = "", type = "text" }
     }, function(done, val)
         local TAG = "ImportTheme"
         local shareId = (type(val) == "table") and val[1] or val
-        if not shareId or shareId == "" then
-            LOG.warn(TAG, "Import cancelled due to blank input field.")
-            done()
-            return
-        end
+        
+        if shareId and shareId ~= "" then
+            local rawText, err = paste.get("https://paste.rs/" .. shareId)
+            
+            if rawText then
+                local ok, exportData = pcall(load(rawText))
+                if ok and type(exportData) == "table" and exportData.version then
+                    for k, v in pairs(exportData.ui) do if UI[k] ~= nil then UI[k] = deepCopy(v) end end
     
-        showToast("Downloading theme...")
-        LOG.info(TAG, "Requesting bundle payload for ID: " .. tostring(shareId))
-    
-        local targetUrl = "https://paste.rs/" .. shareId
-        local rawText, err = paste.get(targetUrl)
-    
-        if not rawText then
-            LOG.error(TAG, "Download failed for source: " .. targetUrl .. " -> " .. tostring(err))
-            showDialog("Failed", "Failed to fetch data from cloud:\n" .. tostring(err), "OK")
-            done()
-            return
-        end
-    
-        LOG.info(TAG, "Payload downloaded. Compiling bundle structure...")
-        local loadedChunk, compileErr = load(rawText)
-    
-        if not loadedChunk then
-            LOG.error(TAG, "Lua chunk compilation failure: " .. tostring(compileErr))
-            showDialog("Failed", "Failed to parse theme data:\n" .. tostring(compileErr), "OK")
-            done()
-            return
-        end
-    
-        local ok, exportData = pcall(loadedChunk)
-        if not ok or type(exportData) ~= "table" then
-            LOG.error(TAG, "Invalid payload container returned from cloud.")
-            showDialog("Failed", "Invalid theme data format structure.", "OK")
-            done()
-            return
-        end
-    
-        local imported_prefs = exportData.ui or exportData
-        local imgHex = exportData.img_hex
-        local imgName = exportData.img_name
-    
-        LOG.dbg(TAG, "Merging layout preferences into UI state memory...")
-        if type(imported_prefs) == "table" then
-            for k, v in pairs(imported_prefs) do
-                if UI[k] ~= nil then
-                    UI[k] = deepCopy(v)
-                end
-            end
-        end
-    
-        if imgHex and imgHex ~= "" then
-            LOG.info(TAG, "Hex wallpaper found. Decoding...")
-            local imgData = hexToBytes(imgHex)
-    
-            if imgData and imgData ~= "" then
-                local finalName = getFileName(imgName or "imported_wallpaper.png")
-                local finalDestPath = safeJoinPath(gg.FILES_DIR, finalName)
-    
-                local fileWrite = io.open(finalDestPath, "wb")
-                if fileWrite then
-                    fileWrite:write(imgData)
-                    fileWrite:close()
-    
-                    if UI.BG_IMAGE then
-                        UI.BG_IMAGE.PATH = finalDestPath
+                    if exportData.img_url then
+                        showToast("Downloading wallpaper...")
+                        local dest = gg.FILES_DIR .. "/imported_bg_" .. os.time() .. ".png"
+                        local path, dErr = catbox.download(exportData.img_url, dest)
+                        if path then UI.BG_IMAGE.PATH = path else LOG.error(TAG, "Wallpaper download failed") end
+                    else
+                        UI.BG_IMAGE.PATH = "no_media"
                     end
     
-                    LOG.info(TAG, "Wallpaper written successfully to: " .. finalDestPath)
+                    memory:save_global("ui_prefs", UI)
+                    saveAndRefresh()
+                    showDialog("Success", "Theme imported!", "OK")
                 else
-                    LOG.error(TAG, "Failed to write image file to gg.FILES_DIR.")
+                    showDialog("Failed", "Invalid bundle format.", "OK")
                 end
             else
-                LOG.error(TAG, "Failed to decode wallpaper hex.")
-            end
-        else
-            if UI.BG_IMAGE then
-                UI.BG_IMAGE.PATH = "no_media"
+                showDialog("Failed", "Cloud error: " .. tostring(err), "OK")
             end
         end
     
-        memory:save_global("ui_prefs", UI)
-        saveAndRefresh()
+        done()
+        rebuildMenu()
+    end)
     
-        LOG.info(TAG, "Import completed successfully.")
-        showDialog("Success", "Theme and assets successfully imported and saved!", "OK")
+    -- Tabs icon
+    addModule(container, "tabs_icon", "Tabs Icon", "Change tabs icon", "input", {
+        { hint = "Enter Icon", value = UI.TABS_ICON, type = "text" }
+    }, function(done, val)
+        if val == nil or val == "" then
+            showToast("Cannot be empty")
+        elseif #val > 2 then
+            showToast("Length cannot be more than 2")
+        else
+            UI.TABS_ICON = val
+            saveAndRefresh()
+        end
         done()
         rebuildMenu()
     end)
@@ -23127,7 +23191,7 @@ local _TAB_ICONS = {
 ---@param name string Display name for the tab
 ---@return View The created tab container
 function addTab(parent, id, name)
-    local icon_char = "" -- _TAB_ICONS[id]
+    local icon_char = UI.TABS_ICON -- _TAB_ICONS[id]
 
     -- Outer container (horizontal: icon | label)
     local container = LinearLayout(activity)
@@ -24350,6 +24414,8 @@ Ui          = import("org.vekendian.Ui")
 Shell       = import("org.vekendian.Shell")
 Zip         = import("org.vekendian.Zip")
 
+Array                       = luajava.bindClass("java.lang.reflect.Array")
+Byte                        = luajava.bindClass("java.lang.Byte")
 ClipData                    = import("android.content.ClipData")
 Color                       = import("android.graphics.Color")
 Context                     = import("android.content.Context")
@@ -24559,6 +24625,7 @@ json      = loadModule("core/utils/json.lua")
 memory    = loadModule("core/engines/memory.lua")
 scheduler = loadModule("core/engines/scheduler.lua")
 loader    = loadModule("core/utils/loader.lua")
+catbox    = loadModule("core/utils/catbox.lua")
 paste     = loadModule("core/utils/paste.lua")
 
 -- ── Window size bounds (dp) ───────────────────────────────────────────────────

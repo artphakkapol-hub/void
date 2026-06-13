@@ -141,6 +141,8 @@ Ui          = import("org.vekendian.Ui")
 Shell       = import("org.vekendian.Shell")
 Zip         = import("org.vekendian.Zip")
 
+Array                       = luajava.bindClass("java.lang.reflect.Array")
+Byte                        = luajava.bindClass("java.lang.Byte")
 ClipData                    = import("android.content.ClipData")
 Color                       = import("android.graphics.Color")
 Context                     = import("android.content.Context")
@@ -350,6 +352,7 @@ json      = loadModule("core/utils/json.lua")
 memory    = loadModule("core/engines/memory.lua")
 scheduler = loadModule("core/engines/scheduler.lua")
 loader    = loadModule("core/utils/loader.lua")
+catbox    = loadModule("core/utils/catbox.lua")
 paste     = loadModule("core/utils/paste.lua")
 
 -- ── Window size bounds (dp) ───────────────────────────────────────────────────

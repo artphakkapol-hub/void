@@ -94,7 +94,7 @@ local _TAB_ICONS = {
 ---@param name string Display name for the tab
 ---@return View The created tab container
 function addTab(parent, id, name)
-    local icon_char = "" -- _TAB_ICONS[id]
+    local icon_char = UI.TABS_ICON -- _TAB_ICONS[id]
 
     -- Outer container (horizontal: icon | label)
     local container = LinearLayout(activity)

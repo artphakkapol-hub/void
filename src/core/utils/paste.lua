@@ -14,9 +14,14 @@ function paste.post(content)
         conn.setDoInput(true)
         conn.setRequestProperty("Content-Type", "text/plain; charset=utf-8")
         
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+        
+        conn.setRequestProperty("Content-Length", tostring(#content))
+        
         local os = conn.getOutputStream()
         local javaString = luajava.newInstance("java.lang.String", content)
         local textBytes = javaString.getBytes("UTF-8")
+        
         os.write(textBytes)
         os.flush()
         os.close()
@@ -39,13 +44,11 @@ function paste.post(content)
         end
     end)
 
-    -- If pcall caught a runtime exception (e.g. UnknownHostException / No Internet)
     if not status then
         LOG.error(TAG, "POST Request Crashed: " .. tostring(res))
         return nil, tostring(res)
     end
 
-    -- If network completed but server returned an explicit HTTP error code
     if not res and err then
         LOG.warn(TAG, "POST Server Rejected: " .. tostring(err))
     end
