@@ -35,10 +35,10 @@ return function(container)
     
     local function getFileName(path)
         path = tostring(path or "")
-        local name = path:match("([^/\\]+)$") or "wallpaper.png"
+        local name = path:match("([^/\\]+)$") or "background image.png"
         name = name:gsub("[^%w%._%-]", "_")
         if name == "" then
-            name = "wallpaper.png"
+            name = "background image.png"
         end
         return name
     end
@@ -141,8 +141,7 @@ return function(container)
                 menuView = nil
                 activeView = nil
             end
-    
-            -- Rebuild and re-show
+
             createMenuView("settings")
             switchToMenu()
         end)
@@ -256,7 +255,17 @@ return function(container)
     -- Allow user to changes colors of this script.
     addModuleSep(container, "UI Customizations")
     
-    addModule(container, "export_theme", "Export Theme", "Export custom theme and wallpaper to cloud.", "button", nil, function(done)
+    addModule(container, "reset_theme", "Reset Theme", "Reset custom theme and background image to the default", "button", nil, function(done)
+        local TAG = "ResetTheme"
+        
+        memory:delete_global("ui_prefs")
+        UI = loadModule("configs/colors.lua")
+        
+        done()
+        rebuildMenu()
+    end)
+    
+    addModule(container, "export_theme", "Export Theme", "Export custom theme and background image to cloud", "button", nil, function(done)
         local TAG = "ExportTheme"
         local exportUI = deepCopy(UI)
     
@@ -264,6 +273,7 @@ return function(container)
             local exportData = {
                 version = 5,
                 kind = "theme_bundle_url",
+                name = (UI.BG_IMAGE.PATH:match("([^/\\]+)$") or "background_image_" .. tostring(os.time()).. ".png"),
                 ui = exportUI,
                 img_url = imageUrl
             }
@@ -282,9 +292,9 @@ return function(container)
         end
     
         if UI.BG_IMAGE and UI.BG_IMAGE.PATH and UI.BG_IMAGE.PATH ~= "no_media" then
-            showDialog("Upload Size Warning", "Include custom wallpaper? It will increase the Upload Size depending what size is your image is.",
+            showDialog("Upload Size Warning", "Include custom background image? It will increase the Upload Size depending what size is your image is.",
             {"Yes", function()
-                showToast("Uploading wallpaper to Catbox...")
+                showToast("Uploading background image to Catbox...")
                 local url, err = catbox.upload(UI.BG_IMAGE.PATH)
                 if url then finalizeExport(url) else showDialog("Error", "Image upload failed: " .. err, "OK"); done() end
             end},
@@ -296,7 +306,7 @@ return function(container)
         done()
     end)
         
-    addModule(container, "import_theme", "Import Theme", "Import custom theme from cloud.", "input", {
+    addModule(container, "import_theme", "Import Theme", "Import custom theme from cloud", "input", {
         { hint = "Enter Share ID", value = "", type = "text" }
     }, function(done, val)
         local TAG = "ImportTheme"
@@ -311,10 +321,10 @@ return function(container)
                     for k, v in pairs(exportData.ui) do if UI[k] ~= nil then UI[k] = deepCopy(v) end end
     
                     if exportData.img_url then
-                        showToast("Downloading wallpaper...")
-                        local dest = gg.FILES_DIR .. "/imported_bg_" .. os.time() .. ".png"
+                        showToast("Downloading background image...")
+                        local dest = gg.FILES_DIR .. "/" .. (exportData.name or "background_image_" .. tostring(os.time()).. ".png")
                         local path, dErr = catbox.download(exportData.img_url, dest)
-                        if path then UI.BG_IMAGE.PATH = path else LOG.error(TAG, "Wallpaper download failed") end
+                        if path then UI.BG_IMAGE.PATH = path else LOG.error(TAG, "Background image download failed") end
                     else
                         UI.BG_IMAGE.PATH = "no_media"
                     end
@@ -388,13 +398,14 @@ return function(container)
             
             saveAndRefresh()
             done()
+            rebuildMenu()
         end
     )
 
     -- ── Background Image ────────────────────────────────────────────────
-    -- Updates the absolute storage location path pointing to the wallpaper image.
+    -- Updates the absolute storage location path pointing to the background image image.
 
-    addModule(container, "bg_image_picker", "Background Image", "Tap to modify the absolute file path destination for your custom layout wallpaper.", "button", nil, function(done)
+    addModule(container, "bg_image_picker", "Background Image", "Tap to modify the absolute file path destination for your custom layout background image", "button", nil, function(done)
         local response = gg.prompt(
             { "Absolute Image File Path (.jpg or .png):", "Remove BG Image" },
             { UI.BG_IMAGE.PATH == "no_media" and gg.EXT_STORAGE or UI.BG_IMAGE.PATH, false },

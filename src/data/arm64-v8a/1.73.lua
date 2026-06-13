@@ -18,6 +18,10 @@ return {
         fakeVip = {
             {scan = "h 93 D6 01 F9 68 B2 40 39 1F 01 00 71", offset = 4, patch = "h 28 00 80 52", unpatch = "h 68 B2 40 39"},
         },
+        
+        fakeUnlock = {
+            {scan = "h 36 C5 40 F9", pattern = { { offset = 0x164, valid = {"h E0 03 1F 2A"} }, { offset = 0x16C, valid = {"h 20 00 80 52"} } }, offset = 0x164, patch = "h 20 00 80 52", unpatch = "h E0 03 1F 2A"},
+        },
 
         autoDetach = {
             {scan = "h 08 20 20 1E 85 00 00 54 E0 03 13 AA E1 03 14 AA", offset = 4, patch = "h 1F 20 03 D5", unpatch = "h 85 00 00 54"},

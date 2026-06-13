@@ -3,6 +3,60 @@
 -- Depends on: memory, scheduler, gg (all loaded before this file)
 
 -- ── Internal helpers ──────────────────────────────────────────────────────────
+--- Reads bytes and compares against allowed values.
+---@param base number
+---@param patterns table
+---@return boolean
+local function verify_pattern(base, patterns)
+    for _, check in ipairs(patterns) do
+        local addr = base + check.offset
+
+        local bytes = gg.getValues({
+            {
+                address = addr,
+                flags = gg.TYPE_BYTE,
+            }
+        })
+
+        if not bytes or not bytes[1] then
+            return false
+        end
+
+        -- Read enough bytes for comparison
+        local len = #check.valid[1]:gsub("^h%s*", ""):gsub("%s+", "") / 2
+
+        local values = {}
+        for i = 0, len - 1 do
+            values[#values + 1] = {
+                address = addr + i,
+                flags = gg.TYPE_BYTE
+            }
+        end
+
+        local read = gg.getValues(values)
+
+        local hex = {}
+        for _, v in ipairs(read) do
+            hex[#hex + 1] = string.format("%02X", v.value & 0xFF)
+        end
+
+        local current = "h " .. table.concat(hex, " ")
+
+        local ok = false
+        for _, expected in ipairs(check.valid) do
+            if current == expected then
+                ok = true
+                break
+            end
+        end
+
+        if not ok then
+            return false
+        end
+    end
+
+    return true
+end
 
 ---Returns a human-readable list of supported architectures from a patch table.
 ---@param arch_map table { [arch_name] = data }
@@ -96,14 +150,39 @@ local function apply_patch(id, entries, enable)
         for i, entry in ipairs(entries) do
             gg.clearResults()
             gg.searchNumber(entry.scan, gg.TYPE_BYTE)
-            if gg.getResultsCount() > 0 then
-                local addr = gg.getResults(1)[1].address + entry.offset
-                new_cache[i] = addr
-                table.insert(writes, {
-                    address = addr,
-                    flags   = gg.TYPE_DWORD,
-                    value   = enable and entry.patch or entry.unpatch,
-                })
+            
+            local result_count = gg.getResultsCount()
+            
+            if result_count > 0 then
+                local results = gg.getResults(result_count)
+                
+                local target_addr
+            
+                if entry.pattern and #entry.pattern > 0 then
+                    gg.refineNumber(results[1].value, 1)
+                    local _results = gg.getResults(result_count)
+                    for _, result in ipairs(_results) do
+                        if verify_pattern(result.address, entry.pattern) then
+                            target_addr = result.address + entry.offset
+                            break
+                        end
+                    end
+                else
+                    -- Legacy behavior
+                    target_addr = results[1].address + entry.offset
+                end
+            
+                if target_addr then
+                    new_cache[i] = target_addr
+            
+                    table.insert(writes, {
+                        address = target_addr,
+                        flags = gg.TYPE_DWORD,
+                        value = enable and entry.patch or entry.unpatch
+                    })
+                else
+                    fail_count = fail_count + 1
+                end
             else
                 fail_count = fail_count + 1
             end

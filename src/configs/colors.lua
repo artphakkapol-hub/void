@@ -1,10 +1,10 @@
 UI = {
-    BG = 0x600D001A,
+    BG = 0x800D001A,
     BG_IMAGE = {
         PATH  = "no_media",
         ALPHA = 255
     },
-    HEADER = 0x60110022,
+    HEADER = 0x80110022,
     CARD = 0x331A0028,
     ACCENT = 0x608F3BE8,
     MUTED = 0x4D3D1060,

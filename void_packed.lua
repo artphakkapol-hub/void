@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-13 15:17:03
+-- Packed by bundle.py  •  2026-06-13 17:11:55
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -7,12 +7,12 @@ local __vfs = {}
 
 __vfs['configs/colors.lua'] = function(...)
 UI = {
-    BG = 0x600D001A,
+    BG = 0x800D001A,
     BG_IMAGE = {
         PATH  = "no_media",
         ALPHA = 255
     },
-    HEADER = 0x60110022,
+    HEADER = 0x80110022,
     CARD = 0x331A0028,
     ACCENT = 0x608F3BE8,
     MUTED = 0x4D3D1060,
@@ -19476,6 +19476,60 @@ __vfs['core/engines/patches.lua'] = function(...)
 -- Depends on: memory, scheduler, gg (all loaded before this file)
 
 -- ── Internal helpers ──────────────────────────────────────────────────────────
+--- Reads bytes and compares against allowed values.
+---@param base number
+---@param patterns table
+---@return boolean
+local function verify_pattern(base, patterns)
+    for _, check in ipairs(patterns) do
+        local addr = base + check.offset
+
+        local bytes = gg.getValues({
+            {
+                address = addr,
+                flags = gg.TYPE_BYTE,
+            }
+        })
+
+        if not bytes or not bytes[1] then
+            return false
+        end
+
+        -- Read enough bytes for comparison
+        local len = #check.valid[1]:gsub("^h%s*", ""):gsub("%s+", "") / 2
+
+        local values = {}
+        for i = 0, len - 1 do
+            values[#values + 1] = {
+                address = addr + i,
+                flags = gg.TYPE_BYTE
+            }
+        end
+
+        local read = gg.getValues(values)
+
+        local hex = {}
+        for _, v in ipairs(read) do
+            hex[#hex + 1] = string.format("%02X", v.value & 0xFF)
+        end
+
+        local current = "h " .. table.concat(hex, " ")
+
+        local ok = false
+        for _, expected in ipairs(check.valid) do
+            if current == expected then
+                ok = true
+                break
+            end
+        end
+
+        if not ok then
+            return false
+        end
+    end
+
+    return true
+end
 
 ---Returns a human-readable list of supported architectures from a patch table.
 ---@param arch_map table { [arch_name] = data }
@@ -19569,14 +19623,39 @@ local function apply_patch(id, entries, enable)
         for i, entry in ipairs(entries) do
             gg.clearResults()
             gg.searchNumber(entry.scan, gg.TYPE_BYTE)
-            if gg.getResultsCount() > 0 then
-                local addr = gg.getResults(1)[1].address + entry.offset
-                new_cache[i] = addr
-                table.insert(writes, {
-                    address = addr,
-                    flags   = gg.TYPE_DWORD,
-                    value   = enable and entry.patch or entry.unpatch,
-                })
+            
+            local result_count = gg.getResultsCount()
+            
+            if result_count > 0 then
+                local results = gg.getResults(result_count)
+                
+                local target_addr
+            
+                if entry.pattern and #entry.pattern > 0 then
+                    gg.refineNumber(results[1].value, 1)
+                    local _results = gg.getResults(result_count)
+                    for _, result in ipairs(_results) do
+                        if verify_pattern(result.address, entry.pattern) then
+                            target_addr = result.address + entry.offset
+                            break
+                        end
+                    end
+                else
+                    -- Legacy behavior
+                    target_addr = results[1].address + entry.offset
+                end
+            
+                if target_addr then
+                    new_cache[i] = target_addr
+            
+                    table.insert(writes, {
+                        address = target_addr,
+                        flags = gg.TYPE_DWORD,
+                        value = enable and entry.patch or entry.unpatch
+                    })
+                else
+                    fail_count = fail_count + 1
+                end
             else
                 fail_count = fail_count + 1
             end
@@ -20486,6 +20565,10 @@ return {
         fakeVip = {
             {scan = "h 93 D6 01 F9 68 B2 40 39 1F 01 00 71", offset = 4, patch = "h 28 00 80 52", unpatch = "h 68 B2 40 39"},
         },
+        
+        fakeUnlock = {
+            {scan = "h 36 C5 40 F9", pattern = { { offset = 0x164, valid = {"h E0 03 1F 2A"} }, { offset = 0x16C, valid = {"h 20 00 80 52"} } }, offset = 0x164, patch = "h 20 00 80 52", unpatch = "h E0 03 1F 2A"},
+        },
 
         autoDetach = {
             {scan = "h 08 20 20 1E 85 00 00 54 E0 03 13 AA E1 03 14 AA", offset = 4, patch = "h 1F 20 03 D5", unpatch = "h 85 00 00 54"},
@@ -20754,7 +20837,9 @@ return function(container)
             done()
         end)
     end)
-
+    
+    addArchModule(container, "fake_unlock", "Fake Unlock", "Unlock all customizations temporarily", "switch", nil, aobs.fakeUnlock)
+    
     addArchModule(container, "fake_vip", "Fake VIP", "Toggle vip subscription state locally", "switch", nil, aobs.fakeVip)
     
     addModule(container, "fake_rank", "Fake Rank", "Set your rank to fake legendary automatically", "button", nil, function(done)
@@ -22517,10 +22602,10 @@ return function(container)
     
     local function getFileName(path)
         path = tostring(path or "")
-        local name = path:match("([^/\\]+)$") or "wallpaper.png"
+        local name = path:match("([^/\\]+)$") or "background image.png"
         name = name:gsub("[^%w%._%-]", "_")
         if name == "" then
-            name = "wallpaper.png"
+            name = "background image.png"
         end
         return name
     end
@@ -22623,8 +22708,7 @@ return function(container)
                 menuView = nil
                 activeView = nil
             end
-    
-            -- Rebuild and re-show
+
             createMenuView("settings")
             switchToMenu()
         end)
@@ -22738,7 +22822,17 @@ return function(container)
     -- Allow user to changes colors of this script.
     addModuleSep(container, "UI Customizations")
     
-    addModule(container, "export_theme", "Export Theme", "Export custom theme and wallpaper to cloud.", "button", nil, function(done)
+    addModule(container, "reset_theme", "Reset Theme", "Reset custom theme and background image to the default", "button", nil, function(done)
+        local TAG = "ResetTheme"
+        
+        memory:delete_global("ui_prefs")
+        UI = loadModule("configs/colors.lua")
+        
+        done()
+        rebuildMenu()
+    end)
+    
+    addModule(container, "export_theme", "Export Theme", "Export custom theme and background image to cloud", "button", nil, function(done)
         local TAG = "ExportTheme"
         local exportUI = deepCopy(UI)
     
@@ -22746,6 +22840,7 @@ return function(container)
             local exportData = {
                 version = 5,
                 kind = "theme_bundle_url",
+                name = (UI.BG_IMAGE.PATH:match("([^/\\]+)$") or "background_image_" .. tostring(os.time()).. ".png"),
                 ui = exportUI,
                 img_url = imageUrl
             }
@@ -22764,9 +22859,9 @@ return function(container)
         end
     
         if UI.BG_IMAGE and UI.BG_IMAGE.PATH and UI.BG_IMAGE.PATH ~= "no_media" then
-            showDialog("Upload Size Warning", "Include custom wallpaper? It will increase the Upload Size depending what size is your image is.",
+            showDialog("Upload Size Warning", "Include custom background image? It will increase the Upload Size depending what size is your image is.",
             {"Yes", function()
-                showToast("Uploading wallpaper to Catbox...")
+                showToast("Uploading background image to Catbox...")
                 local url, err = catbox.upload(UI.BG_IMAGE.PATH)
                 if url then finalizeExport(url) else showDialog("Error", "Image upload failed: " .. err, "OK"); done() end
             end},
@@ -22778,7 +22873,7 @@ return function(container)
         done()
     end)
         
-    addModule(container, "import_theme", "Import Theme", "Import custom theme from cloud.", "input", {
+    addModule(container, "import_theme", "Import Theme", "Import custom theme from cloud", "input", {
         { hint = "Enter Share ID", value = "", type = "text" }
     }, function(done, val)
         local TAG = "ImportTheme"
@@ -22793,10 +22888,10 @@ return function(container)
                     for k, v in pairs(exportData.ui) do if UI[k] ~= nil then UI[k] = deepCopy(v) end end
     
                     if exportData.img_url then
-                        showToast("Downloading wallpaper...")
-                        local dest = gg.FILES_DIR .. "/imported_bg_" .. os.time() .. ".png"
+                        showToast("Downloading background image...")
+                        local dest = gg.FILES_DIR .. "/" .. (exportData.name or "background_image_" .. tostring(os.time()).. ".png")
                         local path, dErr = catbox.download(exportData.img_url, dest)
-                        if path then UI.BG_IMAGE.PATH = path else LOG.error(TAG, "Wallpaper download failed") end
+                        if path then UI.BG_IMAGE.PATH = path else LOG.error(TAG, "Background image download failed") end
                     else
                         UI.BG_IMAGE.PATH = "no_media"
                     end
@@ -22870,13 +22965,14 @@ return function(container)
             
             saveAndRefresh()
             done()
+            rebuildMenu()
         end
     )
 
     -- ── Background Image ────────────────────────────────────────────────
-    -- Updates the absolute storage location path pointing to the wallpaper image.
+    -- Updates the absolute storage location path pointing to the background image image.
 
-    addModule(container, "bg_image_picker", "Background Image", "Tap to modify the absolute file path destination for your custom layout wallpaper.", "button", nil, function(done)
+    addModule(container, "bg_image_picker", "Background Image", "Tap to modify the absolute file path destination for your custom layout background image", "button", nil, function(done)
         local response = gg.prompt(
             { "Absolute Image File Path (.jpg or .png):", "Remove BG Image" },
             { UI.BG_IMAGE.PATH == "no_media" and gg.EXT_STORAGE or UI.BG_IMAGE.PATH, false },
@@ -23890,7 +23986,7 @@ function createIconView()
     local iconRoot = LinearLayout(activity)
     iconRoot.setOrientation(0)
     iconRoot.setGravity(Gravity.BOTTOM)
-    iconRoot.setBackground(getSkin(UI.HEADER, 16))
+    iconRoot.setBackground(getSkin(UI.HEADER, 0))
     iconRoot.setPadding(dp(15), dp(10), dp(10), dp(10))
     
     -- Explicit dp(WIN_W) width with plain LayoutParams (not LinLayoutParams).
@@ -23905,7 +24001,7 @@ function createIconView()
     local title = TextView(activity)
     title.setText("VOID")
     title.setTextColor(UI.LOGO)
-    title.setTextSize(1, 15)
+    title.setTextSize(1, 16)
     title.setTypeface(Typeface.create("sans-serif-black", Typeface.BOLD))
     iconRoot.addView(title)
 
@@ -24015,7 +24111,7 @@ local function _buildMenuHeader(root)
     headerGroup.setOrientation(0)
     headerGroup.setGravity(Gravity.CENTER_VERTICAL)
     headerGroup.setPadding(dp(15), dp(10), dp(10), dp(10))
-    headerGroup.setBackground(getSkin(UI.HEADER, 16))
+    headerGroup.setBackground(getSkin(UI.HEADER, 0))
     headerGroup.setClickable(true)
     headerGroup.setFocusable(false)
 

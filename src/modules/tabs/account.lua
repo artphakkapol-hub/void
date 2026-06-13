@@ -111,7 +111,9 @@ return function(container)
             done()
         end)
     end)
-
+    
+    addArchModule(container, "fake_unlock", "Fake Unlock", "Unlock all customizations temporarily", "switch", nil, aobs.fakeUnlock)
+    
     addArchModule(container, "fake_vip", "Fake VIP", "Toggle vip subscription state locally", "switch", nil, aobs.fakeVip)
     
     addModule(container, "fake_rank", "Fake Rank", "Set your rank to fake legendary automatically", "button", nil, function(done)
