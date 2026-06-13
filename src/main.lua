@@ -474,8 +474,8 @@ if auto_update and not IS_DEV then
             f:close()
             
             showDialog(
-                "Void Updated to v" .. remote_ver,
-                "Void has been updated successfully.\n\nThe new script has been saved as:\nvoid_v" .. remote_ver .. ".lua\n\nRun it from GameGuardian to apply the update.",
+                "VOID Updated to v" .. remote_ver,
+                "VOID has been updated successfully.\n\nThe new script has been saved as:\nvoid_v" .. remote_ver .. ".lua\n\nRun it from GameGuardian to apply the update.",
                 {"Got it"}
             )
             
@@ -567,7 +567,7 @@ if not exit then
     vm_status, game_path = detectVirtualSpace()
     
     if vm_status == 3 then
-        showDialog("Permission Error", "Please allow the script to run the terminal command. Check Void source code if you want to verify.", {"OK"})
+        showDialog("Permission Error", "Please allow the script to run the terminal command. Check VOID source code if you want to verify.", {"OK"})
         os.exit()
     end
     
