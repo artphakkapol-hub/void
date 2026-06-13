@@ -472,7 +472,13 @@ if auto_update and not IS_DEV then
             end
             f:write(content)
             f:close()
-
+            
+            showDialog(
+                "Void Updated to v" .. remote_ver,
+                "Void has been updated successfully.\n\nThe new script has been saved as:\nvoid_v" .. remote_ver .. ".lua\n\nRun it from GameGuardian to apply the update.",
+                {"Got it"}
+            )
+            
             showToast("Launching v" .. remote_ver .. "...")
             local ok, load_err = pcall(function() dofile(new_path) end)
             if not ok then
