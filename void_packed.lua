@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-13 13:21:43
+-- Packed by bundle.py  •  2026-06-13 14:31:15
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -19134,24 +19134,8 @@ end
 __vfs['core/engines/arch.lua'] = function(...)
 -- core/engines/arch.lua — Architecture detection + manifest-driven data loading
 -- Sets globals: DEVICE_ARCH, BaseLib, aobs, offsets
--- Depends on: loadModule, memory (already loaded), gg, showDialog
-
--- ── Semver helpers ────────────────────────────────────────────────────────────
-
-local function semver(v)
-    local major, minor, patch = v:match("(%d+)%.(%d+)%.(%d+)")
-    if not major then return 0 end
-    return tonumber(major) * 1e6 + tonumber(minor) * 1e3 + tonumber(patch)
-end
-
--- Parses "1.73.0" (exact) or "1.73.0-1.73.2" (inclusive range) keys.
-local function in_range(range, version)
-    local lo, hi = range:match("^([%d%.]+)-([%d%.]+)$")
-    if not lo then lo = range; hi = range end
-    local v = semver(version)
-    return v >= semver(lo) and v <= semver(hi)
-end
-
+-- Depends on: loadModule, memory (already loaded), gg, showDialog, LOG,
+--             DEFAULT_ARCH (set in main.lua)
 
 -- ── Architecture detection ────────────────────────────────────────────────────
 
@@ -19190,8 +19174,12 @@ end
 
 
 -- ── Manifest-driven data resolution ──────────────────────────────────────────
+--
+-- See data/manifest.lua for the full structure/resolution writeup. Short
+-- version: arch_t[major][minor].base (or arch_t.default_base) is the full
+-- baseline; arch_t[major][minor][patch] is an optional diff-only override,
+-- shallow-merged on top per `aobs` group key / `offsets` key.
 
--- manifest.lua returns: { [version_range] = { [arch] = "data/path/to/file.lua" } }
 local manifest    = loadModule("data/manifest.lua")
 local pkg_version = gg.getTargetInfo().versionName
 LOG.info("Arch", "Game version: " .. tostring(pkg_version) .. " | Arch: " .. tostring(DEVICE_ARCH))
@@ -19199,33 +19187,60 @@ LOG.info("Arch", "Game version: " .. tostring(pkg_version) .. " | Arch: " .. tos
 if type(pkg_version) ~= "string" then
     LOG.fatal("Arch", "pkg_version is not a string: " .. type(pkg_version))
     showDialog("Warning", "Game version unknown. Try again after the game loads.", "OK")
-    os.exit()
+    os.exit(0)
 end
 
-local function resolve_data(version, arch)
-    for range, arch_map in pairs(manifest) do
-        if in_range(range, version) then
-            local path = arch_map[arch] or arch_map[DEFAULT_ARCH]
-            if path then return loadModule(path) end
-        end
-    end
-    return nil
+local function shallow_merge(base_t, override_t)
+    local merged = {}
+    for k, v in pairs(base_t or {}) do merged[k] = v end
+    for k, v in pairs(override_t or {}) do merged[k] = v end
+    return merged
 end
 
-local version_data = resolve_data(pkg_version, DEVICE_ARCH)
-
-if not version_data then
-    LOG.fatal("Arch", string.format("No data found for v%s on %s — unsupported version", pkg_version, DEVICE_ARCH))
-    showDialog("Unsupported Version",
-        ("No data found for v%s on %s."):format(pkg_version, DEVICE_ARCH), "OK")
-    os.exit()
+local function count(t)
+    local n = 0
+    for _ in pairs(t) do n = n + 1 end
+    return n
 end
 
-aobs    = version_data.aobs    or {}
-offsets = version_data.offsets or {}
-LOG.info("Arch", string.format("Data loaded OK | aobs=%d entries | offsets=%d entries",
-    (function() local n=0; for _ in pairs(aobs) do n=n+1 end; return n end)(),
-    (function() local n=0; for _ in pairs(offsets) do n=n+1 end; return n end)()))
+-- Resolve which arch's tree to use. Unsupported arches fall back to
+-- DEFAULT_ARCH's tree so the script still runs (with a warning) instead of
+-- hard-exiting.
+local arch_t = manifest[DEVICE_ARCH]
+if not arch_t then
+    LOG.warn("Arch", string.format(
+        "No manifest entry for '%s' — falling back to '%s' (lib patches likely won't match)",
+        DEVICE_ARCH, DEFAULT_ARCH))
+    arch_t = manifest[DEFAULT_ARCH]
+end
+
+if not arch_t or not arch_t.default_base then
+    LOG.fatal("Arch", "Manifest missing default_base for resolved arch — cannot continue")
+    showDialog("Warning", "Internal error: no base data available for this architecture.", "OK")
+    
+end
+
+local major, minor, patch = pkg_version:match("(%d+)%.(%d+)%.(%d+)")
+local minor_t = ((arch_t[major] or {})[minor]) or {}
+
+local base_path = minor_t.base or arch_t.default_base
+local base = loadModule(base_path)
+LOG.info("Arch", string.format("Base loaded: %s", base_path))
+
+local override_path = minor_t[patch]
+local override = nil
+if override_path then
+    override = loadModule(override_path)
+    LOG.info("Arch", string.format("Override matched: v%s.%s.%s -> %s", major, minor, patch, override_path))
+else
+    LOG.info("Arch", string.format("No override for v%s.%s.%s — using base as-is", major, minor, patch))
+end
+
+aobs    = shallow_merge(base.aobs, override and override.aobs)
+offsets = shallow_merge(base.offsets, override and override.offsets)
+
+LOG.info("Arch", string.format("Data resolved | aobs=%d groups | offsets=%d entries",
+    count(aobs), count(offsets)))
 
 end
 
@@ -20353,32 +20368,137 @@ return paste
 end
 
 __vfs['data/manifest.lua'] = function(...)
--- data/manifest.lua — Version × Architecture data manifest
+-- data/manifest.lua — Version × Architecture data tree
 --
--- Structure:
---   [version_range] = {
---       [arch] = "data/<arch>/<slot>.lua",
---       ...
+-- ── Structure ─────────────────────────────────────────────────────────────
+--
+--   [arch] = {
+--       default_base = "data/<arch>/base.lua",  -- REQUIRED. Also marks this
+--                                                 -- arch as supported (its
+--                                                 -- presence = arch_t exists).
+--
+--       [major] = {
+--           [minor] = {
+--               base = "data/<arch>/base_X.Y.lua",  -- OPTIONAL. New full
+--                                                     -- baseline for this
+--                                                     -- X.Y era. Omit to
+--                                                     -- inherit default_base.
+--
+--               [patch] = "data/<arch>/vX.Y.Z.lua",  -- OPTIONAL. Diff-only
+--                                                      -- override, merged on
+--                                                      -- top of `base` above.
+--           },
+--       },
 --   }
 --
--- Version range rules:
---   "1.73.0"           → exact match
---   "1.73.0-1.73.9"    → inclusive semver range (major*1e6 + minor*1e3 + patch)
+--   major/minor/patch are STRING keys ("1", "73", "3"), taken verbatim from
+--   the game's versionName "1.73.3".
 --
--- Arch keys must match ARCH_MAP output in core/arch.lua:
---   "arm64-v8a", "armeabi-v7a", "x86_64", "x86"
+-- ── Resolution (see core/engines/arch.lua) ───────────────────────────────────
 --
--- When a device arch has no dedicated entry for a version range, core/arch.lua
--- falls back to DEFAULT_ARCH automatically.
+--   1. arch_t = manifest[DEVICE_ARCH], or manifest[DEFAULT_ARCH] if the
+--      current arch has no entry (with a warning — lib patches likely
+--      won't match on the wrong arch's base).
 --
--- To add a new game version:
---   1. Add a new range key below.
---   2. Create the corresponding data file(s) in data/<arch>/.
---   3. No changes to core/ required.
+--   2. minor_t = arch_t[major][minor], or {} if that major/minor combo
+--      isn't mapped yet (brand new version — falls through to step 3/4
+--      with no override, using default_base as-is).
+--
+--   3. base_path = minor_t.base or arch_t.default_base
+--      → loaded as the full baseline.
+--
+--   4. override_path = minor_t[patch] (may be nil)
+--      → if present, shallow-merged on top of base per `aobs` group key
+--        and per `offsets` key.
+--
+-- ── When to add what ─────────────────────────────────────────────────────────
+--
+--   • Most patch bumps change NOTHING → no entry needed at all. They fall
+--     through to default_base (or the era's `base`) untouched.
+--
+--   • A patch bump shifts ONE offset → add a tiny diff file under
+--     [major][minor][patch], e.g. v1.73.3.lua containing just that key.
+--
+--   • A minor/major bump rewrites everything (new lib, new AOB bytes
+--     everywhere) → write a fresh full base_X.Y.lua ONCE, point
+--     [major][minor].base at it. Subsequent patches in that era go back
+--     to being tiny diffs against THIS new base.
+--
+-- ── Adding a new arch ───────────────────────────────────────────────────────
+--   1. Create data/<arch>/base.lua (full aobs + offsets).
+--   2. Add manifest[<arch>] = { default_base = "data/<arch>/base.lua" }.
+--   3. Add version entries as needed — no changes to core/ required.
 
 return {
-    ["1.73.0-1.73.2"] = {
-        ["arm64-v8a"] = "data/arm64-v8a/v1.73.x.lua"
+
+    ["arm64-v8a"] = {
+        default_base = "data/arm64-v8a/1.73.lua", -- 1.73
+
+        ["1"] = {
+            ["73"] = {
+                base = "data/arm64-v8a/1.73.lua",
+                ["3"] = "data/arm64-v8a/1.73.3.lua",
+            },
+            
+        },
+    },
+
+}
+
+end
+
+__vfs['data/arm64-v8a/1.73.3.lua'] = function(...)
+-- data/arm64-v8a/1.73.3.lua — Override for 1.73.3 (arm64-v8a)
+--
+-- Inherits everything from base.lua EXCEPT the keys listed below.
+-- See data/manifest.lua for how merging works.
+--
+-- Changed:
+--   lib_setDistanceBase shifted (0x2009C28 → 0x200BC58) due to lib
+--   recompilation in this version.
+
+return {
+    offsets = {
+        lib_setDistanceBase = 0x200BC58,
+    },
+}
+
+end
+
+__vfs['data/arm64-v8a/1.73.lua'] = function(...)
+-- data/arm64-v8a/base.lua — Baseline aobs + offsets for arm64-v8a
+--
+-- Always loaded first by core/engines/arch.lua. Covers 1.73.0–1.73.2 as-is,
+-- and serves as the fallback for any game version with no entry (or no
+-- arch-specific file) in data/manifest.lua's `overrides`.
+--
+-- AoB entry format:
+--   scan    = hex byte pattern (GG TYPE_BYTE search string)
+--   offset  = byte delta from scan hit to target instruction
+--   patch   = bytes to write when enabling
+--   unpatch = original bytes to restore when disabling
+--
+-- Offset entry format:
+--   key = byte offset (relative to BaseLib unless noted otherwise)
+
+return {
+    aobs = {
+        fakeVip = {
+            {scan = "h 93 D6 01 F9 68 B2 40 39 1F 01 00 71", offset = 4, patch = "h 28 00 80 52", unpatch = "h 68 B2 40 39"},
+        },
+
+        autoDetach = {
+            {scan = "h 08 20 20 1E 85 00 00 54 E0 03 13 AA E1 03 14 AA", offset = 4, patch = "h 1F 20 03 D5", unpatch = "h 85 00 00 54"},
+        },
+
+        autoWinPatches = {
+            {scan = "h E8 5F 5D A9 16 61 40 B9", offset = 4, patch = "h 55 00 80 52", unpatch = "h 16 61 40 B9"},
+            {scan = "h E0 5F 40 F9 09 4D 40 BD", offset = 4, patch = "h 0A 90 32 1E", unpatch = "h 09 4D 40 BD"},
+        },
+    },
+
+    offsets = {
+        lib_setDistanceBase = 0x2009C28,
     },
 }
 

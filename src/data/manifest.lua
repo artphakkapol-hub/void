@@ -1,28 +1,76 @@
--- data/manifest.lua — Version × Architecture data manifest
+-- data/manifest.lua — Version × Architecture data tree
 --
--- Structure:
---   [version_range] = {
---       [arch] = "data/<arch>/<slot>.lua",
---       ...
+-- ── Structure ─────────────────────────────────────────────────────────────
+--
+--   [arch] = {
+--       default_base = "data/<arch>/base.lua",  -- REQUIRED. Also marks this
+--                                                 -- arch as supported (its
+--                                                 -- presence = arch_t exists).
+--
+--       [major] = {
+--           [minor] = {
+--               base = "data/<arch>/base_X.Y.lua",  -- OPTIONAL. New full
+--                                                     -- baseline for this
+--                                                     -- X.Y era. Omit to
+--                                                     -- inherit default_base.
+--
+--               [patch] = "data/<arch>/vX.Y.Z.lua",  -- OPTIONAL. Diff-only
+--                                                      -- override, merged on
+--                                                      -- top of `base` above.
+--           },
+--       },
 --   }
 --
--- Version range rules:
---   "1.73.0"           → exact match
---   "1.73.0-1.73.9"    → inclusive semver range (major*1e6 + minor*1e3 + patch)
+--   major/minor/patch are STRING keys ("1", "73", "3"), taken verbatim from
+--   the game's versionName "1.73.3".
 --
--- Arch keys must match ARCH_MAP output in core/arch.lua:
---   "arm64-v8a", "armeabi-v7a", "x86_64", "x86"
+-- ── Resolution (see core/engines/arch.lua) ───────────────────────────────────
 --
--- When a device arch has no dedicated entry for a version range, core/arch.lua
--- falls back to DEFAULT_ARCH automatically.
+--   1. arch_t = manifest[DEVICE_ARCH], or manifest[DEFAULT_ARCH] if the
+--      current arch has no entry (with a warning — lib patches likely
+--      won't match on the wrong arch's base).
 --
--- To add a new game version:
---   1. Add a new range key below.
---   2. Create the corresponding data file(s) in data/<arch>/.
---   3. No changes to core/ required.
+--   2. minor_t = arch_t[major][minor], or {} if that major/minor combo
+--      isn't mapped yet (brand new version — falls through to step 3/4
+--      with no override, using default_base as-is).
+--
+--   3. base_path = minor_t.base or arch_t.default_base
+--      → loaded as the full baseline.
+--
+--   4. override_path = minor_t[patch] (may be nil)
+--      → if present, shallow-merged on top of base per `aobs` group key
+--        and per `offsets` key.
+--
+-- ── When to add what ─────────────────────────────────────────────────────────
+--
+--   • Most patch bumps change NOTHING → no entry needed at all. They fall
+--     through to default_base (or the era's `base`) untouched.
+--
+--   • A patch bump shifts ONE offset → add a tiny diff file under
+--     [major][minor][patch], e.g. v1.73.3.lua containing just that key.
+--
+--   • A minor/major bump rewrites everything (new lib, new AOB bytes
+--     everywhere) → write a fresh full base_X.Y.lua ONCE, point
+--     [major][minor].base at it. Subsequent patches in that era go back
+--     to being tiny diffs against THIS new base.
+--
+-- ── Adding a new arch ───────────────────────────────────────────────────────
+--   1. Create data/<arch>/base.lua (full aobs + offsets).
+--   2. Add manifest[<arch>] = { default_base = "data/<arch>/base.lua" }.
+--   3. Add version entries as needed — no changes to core/ required.
 
 return {
-    ["1.73.0-1.73.2"] = {
-        ["arm64-v8a"] = "data/arm64-v8a/v1.73.x.lua"
+
+    ["arm64-v8a"] = {
+        default_base = "data/arm64-v8a/1.73.lua", -- 1.73
+
+        ["1"] = {
+            ["73"] = {
+                base = "data/arm64-v8a/1.73.lua",
+                ["3"] = "data/arm64-v8a/1.73.3.lua",
+            },
+            
+        },
     },
+
 }

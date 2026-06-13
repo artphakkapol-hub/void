@@ -1,23 +1,7 @@
 -- core/engines/arch.lua — Architecture detection + manifest-driven data loading
 -- Sets globals: DEVICE_ARCH, BaseLib, aobs, offsets
--- Depends on: loadModule, memory (already loaded), gg, showDialog
-
--- ── Semver helpers ────────────────────────────────────────────────────────────
-
-local function semver(v)
-    local major, minor, patch = v:match("(%d+)%.(%d+)%.(%d+)")
-    if not major then return 0 end
-    return tonumber(major) * 1e6 + tonumber(minor) * 1e3 + tonumber(patch)
-end
-
--- Parses "1.73.0" (exact) or "1.73.0-1.73.2" (inclusive range) keys.
-local function in_range(range, version)
-    local lo, hi = range:match("^([%d%.]+)-([%d%.]+)$")
-    if not lo then lo = range; hi = range end
-    local v = semver(version)
-    return v >= semver(lo) and v <= semver(hi)
-end
-
+-- Depends on: loadModule, memory (already loaded), gg, showDialog, LOG,
+--             DEFAULT_ARCH (set in main.lua)
 
 -- ── Architecture detection ────────────────────────────────────────────────────
 
@@ -56,8 +40,12 @@ end
 
 
 -- ── Manifest-driven data resolution ──────────────────────────────────────────
+--
+-- See data/manifest.lua for the full structure/resolution writeup. Short
+-- version: arch_t[major][minor].base (or arch_t.default_base) is the full
+-- baseline; arch_t[major][minor][patch] is an optional diff-only override,
+-- shallow-merged on top per `aobs` group key / `offsets` key.
 
--- manifest.lua returns: { [version_range] = { [arch] = "data/path/to/file.lua" } }
 local manifest    = loadModule("data/manifest.lua")
 local pkg_version = gg.getTargetInfo().versionName
 LOG.info("Arch", "Game version: " .. tostring(pkg_version) .. " | Arch: " .. tostring(DEVICE_ARCH))
@@ -65,30 +53,57 @@ LOG.info("Arch", "Game version: " .. tostring(pkg_version) .. " | Arch: " .. tos
 if type(pkg_version) ~= "string" then
     LOG.fatal("Arch", "pkg_version is not a string: " .. type(pkg_version))
     showDialog("Warning", "Game version unknown. Try again after the game loads.", "OK")
-    os.exit()
+    os.exit(0)
 end
 
-local function resolve_data(version, arch)
-    for range, arch_map in pairs(manifest) do
-        if in_range(range, version) then
-            local path = arch_map[arch] or arch_map[DEFAULT_ARCH]
-            if path then return loadModule(path) end
-        end
-    end
-    return nil
+local function shallow_merge(base_t, override_t)
+    local merged = {}
+    for k, v in pairs(base_t or {}) do merged[k] = v end
+    for k, v in pairs(override_t or {}) do merged[k] = v end
+    return merged
 end
 
-local version_data = resolve_data(pkg_version, DEVICE_ARCH)
-
-if not version_data then
-    LOG.fatal("Arch", string.format("No data found for v%s on %s — unsupported version", pkg_version, DEVICE_ARCH))
-    showDialog("Unsupported Version",
-        ("No data found for v%s on %s."):format(pkg_version, DEVICE_ARCH), "OK")
-    os.exit()
+local function count(t)
+    local n = 0
+    for _ in pairs(t) do n = n + 1 end
+    return n
 end
 
-aobs    = version_data.aobs    or {}
-offsets = version_data.offsets or {}
-LOG.info("Arch", string.format("Data loaded OK | aobs=%d entries | offsets=%d entries",
-    (function() local n=0; for _ in pairs(aobs) do n=n+1 end; return n end)(),
-    (function() local n=0; for _ in pairs(offsets) do n=n+1 end; return n end)()))
+-- Resolve which arch's tree to use. Unsupported arches fall back to
+-- DEFAULT_ARCH's tree so the script still runs (with a warning) instead of
+-- hard-exiting.
+local arch_t = manifest[DEVICE_ARCH]
+if not arch_t then
+    LOG.warn("Arch", string.format(
+        "No manifest entry for '%s' — falling back to '%s' (lib patches likely won't match)",
+        DEVICE_ARCH, DEFAULT_ARCH))
+    arch_t = manifest[DEFAULT_ARCH]
+end
+
+if not arch_t or not arch_t.default_base then
+    LOG.fatal("Arch", "Manifest missing default_base for resolved arch — cannot continue")
+    showDialog("Warning", "Internal error: no base data available for this architecture.", "OK")
+    
+end
+
+local major, minor, patch = pkg_version:match("(%d+)%.(%d+)%.(%d+)")
+local minor_t = ((arch_t[major] or {})[minor]) or {}
+
+local base_path = minor_t.base or arch_t.default_base
+local base = loadModule(base_path)
+LOG.info("Arch", string.format("Base loaded: %s", base_path))
+
+local override_path = minor_t[patch]
+local override = nil
+if override_path then
+    override = loadModule(override_path)
+    LOG.info("Arch", string.format("Override matched: v%s.%s.%s -> %s", major, minor, patch, override_path))
+else
+    LOG.info("Arch", string.format("No override for v%s.%s.%s — using base as-is", major, minor, patch))
+end
+
+aobs    = shallow_merge(base.aobs, override and override.aobs)
+offsets = shallow_merge(base.offsets, override and override.offsets)
+
+LOG.info("Arch", string.format("Data resolved | aobs=%d groups | offsets=%d entries",
+    count(aobs), count(offsets)))
