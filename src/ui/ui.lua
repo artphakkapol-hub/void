@@ -1047,49 +1047,10 @@ function createMenuView(lastTab)
 
     local base = FrameLayout(activity)
     base.setLayoutParams(LayoutParams(-2, -2))
-    
-    local isBgLoaded = false
 
-    local targetPath = UI.BG_IMAGE.PATH
-    if targetPath ~= "no_media" then
-        local fileCheck = io.open(targetPath, "r")
-        
-        if fileCheck then
-            fileCheck:close()
-            
-            local bgImage = ImageView(activity)
-            local bgParams = FrameLayout.LayoutParams(-1, -1)
-            bgImage.setLayoutParams(bgParams)
-            bgImage.setScaleType(ScaleType.FIT_XY)
-            
-            local bitmap = BitmapFactory.decodeFile(targetPath)
-            if bitmap then
-                local drawable = BitmapDrawable(activity.getResources(), bitmap)
-                bgImage.setImageDrawable(drawable)
-                bgImage.setImageAlpha(UI.BG_IMAGE.ALPHA & 0xFF)
-                
-                base.addView(bgImage)
-                isBgLoaded = true -- Set state flag to true
-                LOG.info("createMenuView", "Configurable static background mounted successfully.")
-            else
-                LOG.error("createMenuView", "Failed to decode static target bitmap asset data structure.")
-            end
-        else
-            LOG.warn("createMenuView", "Configured background asset completely missing at path: " .. tostring(targetPath))
-        end
-    end
-
-    -- Outer: VERTICAL — header on top, then the sidebar+content row below
+    -- Outer: VERTICAL — header on top, then the content area below
     local outer = LinearLayout(activity)
     outer.setOrientation(1)
-    
-    -- Dynamic Adaptive Styling Configuration
-    if isBgLoaded then
-        outer.setBackgroundColor(0x00000000)
-    else
-        outer.setBackground(getSkin(UI.BG, 16, 0, UI.STROKE))
-    end
-
     outer.setLayoutParams(FrameLayout.LayoutParams(dp(WIN_W), -2))
 
     outer.setFocusable(true)
@@ -1110,19 +1071,70 @@ function createMenuView(lastTab)
         end
     })
 
-    -- Header sits at the top of outer
+    -- Header on top
     _buildMenuHeader(outer)
 
-    -- Inner: HORIZONTAL — sidebar tabs on the left, content scroll on the right
-    local inner = LinearLayout(activity)
-    inner.setOrientation(0)
+    -- Use a FrameLayout so background can sit behind everything else
+    local inner = FrameLayout(activity)
     local innerParams = LinLayoutParams(-1, dp(WIN_H))
     inner.setLayoutParams(innerParams)
     _menuRoot = inner
+
+    local isBgLoaded = false
+    local targetPath = UI.BG_IMAGE.PATH
+
+    -- Background layer
+    if targetPath ~= "no_media" then
+        local fileCheck = io.open(targetPath, "r")
+
+        if fileCheck then
+            fileCheck:close()
+
+            local bitmap = BitmapFactory.decodeFile(targetPath)
+            if bitmap then
+                local bgImage = ImageView(activity)
+                bgImage.setLayoutParams(FrameLayout.LayoutParams(-1, -1))
+                bgImage.setScaleType(ScaleType.FIT_XY)
+
+                local drawable = BitmapDrawable(activity.getResources(), bitmap)
+                bgImage.setImageDrawable(drawable)
+                bgImage.setImageAlpha(UI.BG_IMAGE.ALPHA & 0xFF)
+
+                inner.addView(bgImage) -- background goes in first
+                isBgLoaded = true
+                LOG.info("createMenuView", "Configurable static background mounted successfully.")
+            else
+                LOG.error("createMenuView", "Failed to decode static target bitmap asset data structure.")
+            end
+        else
+            LOG.warn("createMenuView", "Configured background asset completely missing at path: " .. tostring(targetPath))
+        end
+    end
+
+    -- Foreground content layer
+    local contentLayer = LinearLayout(activity)
+    contentLayer.setOrientation(0)
+    contentLayer.setLayoutParams(FrameLayout.LayoutParams(-1, -1))
+    contentLayer.setClickable(false)
+    contentLayer.setFocusable(false)
+
+    inner.addView(contentLayer) -- content sits above the bg image
+
+    -- Make sure content is above the bg
+    contentLayer.bringToFront()
+
+    -- Dynamic Adaptive Styling Configuration
+    if isBgLoaded then
+        outer.setBackgroundColor(0x00000000)
+    else
+        outer.setBackground(getSkin(UI.BG, 16, 0, UI.STROKE))
+    end
+
     outer.addView(inner)
 
-    local firstTab, firstTabId = _buildMenuTabs(inner, lastTab)
-    local scroll = _buildMenuContent(inner)
+    -- Build UI into the foreground layer, not the background layer
+    local firstTab, firstTabId = _buildMenuTabs(contentLayer, lastTab)
+    local scroll = _buildMenuContent(contentLayer)
     _menuScroll = scroll
 
     -- Defer first-tab load so createMenuView() fully returns before
