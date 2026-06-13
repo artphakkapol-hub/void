@@ -418,7 +418,7 @@ return function(container)
                             
                             UI.BG_IMAGE.PATH = parsedPath
                             saveAndRefresh()
-                            showDialog("Successfully", "Restart this script to see the results", {"OK"})
+                            showDialog("Successfully", "Background image added", {"OK"})
                         else
                             showDialog("Failed", "File not found or read operation refused:\n" .. tostring(parsedPath), {"OK"})
                         end

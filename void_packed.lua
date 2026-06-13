@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-13 14:31:15
+-- Packed by bundle.py  •  2026-06-13 14:35:07
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -22900,7 +22900,7 @@ return function(container)
                             
                             UI.BG_IMAGE.PATH = parsedPath
                             saveAndRefresh()
-                            showDialog("Successfully", "Restart this script to see the results", {"OK"})
+                            showDialog("Successfully", "Background image added", {"OK"})
                         else
                             showDialog("Failed", "File not found or read operation refused:\n" .. tostring(parsedPath), {"OK"})
                         end
