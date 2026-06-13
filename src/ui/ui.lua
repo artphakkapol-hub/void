@@ -94,7 +94,7 @@ local _TAB_ICONS = {
 ---@param name string Display name for the tab
 ---@return View The created tab container
 function addTab(parent, id, name)
-    local icon_char = _TAB_ICONS[id] or "\xe2\x80\xa2"  -- bullet fallback
+    local icon_char = "" -- _TAB_ICONS[id]
 
     -- Outer container (horizontal: icon | label)
     local container = LinearLayout(activity)
@@ -606,6 +606,45 @@ function addModule(parent, id, title, desc, mode, extra, callback)
     parent.addView(card)
 end
 
+
+-- ─────────────────────────────────────────────
+-- SEPARATOR
+-- ─────────────────────────────────────────────
+
+function addTabSep(parent, text)
+    local sep = TextView(activity)
+    local rp = LinLayoutParams(-1, -2)
+    rp.topMargin = dp(4)
+    rp.bottomMargin = dp(2)
+    sep.setLayoutParams(rp)
+    sep.setText(tostring(text))
+    sep.setTextColor(UI.TEXT)
+    sep.setTextSize(1, 9)
+    sep.setTypeface(Typeface.create("sans-serif", Typeface.BOLD))
+    sep.setGravity(Gravity.CENTER)
+    sep.setPadding(dp(6), dp(5), dp(6), dp(5))
+    sep.setBackground(getSkin(UI.CARD, 8))
+
+    parent.addView(sep)
+end
+
+function addModuleSep(parent, text)
+    local sep = TextView(activity)
+    local rp = LinLayoutParams(-1, -2)
+    rp.topMargin = dp(6)
+    rp.bottomMargin = dp(4)
+    sep.setLayoutParams(rp)
+    sep.setText(tostring(text))
+    sep.setTextColor(UI.TEXT)
+    sep.setTextSize(1, 13)
+    sep.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL))
+    sep.setGravity(Gravity.CENTER)
+    sep.setPadding(dp(10), dp(5), dp(10), dp(5))
+    sep.setBackground(getSkin(UI.CARD, 12, 1, UI.STROKE))
+
+    parent.addView(sep)
+end
+
 -- ─────────────────────────────────────────────
 -- RO FIELD UPDATER
 -- ─────────────────────────────────────────────
@@ -849,7 +888,7 @@ end
 ---Builds the vertical sidebar tab column and adds it to root.
 ---@param root View Parent LinearLayout (horizontal)
 ---@return View|nil firstTab, string|nil firstTabId
-local function _buildMenuTabs(root)
+local function _buildMenuTabs(root, _lastTab)
     -- Reset registry so a UI rebuild starts clean
     _tabData     = {}
     _activeTabId = nil
@@ -883,9 +922,24 @@ local function _buildMenuTabs(root)
 
     local firstTab, firstTabId = nil, nil
     local menuList = tabHandlers or {{"unknown", "unknown"}}
+    local firstTabFound = false
     for i, m in ipairs(menuList) do
-        local t = addTab(tabLayout, m[1], m[2])
-        if i == 1 then firstTab = t; firstTabId = m[1] end
+        if m[1] == "separator" then
+            addTabSep(tabLayout, m[2])
+        else
+            local t = addTab(tabLayout, m[1], m[2])
+            if _lastTab and m[1] == _lastTab then
+                firstTab = t
+                firstTabId = m[1]
+                firstTabFound = true
+            else
+                if not firstTabFound then
+                    firstTab = t
+                    firstTabId = m[1]
+                    firstTabFound = true
+                end
+            end
+        end
     end
     return firstTab, firstTabId
 end
@@ -923,7 +977,7 @@ function applyWindowResize(newW, newH)
     WIN_W = math.max(RESIZE_MIN_W, math.min(RESIZE_MAX_W, math.floor(newW)))
     WIN_H = math.max(RESIZE_MIN_H, math.min(RESIZE_MAX_H, math.floor(newH)))
     memory:save_global("window_size", { w = WIN_W, h = WIN_H })
-    showToast("Size saved! Please restart the script to apply.")
+    showToast("Size saved! Restart the script")
     exitScript()
 end
 
@@ -988,17 +1042,56 @@ end
 ---Delegates every major section to a helper function so createMenuView itself
 ---stays shallow (few locals, few bytecodes) and never overflows the JVM stack.
 ---@return View The menu FrameLayout containing all UI elements
-function createMenuView()
-    LOG.info("createMenuView", "START | activity=" .. tostring(activity) .. " WIN_W=" .. tostring(WIN_W))
+function createMenuView(lastTab)
+    LOG.info("createMenuView", "START | Initializing Configurable Background Stack")
 
     local base = FrameLayout(activity)
     base.setLayoutParams(LayoutParams(-2, -2))
+    
+    local isBgLoaded = false
+
+    local targetPath = UI.BG_IMAGE.PATH
+    if targetPath ~= "no_media" then
+        local fileCheck = io.open(targetPath, "r")
+        
+        if fileCheck then
+            fileCheck:close()
+            
+            local bgImage = ImageView(activity)
+            local bgParams = FrameLayout.LayoutParams(-1, -1)
+            bgImage.setLayoutParams(bgParams)
+            bgImage.setScaleType(ScaleType.FIT_XY)
+            
+            local bitmap = BitmapFactory.decodeFile(targetPath)
+            if bitmap then
+                local drawable = BitmapDrawable(activity.getResources(), bitmap)
+                bgImage.setImageDrawable(drawable)
+                bgImage.setImageAlpha(UI.BG_IMAGE.ALPHA & 0xFF)
+                
+                base.addView(bgImage)
+                isBgLoaded = true -- Set state flag to true
+                LOG.info("createMenuView", "Configurable static background mounted successfully.")
+            else
+                LOG.error("createMenuView", "Failed to decode static target bitmap asset data structure.")
+            end
+        else
+            LOG.warn("createMenuView", "Configured background asset completely missing at path: " .. tostring(targetPath))
+        end
+    end
 
     -- Outer: VERTICAL — header on top, then the sidebar+content row below
     local outer = LinearLayout(activity)
     outer.setOrientation(1)
-    outer.setBackground(getSkin(UI.BG, 16, 0, UI.STROKE))
+    
+    -- Dynamic Adaptive Styling Configuration
+    if isBgLoaded then
+        outer.setBackgroundColor(0x00000000)
+    else
+        outer.setBackground(getSkin(UI.BG, 16, 0, UI.STROKE))
+    end
+
     outer.setLayoutParams(FrameLayout.LayoutParams(dp(WIN_W), -2))
+
     outer.setFocusable(true)
     outer.setFocusableInTouchMode(true)
     outer.setOnTouchListener(View.OnTouchListener{
@@ -1028,7 +1121,7 @@ function createMenuView()
     _menuRoot = inner
     outer.addView(inner)
 
-    local firstTab, firstTabId = _buildMenuTabs(inner)
+    local firstTab, firstTabId = _buildMenuTabs(inner, lastTab)
     local scroll = _buildMenuContent(inner)
     _menuScroll = scroll
 

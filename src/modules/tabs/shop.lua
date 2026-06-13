@@ -39,7 +39,54 @@ return function(container)
             done()
         end)
     end)
+    
+    addModule(container, "free_purchases", "Free Purchases", "Make some daily deals purchases free in the shop tab (also works for special offers as popup/badges)", "button", nil, function(done)
+        scheduler:add(function(finishTask)
+            gg.clearResults()
+            gg.setRanges(4)
+            gg.searchNumber("h 04 65 6E 00", 1)
+            gg.refineNumber("h 04", 1)
+            
+            local results = gg.getResults(gg.getResultsCount())
+            local totalres = #results
+            if totalres > 0 then
+                local counter = 0 
+                local edits = {}
+                local tptrs = {}
+                
+                for _, r in ipairs(results) do
+                    gg.clearResults()
+                    gg.searchNumber(tostring(r.address), 32)
+                    local ptrs = gg.getResults(gg.getResultsCount())
+                    for _, sp in ipairs(ptrs) do
+                        table.insert(tptrs, {address = sp.address + 0x18, flags = 4})
+                    end
+                    counter = counter + 1
+                    showToast(tostring(counter) .. "/" .. tostring(totalres), true)
+                end
+                
+                tptrs = gg.getValues(tptrs)
+                for _, p in ipairs(tptrs) do
+                    local val = p.value
+                    if val > 0 and val < 100 then
+                        for off = 0x18, 0x2C, 4 do
+                            table.insert(edits, {address = p.address + off, flags = 4, value = 0})
+                        end
+                    end
+                end
+                
+                if #edits > 0 then
+                    gg.setValues(edits)
+                    gg.toast("Free Purchase Successful")
+                end
+            end
 
+            gg.clearResults()
+            finishTask()
+            done()
+        end)
+    end)
+    
     addModule(container, "change_chest", "Change Chest", "Change legendary chest to selected chest", "spinner", {
         options = {
             "Common Chest", "Uncommon Chest", "Rare Chest", "Epic Chest",
@@ -81,56 +128,4 @@ return function(container)
         end)
     end)
     
-    addModule(container, "free_purchases", "Free Purchases", "Make some purchases free in the shop tab (also works for special offers as popup/badges)", "button", nil, function(done)
-        scheduler:add(function(finishTask)
-            gg.clearResults()
-            gg.setRanges(4)
-            gg.searchNumber("h 04 65 6E 00", 1)
-            gg.refineNumber("h 04", 1)
-            
-            local results = gg.getResults(gg.getResultsCount())
-            local totalres = #results
-            if totalres > 0 then
-                local min = results[1].address
-                local max = results[totalres].address
-                
-                min = min - 0x4
-                max = max + 0x4
-                
-                local counter = 0 
-                local edits = {}
-                local tptrs = {}
-                
-                for _, r in ipairs(results) do
-                    gg.clearResults()
-                    gg.searchNumber(tostring(r.address), 32, false, gg.SIGN_EQUAL, min, max, 0)
-                    local ptrs = gg.getResults(gg.getResultsCount())
-                    for _, sp in ipairs(ptrs) do
-                        table.insert(tptrs, {address = sp.address + 0x18, flags = 4})
-                    end
-                    counter = counter + 1
-                    showToast(tostring(counter) .. "/" .. tostring(totalres), true)
-                end
-                
-                tptrs = gg.getValues(tptrs)
-                for _, p in ipairs(tptrs) do
-                    local val = p.value
-                    if val > 0 and val < 100 then
-                        for off = 0x18, 0x2C, 4 do
-                            table.insert(edits, {address = p.address + off, flags = 4, value = 0})
-                        end
-                    end
-                end
-                
-                if #edits > 0 then
-                    gg.setValues(edits)
-                    gg.toast("Free Purchase Successful")
-                end
-            end
-
-            gg.clearResults()
-            finishTask()
-            done()
-        end)
-    end)
 end

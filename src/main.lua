@@ -1,7 +1,7 @@
 -- VOID v1 — HCR2 Modding Framework
 -- Load order: env → imports → constants → core → patches → arch+data → modules → ui → init → loop
 
-scriptSubHeader = " v1.0.19 • By Vekendian"
+scriptSubHeader = " v1.0.20 • By Vekendian"
 
 do
     local LOG_TO_FILE  = true
@@ -9,7 +9,7 @@ do
     local LOG_TO_PRINT = true
     local MAX_FILE_BYTES = 2 * 1024 * 1024
 
-    local _log_path   = (gg.getFile():match("(.*)/") or "/sdcard") .. "/void_debug.log"
+    local _log_path   = gg.getFile():match("(.*)/") .. "/void_debug.log"
     local _log_buf    = {}
     local _line_count = 0
     local _start_time = os.clock()
@@ -101,7 +101,7 @@ do
     _safePcall = pcall
 end
 
-local script_dir = gg.getFile():match("(.*)/")
+script_dir = gg.getFile():match("(.*)/")
 
 LOG.info("MAIN", "script_dir resolved: " .. tostring(script_dir))
 
@@ -170,6 +170,10 @@ Typeface                    = import("android.graphics.Typeface")
 TypedValue                  = import("android.util.TypedValue")
 View                        = import("android.view.View")
 WindowManager               = import("android.view.WindowManager")
+ImageView                   = import("android.widget.ImageView")
+ScaleType                   = import("android.widget.ImageView$ScaleType")
+BitmapFactory               = import("android.graphics.BitmapFactory")
+BitmapDrawable              = import("android.graphics.drawable.BitmapDrawable")
 MainHandler                 = Handler(Looper.getMainLooper())
 
 
@@ -181,6 +185,13 @@ CLICK_COOLDOWN = 500
 DEVICE_ARCH    = "unknown"
 DEFAULT_ARCH   = "arm64-v8a"
 
+SCRIPT_PATH = gg.getFile() or ""
+SCRIPT_NAME = SCRIPT_PATH:match("([^/\\]+)$") or ""
+IS_DEV = SCRIPT_NAME == "main.lua"
+CURRENT_VERSION = scriptSubHeader:match("v([%d%.]+)") or "0.0.0"
+RELEASE_API = "https://api.github.com/repos/vekendianorg/void/releases/latest"
+    
+    
 UI = loadModule("configs/colors.lua")
 
 -- ── Global state ──────────────────────────────────────────────────────────────
@@ -396,51 +407,158 @@ if not target_info.x64 then
     os.exit()
 end
 
--- FIX: was referencing undeclared `vmPkg` in the LOG.warn line; now correctly
--- uses `vm_package_name` which is the renamed variable throughout.
+function fetchLatestVersion()
+    local raw, err = paste.get(RELEASE_API)
+    if not raw then return nil, nil, nil, err end
+    
+    local ok, data = pcall(function() return json.decode(raw) end)
+    if not ok or type(data) ~= "table" then
+        return nil, nil, nil, "Failed to parse release JSON"
+    end
+    
+    local tag  = tostring(data.tag_name or ""):gsub("^v", "")
+    local body = data.body
+    local url  = nil
+    
+    if type(data.assets) == "table" then
+        for _, asset in ipairs(data.assets) do
+            if type(asset.browser_download_url) == "string" and asset.browser_download_url:match("%.lua$") then
+                url = asset.browser_download_url
+                break
+            end
+        end
+    end
+    
+    if tag == "" then return nil, nil, nil, "Could not parse release tag" end
+    return tag, url, body
+end
+    
+function versionNewer(remote, current)
+    local function parts(v)
+        local t = {}
+        for n in v:gmatch("%d+") do t[#t+1] = tonumber(n) end
+        return t
+    end
+    local r, c = parts(remote), parts(current)
+    for i = 1, math.max(#r, #c) do
+        local a, b = r[i] or 0, c[i] or 0
+        if a > b then return true end
+        if a < b then return false end
+    end
+    return false
+end
+
+local auto_update = memory:load_global("auto_update")
+if auto_update and not IS_DEV then
+    local remote_ver, download_url, release_body = fetchLatestVersion()
+    if remote_ver and versionNewer(remote_ver, CURRENT_VERSION) and download_url then
+        local msg = "v" .. remote_ver .. " is available (current: v" .. CURRENT_VERSION .. ")\n\n" .. (release_body or "No changelog.") .. "\n\nUpdate now?"
+        showDialog("Update Available", msg, {"UPDATE", function()
+            showToast("Downloading v" .. remote_ver .. "...")
+            local content = paste.get(download_url)
+            if content then
+                os.remove(SCRIPT_PATH)
+                local f = io.open(SCRIPT_PATH, "w")
+                if f then f:write(content); f:close() end
+                showToast("Updated to v" .. remote_ver .. ", restarting...")
+                exitScript()
+            else
+                showDialog("Failed", "Could not download the update.", {"OK"})
+            end
+        end}, {"Later"})
+    end
+end
+
 local function detectVirtualSpace()
     if not Config.vSpaceReal then return 0, "/data/data/" .. PKG end
 
     local vm_package_name = tostring(Config.E)
-    local result = Shell.sh("find /data/data/" .. vm_package_name .. " -maxdepth 8 -name '" .. PKG .. "' -type d 2>/dev/null | head -1")
+    local result = Shell.sh("find /data/data/" .. vm_package_name .. " -maxdepth 8 -name '" .. PKG .. "' -type d 2>/dev/null")
 
     if result and result:find("Permission denied by user") then
         LOG.warn("detectVM", "User denied shell permission.")
         return 3, nil
     end
 
-    if result and result ~= "" then
-        local hcr2_path = result:match("^([^\n]+)")
-        LOG.info("detectVM", "HCR2 found at: " .. tostring(hcr2_path))
-        return 1, hcr2_path
+    if not result or result == "" then
+        LOG.warn("detectVM", "HCR2 not found in VM: " .. vm_package_name)
+        return 2, nil
     end
 
-    -- FIX: was `vmPkg` (undeclared); now correctly `vm_package_name`
-    LOG.warn("detectVM", "HCR2 not found in VM: " .. vm_package_name)
-    return 2, nil
+    -- Collect all matches, prefer /user/
+    local paths = {}
+    local seen_users = {}
+    for path in result:gmatch("([^\n]+)") do
+        if path:find("/user/") then
+            local uid = path:match("/user/(%d+)/") or "?"
+            if not seen_users[uid] then
+                seen_users[uid] = path
+            else
+                if #path < #seen_users[uid] then
+                    seen_users[uid] = path
+                end
+            end
+        end
+    end
+    for uid, path in pairs(seen_users) do
+        table.insert(paths, path)
+    end
+
+    table.sort(paths, function(a, b)
+        local a_score = (a:find("/user_de/") and 0 or 1)
+        local b_score = (b:find("/user_de/") and 0 or 1)
+        return a_score > b_score
+    end)
+
+    local chosen = paths[1]
+    LOG.info("detectVM", "HCR2 found at: " .. tostring(chosen))
+
+    -- Multiple paths found — ask user
+    if #paths > 1 then
+        local items = {}
+        local has_hcr2 = {}
+        for i, p in ipairs(paths) do
+            local user_id = p:match("/user[^/]*/(%d+)/") or "?"
+            local detected = p:find(PKG) and "hcr2 detected" or "no hcr2 detected"
+            table.insert(items, user_id .. " (" .. detected .. ")")
+            table.insert(has_hcr2, p:find(PKG) ~= nil)
+        end
+
+        local change = showDialog("Multiple Users Detected",
+            "We found HCR2 data across multiple users. Do you want to pick a different path?",
+            {"YES"}, {"NO"})
+        
+        if change == 1 then
+            local selected_idx = gg.choice(items, nil, "Select the user that you're currently running")
+            if selected_idx then
+                chosen = paths[selected_idx]
+                LOG.info("detectVM", "User selected path: " .. chosen)
+            end
+        end
+    end
+
+    return 1, chosen
 end
 
 local vm_status
 vm_status, game_path = detectVirtualSpace()
+
 if vm_status == 3 then
-    showDialog("Permission Error",
-        "Please allow the script to run the terminal command. Check Void source code if you want to verify.",
-        {"OK"})
+    showDialog("Permission Error", "Please allow the script to run the terminal command. Check Void source code if you want to verify.", {"OK"})
     os.exit()
 end
 
-if vm_status == 2 then
-    showDialog("Unsupported VM",
-        "Your virtual space app is not supported. Please use known virtual space like Multi App Ultra (Waxmoon).",
-        {"OK"})
-    os.exit()
-end
-
-if game_path == nil then
-    showDialog("HCR2 Not Found",
-        "Is the game installed correctly? If it's not about that, please contact us. (@vekendian)",
-        {"OK"})
-    os.exit()
+if vm_status == 2 or game_path == nil then
+    showDialog("Data Path Error", "We can't find the Hill Climb Racing 2 data path. Some features that rely on this path will not work. You can try manual mode if you know how to do it.",
+    {"PROCEED ANYWAY"}, {"MANUAL MODE", function()
+        local response = gg.prompt({"Enter the Data Path"}, {"/data/data/" .. tostring(Config.E) .. "/"}, {"path"})
+        if response and response[1] then
+            vm_status = 1
+            game_path = response[1]
+        else
+            showToast("Cancelled")
+        end
+    end})
 end
 
 local function attachToProcess(pkg)
@@ -546,7 +664,7 @@ if BaseGameStatus == nil or BaseRegion == nil then
     showToast("GameStatus Not Found"); exit = true
 else
     LOG.info("INIT", "BaseGameStatus OK=" .. tostring(BaseGameStatus) .. " | scheduling initUI() via MainHandler")
-
+    
     local saved_prefs = memory:load_global("ui_prefs")
     if saved_prefs then
         LOG.info("INIT", "User preferences RE-APPLIED")

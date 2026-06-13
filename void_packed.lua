@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-11 18:54:49
+-- Packed by bundle.py  •  2026-06-13 08:47:14
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -8,6 +8,10 @@ local __vfs = {}
 __vfs['configs/colors.lua'] = function(...)
 UI = {
     BG = 0x600D001A,
+    BG_IMAGE = {
+        PATH  = "no_media",
+        ALPHA = 255
+    },
     HEADER = 0x60110022,
     CARD = 0x331A0028,
     ACCENT = 0x608F3BE8,
@@ -20279,17 +20283,19 @@ __vfs['modules/registry.lua'] = function(...)
 
 local TAB_DEFS = {
     -- { id, display_name }
-    { "account",   "ACCOUNT MENU"   },
-    { "player",    "PLAYER MENU"    },
+    { "separator", "GAME MENU" },
+    { "account", "ACCOUNT MENU" },
+    { "player", "PLAYER MENU" },
     { "adventure", "ADVENTURE MENU" },
-    { "cups",      "CUPS MENU"      },
-    { "team",      "TEAM MENU"      },
-    { "event",     "EVENT MENU"     },
-    { "creative",  "CREATIVE MENU"  },
-    { "shop",      "SHOP MENU"      },
-    { "other",     "OTHER MENU"     },
-    { "settings",  "SETTINGS"       },
-    { "about",     "ABOUT"          },
+    { "cups", "CUPS MENU" },
+    { "team", "TEAM MENU" },
+    { "event", "EVENT MENU" },
+    { "creative", "CREATIVE MENU" },
+    { "shop", "SHOP MENU" },
+    { "other", "OTHER MENU" },
+    { "separator", "SCRIPT MENU" },
+    { "settings", "SETTINGS" },
+    { "about", "ABOUT" },
 }
 
 -- tabHandlers: ordered list of { id, display_name } used by ui.lua for the sidebar.
@@ -20351,8 +20357,8 @@ __vfs['modules/tabs/about.lua'] = function(...)
 return function(container)
     addModule(container, "about_script", "About Script", "A powerful and highly optimized memory manipulation script built for Hill Climb Racing 2 on the custom GG: ME (GameGuardian: Memory Editor) environment.\n\nDownload ME:\nhttps://github.com/vekendianorg/me/releases/", "ro", " ", nil)
     addModule(container, "script_owner", "Script Owner", "- Vekendian Organization (github: vekendianorg)", "ro", " ", nil)
-    addModule(container, "script_dev", "Script Developer", "- Lazor (github: lazor-git)\n- AMR (github: amr-gt)", "ro", " ", nil)
-    addModule(container, "credits", "Credits", "- Lazor (github: lazor-git)\n- Lan9118 (discord: lan9118)\n- AMR (github: amr-gt)\n- Eomthix/Erik (discord: eomthix)\n- Sr Romero", "ro", " ", nil)
+    addModule(container, "script_dev", "Script Developer", "- Lazor (github: lazor-git)\n- AMR (github: amr-gt)\n- Erik (github: eomthix)", "ro", " ", nil)
+    addModule(container, "credits", "Credits", "- Lazor (github: lazor-git)\n- Lan9118 (discord: lan9118)\n- AMR (github: amr-gt)\n- Erik (github: eomthix)\n- Sr Romero", "ro", " ", nil)
     addModule(container, "special_thanks", "Special Thanks", "- Aryan/KokushiboModz", "ro", " ", nil)
     
 end
@@ -20475,14 +20481,13 @@ return function(container)
     end)
 
     addArchModule(container, "fake_vip", "Fake VIP", "Toggle vip subscription state locally", "switch", nil, aobs.fakeVip)
-
+    
     addModule(container, "fake_rank", "Fake Rank", "Set your rank to fake legendary automatically", "button", nil, function(done)
         scheduler:add(function(finishTask)
             gg.setValues({
-                { address = BaseGameStatus + 0x1CC, flags = 16, value = 50.0 },
-                { address = BaseGameStatus + 0x200, flags = 16, value = 50.0 },
+                { address = BaseGameStatus + 0x200, flags = 16, value = 50.0 }
             })
-            showToast("Fake Rank has been injected, please don't do this twice for safety.")
+            showToast("Fake Rank has been injected.")
             finishTask()
             done()
         end)
@@ -21977,8 +21982,8 @@ return function(container)
             end
             gg.clearResults()
             
-            finishTask() -- Release scheduler block for next mod
-            done()        -- Notify UI toggle update
+            finishTask()
+            done()
         end)
     end)
 
@@ -22211,6 +22216,145 @@ __vfs['modules/tabs/settings.lua'] = function(...)
 ]]
 
 return function(container)
+    -- =========================
+    -- Helpers
+    -- =========================
+    
+    local function deepCopy(orig, seen)
+        if type(orig) ~= "table" then
+            return orig
+        end
+    
+        if seen and seen[orig] then
+            return seen[orig]
+        end
+    
+        local copy = {}
+        seen = seen or {}
+        seen[orig] = copy
+    
+        for k, v in pairs(orig) do
+            copy[deepCopy(k, seen)] = deepCopy(v, seen)
+        end
+    
+        return copy
+    end
+    
+    local function getFileName(path)
+        path = tostring(path or "")
+        local name = path:match("([^/\\]+)$") or "wallpaper.png"
+        name = name:gsub("[^%w%._%-]", "_")
+        if name == "" then
+            name = "wallpaper.png"
+        end
+        return name
+    end
+    
+    local function safeJoinPath(folder, name)
+        folder = tostring(folder or "")
+        name = getFileName(name)
+        if folder:sub(-1) == "/" then
+            return folder .. name
+        end
+        return folder .. "/" .. name
+    end
+    
+    local function bytesToHex(data)
+        if type(data) ~= "string" then
+            return nil
+        end
+        return (data:gsub(".", function(c)
+            return string.format("%02x", string.byte(c))
+        end))
+    end
+    
+    local function hexToBytes(hex)
+        if type(hex) ~= "string" then
+            return nil
+        end
+    
+        hex = hex:gsub("%s+", "")
+        if hex == "" then
+            return ""
+        end
+    
+        if #hex % 2 ~= 0 then
+            return nil
+        end
+    
+        local out = hex:gsub("..", function(cc)
+            local n = tonumber(cc, 16)
+            if not n then
+                return ""
+            end
+            return string.char(n)
+        end)
+    
+        return out
+    end
+    
+    local function serializeValue(v, seen)
+        local t = type(v)
+    
+        if t == "string" then
+            return string.format("%q", v)
+        elseif t == "number" or t == "boolean" then
+            return tostring(v)
+        elseif t == "table" then
+            if seen and seen[v] then
+                return "nil"
+            end
+    
+            seen = seen or {}
+            seen[v] = true
+    
+            local parts = {}
+            for k, val in pairs(v) do
+                local keyType = type(k)
+                local keyStr
+    
+                if keyType == "string" then
+                    keyStr = "[" .. string.format("%q", k) .. "]"
+                elseif keyType == "number" then
+                    keyStr = "[" .. tostring(k) .. "]"
+                elseif keyType == "boolean" then
+                    keyStr = "[" .. tostring(k) .. "]"
+                else
+                    goto continue
+                end
+    
+                local valueStr = serializeValue(val, seen)
+                if valueStr ~= nil then
+                    parts[#parts + 1] = keyStr .. "=" .. valueStr
+                end
+    
+                ::continue::
+            end
+    
+            return "{" .. table.concat(parts, ",") .. "}"
+        end
+    
+        return nil
+    end
+    
+    local function serializeTable(t)
+        return "return " .. serializeValue(t)
+    end
+    
+    local function rebuildMenu()
+        MainHandler.post(function()
+            if menuView then
+                pcall(function() windowManager.removeView(menuView) end)
+                menuView = nil
+                activeView = nil
+            end
+    
+            -- Rebuild and re-show
+            createMenuView("settings")
+            switchToMenu()
+        end)
+    end
+    
     local function saveAndRefresh()
         LOG.info("Settings", "UI preferences saved and refresh triggered")
         memory:save_global("ui_prefs", UI)
@@ -22222,7 +22366,78 @@ return function(container)
                 loadCategory("settings", activeTabView)
             end
         end)
+        
     end
+    
+    -- --- Updater ────────────────────────────────────────────────────────
+    
+    addModuleSep(container, "Updates")
+    
+    -- ── Auto Update switch ────────────────────────────────────────────────────────
+    addModule(container, "auto_update", "Auto Update", "Auto update VOID on startup", "switch", nil, function(done, state)
+        if IS_DEV then
+            showDialog("Dev Mode", "Auto update is disabled for main.lua (dev build).", {"OK"})
+            toggleStates["auto_update"] = false
+            done()
+            return
+        end
+        memory:save_global("auto_update", state)
+        done()
+    end)
+    
+    -- ── Check for Update button ───────────────────────────────────────────────────
+    addModule(container, "check_updates", "Check for Update", "Check for the latest VOID release on GitHub", "button", nil, function(done)
+        if IS_DEV then
+            showDialog("Dev Mode", "Update check is disabled for main.lua (dev build).\n\nPull from the repo manually.", {"OK"})
+            done()
+            return
+        end
+    
+        showToast("Checking for updates...")
+        local remote_ver, download_url, release_body = fetchLatestVersion()
+
+        if not remote_ver then
+            showDialog("Update Check Failed", "Could not reach GitHub:\n" .. tostring(download_url), {"OK"})
+            done()
+            return
+        end
+    
+        if not versionNewer(remote_ver, CURRENT_VERSION) then
+            showDialog("Up to date", "You are already on the latest version (v" .. CURRENT_VERSION .. ").", {"OK"})
+            done()
+            return
+        end
+    
+        local msg = "v" .. remote_ver .. "  (current: v" .. CURRENT_VERSION .. ")\n\n" .. (release_body or "No changelog available.") .. "\n\nDownload and replace this script?"
+        showDialog("Update Available", msg, {"UPDATE", function()
+            if not download_url then
+                showDialog("Failed", "No .lua asset found in the release.", {"OK"})
+                return
+            end
+    
+            showToast("Downloading v" .. remote_ver .. "...")
+            local content, err = paste.get(download_url)
+            if not content then
+                showDialog("Download Failed", tostring(err), {"OK"})
+                return
+            end
+    
+            local f = io.open(SCRIPT_PATH, "w")
+            if not f then
+                showDialog("Write Failed", "Could not write to:\n" .. SCRIPT_PATH, {"OK"})
+                return
+            end
+            f:write(content)
+            f:close()
+    
+            showDialog("Done", "Updated to v" .. remote_ver .. ". Restart the script to apply.", {"Restart", function()
+                MainHandler.post(function() os.exit() end)
+            end}, {"Later"})
+        end}, {"Cancel"})
+    
+        done()
+    end)
+    
     -- ── Read-only info ────────────────────────────────────────────────────────
 
     local function regionName()
@@ -22230,6 +22445,8 @@ return function(container)
         elseif BaseRegion == 4 then return "Ca: C++ alloc"
         else return "U: Unknown" end
     end
+    
+    addModuleSep(container, "Memory")
 
     addModule(container, "memory_range", "Memory Range", "Current selected memory range\n(automatically chosen by script)", "ro", regionName(), nil)
     addModule(container, "gamestatus_address", "GameStatus", "Current gamestatus address\n(automatically chosen by script)", "ro", string.format("0x%X", BaseGameStatus or 0), nil)
@@ -22244,78 +22461,193 @@ return function(container)
     
     -- ── Custom Colors Info ────────────────────────────────────────────────────
     -- Allow user to changes colors of this script.
-    addModule(container, "colors_info", "About Custom Colors", "Let's you customize this script menu colors, restart this script after customizing for better results.", "ro", "", nil)
+    addModuleSep(container, "UI Customizations")
     
-    -- Helper to serialize the current UI table for cloud storage
-    local function serializeTable(t)
-        local elements = {}
-        for k, v in pairs(t) do
-            -- Only serialize strings, numbers, and booleans to avoid functions/userdata crashing
-            if type(v) == "string" then
-                table.insert(elements, string.format('["%s"]="%s"', k, v))
-            elseif type(v) == "number" or type(v) == "boolean" then
-                table.insert(elements, string.format('["%s"]=%s', k, tostring(v)))
+    -- =========================
+    -- Export Theme
+    -- =========================
+    
+    addModule(container, "export_theme", "Export Theme", "Export custom theme and wallpaper to cloud.", "button", nil, function(done)
+        local TAG = "ExportTheme"
+        local exportUI = deepCopy(UI)
+    
+        local imgData = nil
+        local imgName = nil
+    
+        if UI.BG_IMAGE and UI.BG_IMAGE.PATH and UI.BG_IMAGE.PATH ~= "no_media" then
+            local file = io.open(UI.BG_IMAGE.PATH, "rb")
+            if file then
+                imgData = file:read("*a")
+                file:close()
+    
+                imgName = getFileName(UI.BG_IMAGE.PATH)
+                LOG.info(TAG, "Wallpaper file: " .. tostring(imgName))
+                LOG.info(TAG, "Wallpaper raw bytes: " .. tostring(imgData and #imgData or 0))
+            else
+                LOG.warn(TAG, "Wallpaper path configured but file missing: " .. tostring(UI.BG_IMAGE.PATH))
             end
         end
-        return "return {" .. table.concat(elements, ",") .. "}"
-    end
     
-    -- Export Theme
-    addModule(container, "export_theme", "Export Theme", "Export custom theme to cloud.", "button", nil, function(done)
-        showToast("Uploading theme configuration...")
-            
-        local payload = serializeTable(UI)
-        local link, err = paste.post(payload)
-            
-        if link then
-            local pasteId = link:match("[^/]+$") -- Extracts just the short key
-            gg.copyText(pasteId)
-            showDialog("Success", "Theme uploaded successfully!\n\nShare ID: " .. pasteId .. "\n\nThe ID has been copied to your clipboard.", {"OK"})
-        else
-            showDialog("Failed", "Failed to export theme:\n" .. tostring(err), {"OK"})
+        local function proceedWithUpload()
+            showToast("Preparing and uploading...")
+    
+            local imgHex = nil
+            if imgData and imgData ~= "" then
+                imgHex = bytesToHex(imgData)
+                if not imgHex or imgHex == "" then
+                    LOG.error(TAG, "Hex conversion failed.")
+                    showDialog("Failed", "Failed to encode wallpaper.", "OK")
+                    done()
+                    return
+                end
+    
+                LOG.info(TAG, "Wallpaper hex length: " .. tostring(#imgHex))
+            end
+    
+            if exportUI.BG_IMAGE then
+                if imgHex then
+                    exportUI.BG_IMAGE.PATH = imgName or "embedded_wallpaper.png"
+                else
+                    exportUI.BG_IMAGE.PATH = "no_media"
+                end
+            end
+    
+            local exportData = {
+                version = 4,
+                kind = "theme_bundle_hex",
+                ui = exportUI,
+                img_name = imgName,
+                img_hex = imgHex
+            }
+    
+            LOG.info(TAG, "Serializing clean payload...")
+            local payload = serializeTable(exportData)
+    
+            LOG.info(TAG, "Payload size: " .. tostring(#payload))
+            LOG.info(TAG, "Uploading payload directly to cloud host...")
+    
+            local link, err = paste.post(payload)
+    
+            if link then
+                local pasteId = link:match("[^/]+$")
+                gg.copyText(pasteId)
+                LOG.info(TAG, "Upload successful. Share ID: " .. tostring(pasteId))
+    
+                showDialog("Success", "Share ID: " .. pasteId .. "\n\nThe ID has been copied to your clipboard.", "OK")
+            else
+                LOG.error(TAG, "Cloud upload failed: " .. tostring(err))
+                showDialog("Failed", "Failed to export bundle string to cloud:\n" .. tostring(err), "OK")
+            end
         end
-            
+    
+        if imgData then
+            local warningMsg = "A custom background image is active. Including this image will increase the export size a lot.\n\nDo you want to proceed?"
+            showDialog("Upload Size Warning", warningMsg, { "Upload Everything", proceedWithUpload }, "Cancel")
+        else
+            proceedWithUpload()
+        end
+    
         done()
     end)
     
+    -- =========================
     -- Import Theme
+    -- =========================
+    
     addModule(container, "import_theme", "Import Theme", "Import custom theme from cloud.", "input", {
         { hint = "Enter Share ID", value = "", type = "text" }
     }, function(done, val)
-        if not val or val == "" then 
+        local TAG = "ImportTheme"
+        local shareId = (type(val) == "table") and val[1] or val
+        if not shareId or shareId == "" then
+            LOG.warn(TAG, "Import cancelled due to blank input field.")
             done()
             return
         end
-        
+    
         showToast("Downloading theme...")
-        local rawText, err = paste.get("https://paste.rs/" .. val) -- Note: Ensure val[1] index is targetted if 'val' is a table
-        
-        if rawText then
-            local loadedChunk, compileErr = load(rawText)
-            if loadedChunk then
-                local imported_prefs = loadedChunk()
-                
-                -- Apply the imported values onto the live UI state
-                for k, v in pairs(imported_prefs) do
-                    if UI[k] ~= nil then 
-                        UI[k] = v 
-                    end
+        LOG.info(TAG, "Requesting bundle payload for ID: " .. tostring(shareId))
+    
+        local targetUrl = "https://paste.rs/" .. shareId
+        local rawText, err = paste.get(targetUrl)
+    
+        if not rawText then
+            LOG.error(TAG, "Download failed for source: " .. targetUrl .. " -> " .. tostring(err))
+            showDialog("Failed", "Failed to fetch data from cloud:\n" .. tostring(err), "OK")
+            done()
+            return
+        end
+    
+        LOG.info(TAG, "Payload downloaded. Compiling bundle structure...")
+        local loadedChunk, compileErr = load(rawText)
+    
+        if not loadedChunk then
+            LOG.error(TAG, "Lua chunk compilation failure: " .. tostring(compileErr))
+            showDialog("Failed", "Failed to parse theme data:\n" .. tostring(compileErr), "OK")
+            done()
+            return
+        end
+    
+        local ok, exportData = pcall(loadedChunk)
+        if not ok or type(exportData) ~= "table" then
+            LOG.error(TAG, "Invalid payload container returned from cloud.")
+            showDialog("Failed", "Invalid theme data format structure.", "OK")
+            done()
+            return
+        end
+    
+        local imported_prefs = exportData.ui or exportData
+        local imgHex = exportData.img_hex
+        local imgName = exportData.img_name
+    
+        LOG.dbg(TAG, "Merging layout preferences into UI state memory...")
+        if type(imported_prefs) == "table" then
+            for k, v in pairs(imported_prefs) do
+                if UI[k] ~= nil then
+                    UI[k] = deepCopy(v)
                 end
-                
-                -- Auto-save to global memory so it persists natively on next boot
-                memory:save_global("ui_prefs", UI)
-                saveAndRefresh()
-                showDialog("Success", "Theme successfully imported and saved!", {"OK"})
+            end
+        end
+    
+        if imgHex and imgHex ~= "" then
+            LOG.info(TAG, "Hex wallpaper found. Decoding...")
+            local imgData = hexToBytes(imgHex)
+    
+            if imgData and imgData ~= "" then
+                local finalName = getFileName(imgName or "imported_wallpaper.png")
+                local finalDestPath = safeJoinPath(gg.FILES_DIR, finalName)
+    
+                local fileWrite = io.open(finalDestPath, "wb")
+                if fileWrite then
+                    fileWrite:write(imgData)
+                    fileWrite:close()
+    
+                    if UI.BG_IMAGE then
+                        UI.BG_IMAGE.PATH = finalDestPath
+                    end
+    
+                    LOG.info(TAG, "Wallpaper written successfully to: " .. finalDestPath)
+                else
+                    LOG.error(TAG, "Failed to write image file to gg.FILES_DIR.")
+                end
             else
-                showDialog("Failed", "Failed to parse theme data:\n" .. tostring(compileErr), {"OK"})
+                LOG.error(TAG, "Failed to decode wallpaper hex.")
             end
         else
-            showDialog("Failed", "Failed to fetch data from cloud:\n" .. tostring(err), {"OK"})
+            if UI.BG_IMAGE then
+                UI.BG_IMAGE.PATH = "no_media"
+            end
         end
-        
-        done()
-    end)
     
+        memory:save_global("ui_prefs", UI)
+        saveAndRefresh()
+    
+        LOG.info(TAG, "Import completed successfully.")
+        showDialog("Success", "Theme and assets successfully imported and saved!", "OK")
+        done()
+        rebuildMenu()
+    end)
+
     -- ── Background Opacity ────────────────────────────────────────────────────
     -- Writes to the alpha byte of UI.BG; HEADER, CARD, and GLASS track it at
     -- fixed ratios so the visual hierarchy stays consistent.
@@ -22344,6 +22676,59 @@ return function(container)
             done()
         end
     )
+    
+    -- ── Background Image Opacity ─────────────────────
+    addModule(container, "bg_image_opacity", "Background Image Opacity",
+        "Adjust visibility alpha settings directly using pure integer channels.",
+        "slider",
+        {min = 0, max = 255, current = UI.BG_IMAGE.ALPHA & 0xFF, title = "Alpha"},
+        function(done, val) 
+            UI.BG_IMAGE.ALPHA = val & 0xFF
+            
+            saveAndRefresh()
+            done()
+        end
+    )
+
+    -- ── Background Image ────────────────────────────────────────────────
+    -- Updates the absolute storage location path pointing to the wallpaper image.
+
+    addModule(container, "bg_image_picker", "Background Image", "Tap to modify the absolute file path destination for your custom layout wallpaper.", "button", nil, function(done)
+        local response = gg.prompt(
+            { "Absolute Image File Path (.jpg or .png):", "Remove BG Image" },
+            { UI.BG_IMAGE.PATH == "no_media" and gg.EXT_STORAGE or UI.BG_IMAGE.PATH, false },
+            { "file", "checkbox" }
+        )
+        
+        if response then
+            if response[2] == true then
+                UI.BG_IMAGE.PATH = "no_media"
+                saveAndRefresh()
+                showDialog("Successfully", "Restart this script to see the results", {"OK"})
+            else
+                if response[1] then
+                    local parsedPath = response[1]:gsub("^%s*(.-)%s*$", "%1")
+        
+                    if parsedPath ~= "" then
+                        local verificationHandle = io.open(parsedPath, "r")
+                        
+                        if verificationHandle then
+                            verificationHandle:close()
+                            
+                            UI.BG_IMAGE.PATH = parsedPath
+                            saveAndRefresh()
+                            showDialog("Successfully", "Restart this script to see the results", {"OK"})
+                        else
+                            showDialog("Failed", "File not found or read operation refused:\n" .. tostring(parsedPath), {"OK"})
+                        end
+                    end
+                end
+            end
+        end
+        
+        done()
+        rebuildMenu()
+    end)
 
     -- ── Background RGB ────────────────────────────────────────────────────────
     -- Adjusts the R, G, B hue of UI.BG. HEADER and CARD are derived at fixed
@@ -22539,7 +22924,54 @@ return function(container)
             done()
         end)
     end)
+    
+    addModule(container, "free_purchases", "Free Purchases", "Make some daily deals purchases free in the shop tab (also works for special offers as popup/badges)", "button", nil, function(done)
+        scheduler:add(function(finishTask)
+            gg.clearResults()
+            gg.setRanges(4)
+            gg.searchNumber("h 04 65 6E 00", 1)
+            gg.refineNumber("h 04", 1)
+            
+            local results = gg.getResults(gg.getResultsCount())
+            local totalres = #results
+            if totalres > 0 then
+                local counter = 0 
+                local edits = {}
+                local tptrs = {}
+                
+                for _, r in ipairs(results) do
+                    gg.clearResults()
+                    gg.searchNumber(tostring(r.address), 32)
+                    local ptrs = gg.getResults(gg.getResultsCount())
+                    for _, sp in ipairs(ptrs) do
+                        table.insert(tptrs, {address = sp.address + 0x18, flags = 4})
+                    end
+                    counter = counter + 1
+                    showToast(tostring(counter) .. "/" .. tostring(totalres), true)
+                end
+                
+                tptrs = gg.getValues(tptrs)
+                for _, p in ipairs(tptrs) do
+                    local val = p.value
+                    if val > 0 and val < 100 then
+                        for off = 0x18, 0x2C, 4 do
+                            table.insert(edits, {address = p.address + off, flags = 4, value = 0})
+                        end
+                    end
+                end
+                
+                if #edits > 0 then
+                    gg.setValues(edits)
+                    gg.toast("Free Purchase Successful")
+                end
+            end
 
+            gg.clearResults()
+            finishTask()
+            done()
+        end)
+    end)
+    
     addModule(container, "change_chest", "Change Chest", "Change legendary chest to selected chest", "spinner", {
         options = {
             "Common Chest", "Uncommon Chest", "Rare Chest", "Epic Chest",
@@ -22581,58 +23013,6 @@ return function(container)
         end)
     end)
     
-    addModule(container, "free_purchases", "Free Purchases", "Make some purchases free in the shop tab (also works for special offers as popup/badges)", "button", nil, function(done)
-        scheduler:add(function(finishTask)
-            gg.clearResults()
-            gg.setRanges(4)
-            gg.searchNumber("h 04 65 6E 00", 1)
-            gg.refineNumber("h 04", 1)
-            
-            local results = gg.getResults(gg.getResultsCount())
-            local totalres = #results
-            if totalres > 0 then
-                local min = results[1].address
-                local max = results[totalres].address
-                
-                min = min - 0x4
-                max = max + 0x4
-                
-                local counter = 0 
-                local edits = {}
-                local tptrs = {}
-                
-                for _, r in ipairs(results) do
-                    gg.clearResults()
-                    gg.searchNumber(tostring(r.address), 32, false, gg.SIGN_EQUAL, min, max, 0)
-                    local ptrs = gg.getResults(gg.getResultsCount())
-                    for _, sp in ipairs(ptrs) do
-                        table.insert(tptrs, {address = sp.address + 0x18, flags = 4})
-                    end
-                    counter = counter + 1
-                    showToast(tostring(counter) .. "/" .. tostring(totalres), true)
-                end
-                
-                tptrs = gg.getValues(tptrs)
-                for _, p in ipairs(tptrs) do
-                    local val = p.value
-                    if val > 0 and val < 100 then
-                        for off = 0x18, 0x2C, 4 do
-                            table.insert(edits, {address = p.address + off, flags = 4, value = 0})
-                        end
-                    end
-                end
-                
-                if #edits > 0 then
-                    gg.setValues(edits)
-                    gg.toast("Free Purchase Successful")
-                end
-            end
-
-            gg.clearResults()
-            finishTask()
-            done()
-        end)
-    end)
 end
 end
 
@@ -22747,7 +23127,7 @@ local _TAB_ICONS = {
 ---@param name string Display name for the tab
 ---@return View The created tab container
 function addTab(parent, id, name)
-    local icon_char = _TAB_ICONS[id] or "\xe2\x80\xa2"  -- bullet fallback
+    local icon_char = "" -- _TAB_ICONS[id]
 
     -- Outer container (horizontal: icon | label)
     local container = LinearLayout(activity)
@@ -23259,6 +23639,45 @@ function addModule(parent, id, title, desc, mode, extra, callback)
     parent.addView(card)
 end
 
+
+-- ─────────────────────────────────────────────
+-- SEPARATOR
+-- ─────────────────────────────────────────────
+
+function addTabSep(parent, text)
+    local sep = TextView(activity)
+    local rp = LinLayoutParams(-1, -2)
+    rp.topMargin = dp(4)
+    rp.bottomMargin = dp(2)
+    sep.setLayoutParams(rp)
+    sep.setText(tostring(text))
+    sep.setTextColor(UI.TEXT)
+    sep.setTextSize(1, 9)
+    sep.setTypeface(Typeface.create("sans-serif", Typeface.BOLD))
+    sep.setGravity(Gravity.CENTER)
+    sep.setPadding(dp(6), dp(5), dp(6), dp(5))
+    sep.setBackground(getSkin(UI.CARD, 8))
+
+    parent.addView(sep)
+end
+
+function addModuleSep(parent, text)
+    local sep = TextView(activity)
+    local rp = LinLayoutParams(-1, -2)
+    rp.topMargin = dp(6)
+    rp.bottomMargin = dp(4)
+    sep.setLayoutParams(rp)
+    sep.setText(tostring(text))
+    sep.setTextColor(UI.TEXT)
+    sep.setTextSize(1, 13)
+    sep.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL))
+    sep.setGravity(Gravity.CENTER)
+    sep.setPadding(dp(10), dp(5), dp(10), dp(5))
+    sep.setBackground(getSkin(UI.CARD, 12, 1, UI.STROKE))
+
+    parent.addView(sep)
+end
+
 -- ─────────────────────────────────────────────
 -- RO FIELD UPDATER
 -- ─────────────────────────────────────────────
@@ -23502,7 +23921,7 @@ end
 ---Builds the vertical sidebar tab column and adds it to root.
 ---@param root View Parent LinearLayout (horizontal)
 ---@return View|nil firstTab, string|nil firstTabId
-local function _buildMenuTabs(root)
+local function _buildMenuTabs(root, _lastTab)
     -- Reset registry so a UI rebuild starts clean
     _tabData     = {}
     _activeTabId = nil
@@ -23536,9 +23955,24 @@ local function _buildMenuTabs(root)
 
     local firstTab, firstTabId = nil, nil
     local menuList = tabHandlers or {{"unknown", "unknown"}}
+    local firstTabFound = false
     for i, m in ipairs(menuList) do
-        local t = addTab(tabLayout, m[1], m[2])
-        if i == 1 then firstTab = t; firstTabId = m[1] end
+        if m[1] == "separator" then
+            addTabSep(tabLayout, m[2])
+        else
+            local t = addTab(tabLayout, m[1], m[2])
+            if _lastTab and m[1] == _lastTab then
+                firstTab = t
+                firstTabId = m[1]
+                firstTabFound = true
+            else
+                if not firstTabFound then
+                    firstTab = t
+                    firstTabId = m[1]
+                    firstTabFound = true
+                end
+            end
+        end
     end
     return firstTab, firstTabId
 end
@@ -23576,7 +24010,7 @@ function applyWindowResize(newW, newH)
     WIN_W = math.max(RESIZE_MIN_W, math.min(RESIZE_MAX_W, math.floor(newW)))
     WIN_H = math.max(RESIZE_MIN_H, math.min(RESIZE_MAX_H, math.floor(newH)))
     memory:save_global("window_size", { w = WIN_W, h = WIN_H })
-    showToast("Size saved! Please restart the script to apply.")
+    showToast("Size saved! Restart the script")
     exitScript()
 end
 
@@ -23641,17 +24075,56 @@ end
 ---Delegates every major section to a helper function so createMenuView itself
 ---stays shallow (few locals, few bytecodes) and never overflows the JVM stack.
 ---@return View The menu FrameLayout containing all UI elements
-function createMenuView()
-    LOG.info("createMenuView", "START | activity=" .. tostring(activity) .. " WIN_W=" .. tostring(WIN_W))
+function createMenuView(lastTab)
+    LOG.info("createMenuView", "START | Initializing Configurable Background Stack")
 
     local base = FrameLayout(activity)
     base.setLayoutParams(LayoutParams(-2, -2))
+    
+    local isBgLoaded = false
+
+    local targetPath = UI.BG_IMAGE.PATH
+    if targetPath ~= "no_media" then
+        local fileCheck = io.open(targetPath, "r")
+        
+        if fileCheck then
+            fileCheck:close()
+            
+            local bgImage = ImageView(activity)
+            local bgParams = FrameLayout.LayoutParams(-1, -1)
+            bgImage.setLayoutParams(bgParams)
+            bgImage.setScaleType(ScaleType.FIT_XY)
+            
+            local bitmap = BitmapFactory.decodeFile(targetPath)
+            if bitmap then
+                local drawable = BitmapDrawable(activity.getResources(), bitmap)
+                bgImage.setImageDrawable(drawable)
+                bgImage.setImageAlpha(UI.BG_IMAGE.ALPHA & 0xFF)
+                
+                base.addView(bgImage)
+                isBgLoaded = true -- Set state flag to true
+                LOG.info("createMenuView", "Configurable static background mounted successfully.")
+            else
+                LOG.error("createMenuView", "Failed to decode static target bitmap asset data structure.")
+            end
+        else
+            LOG.warn("createMenuView", "Configured background asset completely missing at path: " .. tostring(targetPath))
+        end
+    end
 
     -- Outer: VERTICAL — header on top, then the sidebar+content row below
     local outer = LinearLayout(activity)
     outer.setOrientation(1)
-    outer.setBackground(getSkin(UI.BG, 16, 0, UI.STROKE))
+    
+    -- Dynamic Adaptive Styling Configuration
+    if isBgLoaded then
+        outer.setBackgroundColor(0x00000000)
+    else
+        outer.setBackground(getSkin(UI.BG, 16, 0, UI.STROKE))
+    end
+
     outer.setLayoutParams(FrameLayout.LayoutParams(dp(WIN_W), -2))
+
     outer.setFocusable(true)
     outer.setFocusableInTouchMode(true)
     outer.setOnTouchListener(View.OnTouchListener{
@@ -23681,7 +24154,7 @@ function createMenuView()
     _menuRoot = inner
     outer.addView(inner)
 
-    local firstTab, firstTabId = _buildMenuTabs(inner)
+    local firstTab, firstTabId = _buildMenuTabs(inner, lastTab)
     local scroll = _buildMenuContent(inner)
     _menuScroll = scroll
 
@@ -23758,7 +24231,7 @@ end
 -- VOID v1 — HCR2 Modding Framework
 -- Load order: env → imports → constants → core → patches → arch+data → modules → ui → init → loop
 
-scriptSubHeader = " v1.0.19 • By Vekendian"
+scriptSubHeader = " v1.0.20 • By Vekendian"
 
 do
     local LOG_TO_FILE  = true
@@ -23766,7 +24239,7 @@ do
     local LOG_TO_PRINT = true
     local MAX_FILE_BYTES = 2 * 1024 * 1024
 
-    local _log_path   = (gg.getFile():match("(.*)/") or "/sdcard") .. "/void_debug.log"
+    local _log_path   = gg.getFile():match("(.*)/") .. "/void_debug.log"
     local _log_buf    = {}
     local _line_count = 0
     local _start_time = os.clock()
@@ -23858,7 +24331,7 @@ do
     _safePcall = pcall
 end
 
-local script_dir = gg.getFile():match("(.*)/")
+script_dir = gg.getFile():match("(.*)/")
 
 LOG.info("MAIN", "script_dir resolved: " .. tostring(script_dir))
 
@@ -23906,6 +24379,10 @@ Typeface                    = import("android.graphics.Typeface")
 TypedValue                  = import("android.util.TypedValue")
 View                        = import("android.view.View")
 WindowManager               = import("android.view.WindowManager")
+ImageView                   = import("android.widget.ImageView")
+ScaleType                   = import("android.widget.ImageView$ScaleType")
+BitmapFactory               = import("android.graphics.BitmapFactory")
+BitmapDrawable              = import("android.graphics.drawable.BitmapDrawable")
 MainHandler                 = Handler(Looper.getMainLooper())
 
 
@@ -23917,6 +24394,13 @@ CLICK_COOLDOWN = 500
 DEVICE_ARCH    = "unknown"
 DEFAULT_ARCH   = "arm64-v8a"
 
+SCRIPT_PATH = gg.getFile() or ""
+SCRIPT_NAME = SCRIPT_PATH:match("([^/\\]+)$") or ""
+IS_DEV = SCRIPT_NAME == "main.lua"
+CURRENT_VERSION = scriptSubHeader:match("v([%d%.]+)") or "0.0.0"
+RELEASE_API = "https://api.github.com/repos/vekendianorg/void/releases/latest"
+    
+    
 UI = loadModule("configs/colors.lua")
 
 -- ── Global state ──────────────────────────────────────────────────────────────
@@ -24132,51 +24616,158 @@ if not target_info.x64 then
     os.exit()
 end
 
--- FIX: was referencing undeclared `vmPkg` in the LOG.warn line; now correctly
--- uses `vm_package_name` which is the renamed variable throughout.
+function fetchLatestVersion()
+    local raw, err = paste.get(RELEASE_API)
+    if not raw then return nil, nil, nil, err end
+    
+    local ok, data = pcall(function() return json.decode(raw) end)
+    if not ok or type(data) ~= "table" then
+        return nil, nil, nil, "Failed to parse release JSON"
+    end
+    
+    local tag  = tostring(data.tag_name or ""):gsub("^v", "")
+    local body = data.body
+    local url  = nil
+    
+    if type(data.assets) == "table" then
+        for _, asset in ipairs(data.assets) do
+            if type(asset.browser_download_url) == "string" and asset.browser_download_url:match("%.lua$") then
+                url = asset.browser_download_url
+                break
+            end
+        end
+    end
+    
+    if tag == "" then return nil, nil, nil, "Could not parse release tag" end
+    return tag, url, body
+end
+    
+function versionNewer(remote, current)
+    local function parts(v)
+        local t = {}
+        for n in v:gmatch("%d+") do t[#t+1] = tonumber(n) end
+        return t
+    end
+    local r, c = parts(remote), parts(current)
+    for i = 1, math.max(#r, #c) do
+        local a, b = r[i] or 0, c[i] or 0
+        if a > b then return true end
+        if a < b then return false end
+    end
+    return false
+end
+
+local auto_update = memory:load_global("auto_update")
+if auto_update and not IS_DEV then
+    local remote_ver, download_url, release_body = fetchLatestVersion()
+    if remote_ver and versionNewer(remote_ver, CURRENT_VERSION) and download_url then
+        local msg = "v" .. remote_ver .. " is available (current: v" .. CURRENT_VERSION .. ")\n\n" .. (release_body or "No changelog.") .. "\n\nUpdate now?"
+        showDialog("Update Available", msg, {"UPDATE", function()
+            showToast("Downloading v" .. remote_ver .. "...")
+            local content = paste.get(download_url)
+            if content then
+                os.remove(SCRIPT_PATH)
+                local f = io.open(SCRIPT_PATH, "w")
+                if f then f:write(content); f:close() end
+                showToast("Updated to v" .. remote_ver .. ", restarting...")
+                exitScript()
+            else
+                showDialog("Failed", "Could not download the update.", {"OK"})
+            end
+        end}, {"Later"})
+    end
+end
+
 local function detectVirtualSpace()
     if not Config.vSpaceReal then return 0, "/data/data/" .. PKG end
 
     local vm_package_name = tostring(Config.E)
-    local result = Shell.sh("find /data/data/" .. vm_package_name .. " -maxdepth 8 -name '" .. PKG .. "' -type d 2>/dev/null | head -1")
+    local result = Shell.sh("find /data/data/" .. vm_package_name .. " -maxdepth 8 -name '" .. PKG .. "' -type d 2>/dev/null")
 
     if result and result:find("Permission denied by user") then
         LOG.warn("detectVM", "User denied shell permission.")
         return 3, nil
     end
 
-    if result and result ~= "" then
-        local hcr2_path = result:match("^([^\n]+)")
-        LOG.info("detectVM", "HCR2 found at: " .. tostring(hcr2_path))
-        return 1, hcr2_path
+    if not result or result == "" then
+        LOG.warn("detectVM", "HCR2 not found in VM: " .. vm_package_name)
+        return 2, nil
     end
 
-    -- FIX: was `vmPkg` (undeclared); now correctly `vm_package_name`
-    LOG.warn("detectVM", "HCR2 not found in VM: " .. vm_package_name)
-    return 2, nil
+    -- Collect all matches, prefer /user/
+    local paths = {}
+    local seen_users = {}
+    for path in result:gmatch("([^\n]+)") do
+        if path:find("/user/") then
+            local uid = path:match("/user/(%d+)/") or "?"
+            if not seen_users[uid] then
+                seen_users[uid] = path
+            else
+                if #path < #seen_users[uid] then
+                    seen_users[uid] = path
+                end
+            end
+        end
+    end
+    for uid, path in pairs(seen_users) do
+        table.insert(paths, path)
+    end
+
+    table.sort(paths, function(a, b)
+        local a_score = (a:find("/user_de/") and 0 or 1)
+        local b_score = (b:find("/user_de/") and 0 or 1)
+        return a_score > b_score
+    end)
+
+    local chosen = paths[1]
+    LOG.info("detectVM", "HCR2 found at: " .. tostring(chosen))
+
+    -- Multiple paths found — ask user
+    if #paths > 1 then
+        local items = {}
+        local has_hcr2 = {}
+        for i, p in ipairs(paths) do
+            local user_id = p:match("/user[^/]*/(%d+)/") or "?"
+            local detected = p:find(PKG) and "hcr2 detected" or "no hcr2 detected"
+            table.insert(items, user_id .. " (" .. detected .. ")")
+            table.insert(has_hcr2, p:find(PKG) ~= nil)
+        end
+
+        local change = showDialog("Multiple Users Detected",
+            "We found HCR2 data across multiple users. Do you want to pick a different path?",
+            {"YES"}, {"NO"})
+        
+        if change == 1 then
+            local selected_idx = gg.choice(items, nil, "Select the user that you're currently running")
+            if selected_idx then
+                chosen = paths[selected_idx]
+                LOG.info("detectVM", "User selected path: " .. chosen)
+            end
+        end
+    end
+
+    return 1, chosen
 end
 
 local vm_status
 vm_status, game_path = detectVirtualSpace()
+
 if vm_status == 3 then
-    showDialog("Permission Error",
-        "Please allow the script to run the terminal command. Check Void source code if you want to verify.",
-        {"OK"})
+    showDialog("Permission Error", "Please allow the script to run the terminal command. Check Void source code if you want to verify.", {"OK"})
     os.exit()
 end
 
-if vm_status == 2 then
-    showDialog("Unsupported VM",
-        "Your virtual space app is not supported. Please use known virtual space like Multi App Ultra (Waxmoon).",
-        {"OK"})
-    os.exit()
-end
-
-if game_path == nil then
-    showDialog("HCR2 Not Found",
-        "Is the game installed correctly? If it's not about that, please contact us. (@vekendian)",
-        {"OK"})
-    os.exit()
+if vm_status == 2 or game_path == nil then
+    showDialog("Data Path Error", "We can't find the Hill Climb Racing 2 data path. Some features that rely on this path will not work. You can try manual mode if you know how to do it.",
+    {"PROCEED ANYWAY"}, {"MANUAL MODE", function()
+        local response = gg.prompt({"Enter the Data Path"}, {"/data/data/" .. tostring(Config.E) .. "/"}, {"path"})
+        if response and response[1] then
+            vm_status = 1
+            game_path = response[1]
+        else
+            showToast("Cancelled")
+        end
+    end})
 end
 
 local function attachToProcess(pkg)
@@ -24282,7 +24873,7 @@ if BaseGameStatus == nil or BaseRegion == nil then
     showToast("GameStatus Not Found"); exit = true
 else
     LOG.info("INIT", "BaseGameStatus OK=" .. tostring(BaseGameStatus) .. " | scheduling initUI() via MainHandler")
-
+    
     local saved_prefs = memory:load_global("ui_prefs")
     if saved_prefs then
         LOG.info("INIT", "User preferences RE-APPLIED")

@@ -42,8 +42,8 @@ return function(container)
             end
             gg.clearResults()
             
-            finishTask() -- Release scheduler block for next mod
-            done()        -- Notify UI toggle update
+            finishTask()
+            done()
         end)
     end)
 

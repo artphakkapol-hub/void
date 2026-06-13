@@ -12,17 +12,19 @@
 
 local TAB_DEFS = {
     -- { id, display_name }
-    { "account",   "ACCOUNT MENU"   },
-    { "player",    "PLAYER MENU"    },
+    { "separator", "GAME MENU" },
+    { "account", "ACCOUNT MENU" },
+    { "player", "PLAYER MENU" },
     { "adventure", "ADVENTURE MENU" },
-    { "cups",      "CUPS MENU"      },
-    { "team",      "TEAM MENU"      },
-    { "event",     "EVENT MENU"     },
-    { "creative",  "CREATIVE MENU"  },
-    { "shop",      "SHOP MENU"      },
-    { "other",     "OTHER MENU"     },
-    { "settings",  "SETTINGS"       },
-    { "about",     "ABOUT"          },
+    { "cups", "CUPS MENU" },
+    { "team", "TEAM MENU" },
+    { "event", "EVENT MENU" },
+    { "creative", "CREATIVE MENU" },
+    { "shop", "SHOP MENU" },
+    { "other", "OTHER MENU" },
+    { "separator", "SCRIPT MENU" },
+    { "settings", "SETTINGS" },
+    { "about", "ABOUT" },
 }
 
 -- tabHandlers: ordered list of { id, display_name } used by ui.lua for the sidebar.

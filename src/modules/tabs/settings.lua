@@ -9,6 +9,145 @@
 ]]
 
 return function(container)
+    -- =========================
+    -- Helpers
+    -- =========================
+    
+    local function deepCopy(orig, seen)
+        if type(orig) ~= "table" then
+            return orig
+        end
+    
+        if seen and seen[orig] then
+            return seen[orig]
+        end
+    
+        local copy = {}
+        seen = seen or {}
+        seen[orig] = copy
+    
+        for k, v in pairs(orig) do
+            copy[deepCopy(k, seen)] = deepCopy(v, seen)
+        end
+    
+        return copy
+    end
+    
+    local function getFileName(path)
+        path = tostring(path or "")
+        local name = path:match("([^/\\]+)$") or "wallpaper.png"
+        name = name:gsub("[^%w%._%-]", "_")
+        if name == "" then
+            name = "wallpaper.png"
+        end
+        return name
+    end
+    
+    local function safeJoinPath(folder, name)
+        folder = tostring(folder or "")
+        name = getFileName(name)
+        if folder:sub(-1) == "/" then
+            return folder .. name
+        end
+        return folder .. "/" .. name
+    end
+    
+    local function bytesToHex(data)
+        if type(data) ~= "string" then
+            return nil
+        end
+        return (data:gsub(".", function(c)
+            return string.format("%02x", string.byte(c))
+        end))
+    end
+    
+    local function hexToBytes(hex)
+        if type(hex) ~= "string" then
+            return nil
+        end
+    
+        hex = hex:gsub("%s+", "")
+        if hex == "" then
+            return ""
+        end
+    
+        if #hex % 2 ~= 0 then
+            return nil
+        end
+    
+        local out = hex:gsub("..", function(cc)
+            local n = tonumber(cc, 16)
+            if not n then
+                return ""
+            end
+            return string.char(n)
+        end)
+    
+        return out
+    end
+    
+    local function serializeValue(v, seen)
+        local t = type(v)
+    
+        if t == "string" then
+            return string.format("%q", v)
+        elseif t == "number" or t == "boolean" then
+            return tostring(v)
+        elseif t == "table" then
+            if seen and seen[v] then
+                return "nil"
+            end
+    
+            seen = seen or {}
+            seen[v] = true
+    
+            local parts = {}
+            for k, val in pairs(v) do
+                local keyType = type(k)
+                local keyStr
+    
+                if keyType == "string" then
+                    keyStr = "[" .. string.format("%q", k) .. "]"
+                elseif keyType == "number" then
+                    keyStr = "[" .. tostring(k) .. "]"
+                elseif keyType == "boolean" then
+                    keyStr = "[" .. tostring(k) .. "]"
+                else
+                    goto continue
+                end
+    
+                local valueStr = serializeValue(val, seen)
+                if valueStr ~= nil then
+                    parts[#parts + 1] = keyStr .. "=" .. valueStr
+                end
+    
+                ::continue::
+            end
+    
+            return "{" .. table.concat(parts, ",") .. "}"
+        end
+    
+        return nil
+    end
+    
+    local function serializeTable(t)
+        return "return " .. serializeValue(t)
+    end
+    
+    local function rebuildMenu()
+        MainHandler.post(function()
+            if menuView then
+                pcall(function() windowManager.removeView(menuView) end)
+                menuView = nil
+                activeView = nil
+            end
+    
+            -- Rebuild and re-show
+            createMenuView("settings")
+            switchToMenu()
+        end)
+    end
+    
     local function saveAndRefresh()
         LOG.info("Settings", "UI preferences saved and refresh triggered")
         memory:save_global("ui_prefs", UI)
@@ -20,7 +159,78 @@ return function(container)
                 loadCategory("settings", activeTabView)
             end
         end)
+        
     end
+    
+    -- --- Updater ────────────────────────────────────────────────────────
+    
+    addModuleSep(container, "Updates")
+    
+    -- ── Auto Update switch ────────────────────────────────────────────────────────
+    addModule(container, "auto_update", "Auto Update", "Auto update VOID on startup", "switch", nil, function(done, state)
+        if IS_DEV then
+            showDialog("Dev Mode", "Auto update is disabled for main.lua (dev build).", {"OK"})
+            toggleStates["auto_update"] = false
+            done()
+            return
+        end
+        memory:save_global("auto_update", state)
+        done()
+    end)
+    
+    -- ── Check for Update button ───────────────────────────────────────────────────
+    addModule(container, "check_updates", "Check for Update", "Check for the latest VOID release on GitHub", "button", nil, function(done)
+        if IS_DEV then
+            showDialog("Dev Mode", "Update check is disabled for main.lua (dev build).\n\nPull from the repo manually.", {"OK"})
+            done()
+            return
+        end
+    
+        showToast("Checking for updates...")
+        local remote_ver, download_url, release_body = fetchLatestVersion()
+
+        if not remote_ver then
+            showDialog("Update Check Failed", "Could not reach GitHub:\n" .. tostring(download_url), {"OK"})
+            done()
+            return
+        end
+    
+        if not versionNewer(remote_ver, CURRENT_VERSION) then
+            showDialog("Up to date", "You are already on the latest version (v" .. CURRENT_VERSION .. ").", {"OK"})
+            done()
+            return
+        end
+    
+        local msg = "v" .. remote_ver .. "  (current: v" .. CURRENT_VERSION .. ")\n\n" .. (release_body or "No changelog available.") .. "\n\nDownload and replace this script?"
+        showDialog("Update Available", msg, {"UPDATE", function()
+            if not download_url then
+                showDialog("Failed", "No .lua asset found in the release.", {"OK"})
+                return
+            end
+    
+            showToast("Downloading v" .. remote_ver .. "...")
+            local content, err = paste.get(download_url)
+            if not content then
+                showDialog("Download Failed", tostring(err), {"OK"})
+                return
+            end
+    
+            local f = io.open(SCRIPT_PATH, "w")
+            if not f then
+                showDialog("Write Failed", "Could not write to:\n" .. SCRIPT_PATH, {"OK"})
+                return
+            end
+            f:write(content)
+            f:close()
+    
+            showDialog("Done", "Updated to v" .. remote_ver .. ". Restart the script to apply.", {"Restart", function()
+                MainHandler.post(function() os.exit() end)
+            end}, {"Later"})
+        end}, {"Cancel"})
+    
+        done()
+    end)
+    
     -- ── Read-only info ────────────────────────────────────────────────────────
 
     local function regionName()
@@ -28,6 +238,8 @@ return function(container)
         elseif BaseRegion == 4 then return "Ca: C++ alloc"
         else return "U: Unknown" end
     end
+    
+    addModuleSep(container, "Memory")
 
     addModule(container, "memory_range", "Memory Range", "Current selected memory range\n(automatically chosen by script)", "ro", regionName(), nil)
     addModule(container, "gamestatus_address", "GameStatus", "Current gamestatus address\n(automatically chosen by script)", "ro", string.format("0x%X", BaseGameStatus or 0), nil)
@@ -42,78 +254,193 @@ return function(container)
     
     -- ── Custom Colors Info ────────────────────────────────────────────────────
     -- Allow user to changes colors of this script.
-    addModule(container, "colors_info", "About Custom Colors", "Let's you customize this script menu colors, restart this script after customizing for better results.", "ro", "", nil)
+    addModuleSep(container, "UI Customizations")
     
-    -- Helper to serialize the current UI table for cloud storage
-    local function serializeTable(t)
-        local elements = {}
-        for k, v in pairs(t) do
-            -- Only serialize strings, numbers, and booleans to avoid functions/userdata crashing
-            if type(v) == "string" then
-                table.insert(elements, string.format('["%s"]="%s"', k, v))
-            elseif type(v) == "number" or type(v) == "boolean" then
-                table.insert(elements, string.format('["%s"]=%s', k, tostring(v)))
+    -- =========================
+    -- Export Theme
+    -- =========================
+    
+    addModule(container, "export_theme", "Export Theme", "Export custom theme and wallpaper to cloud.", "button", nil, function(done)
+        local TAG = "ExportTheme"
+        local exportUI = deepCopy(UI)
+    
+        local imgData = nil
+        local imgName = nil
+    
+        if UI.BG_IMAGE and UI.BG_IMAGE.PATH and UI.BG_IMAGE.PATH ~= "no_media" then
+            local file = io.open(UI.BG_IMAGE.PATH, "rb")
+            if file then
+                imgData = file:read("*a")
+                file:close()
+    
+                imgName = getFileName(UI.BG_IMAGE.PATH)
+                LOG.info(TAG, "Wallpaper file: " .. tostring(imgName))
+                LOG.info(TAG, "Wallpaper raw bytes: " .. tostring(imgData and #imgData or 0))
+            else
+                LOG.warn(TAG, "Wallpaper path configured but file missing: " .. tostring(UI.BG_IMAGE.PATH))
             end
         end
-        return "return {" .. table.concat(elements, ",") .. "}"
-    end
     
-    -- Export Theme
-    addModule(container, "export_theme", "Export Theme", "Export custom theme to cloud.", "button", nil, function(done)
-        showToast("Uploading theme configuration...")
-            
-        local payload = serializeTable(UI)
-        local link, err = paste.post(payload)
-            
-        if link then
-            local pasteId = link:match("[^/]+$") -- Extracts just the short key
-            gg.copyText(pasteId)
-            showDialog("Success", "Theme uploaded successfully!\n\nShare ID: " .. pasteId .. "\n\nThe ID has been copied to your clipboard.", {"OK"})
-        else
-            showDialog("Failed", "Failed to export theme:\n" .. tostring(err), {"OK"})
+        local function proceedWithUpload()
+            showToast("Preparing and uploading...")
+    
+            local imgHex = nil
+            if imgData and imgData ~= "" then
+                imgHex = bytesToHex(imgData)
+                if not imgHex or imgHex == "" then
+                    LOG.error(TAG, "Hex conversion failed.")
+                    showDialog("Failed", "Failed to encode wallpaper.", "OK")
+                    done()
+                    return
+                end
+    
+                LOG.info(TAG, "Wallpaper hex length: " .. tostring(#imgHex))
+            end
+    
+            if exportUI.BG_IMAGE then
+                if imgHex then
+                    exportUI.BG_IMAGE.PATH = imgName or "embedded_wallpaper.png"
+                else
+                    exportUI.BG_IMAGE.PATH = "no_media"
+                end
+            end
+    
+            local exportData = {
+                version = 4,
+                kind = "theme_bundle_hex",
+                ui = exportUI,
+                img_name = imgName,
+                img_hex = imgHex
+            }
+    
+            LOG.info(TAG, "Serializing clean payload...")
+            local payload = serializeTable(exportData)
+    
+            LOG.info(TAG, "Payload size: " .. tostring(#payload))
+            LOG.info(TAG, "Uploading payload directly to cloud host...")
+    
+            local link, err = paste.post(payload)
+    
+            if link then
+                local pasteId = link:match("[^/]+$")
+                gg.copyText(pasteId)
+                LOG.info(TAG, "Upload successful. Share ID: " .. tostring(pasteId))
+    
+                showDialog("Success", "Share ID: " .. pasteId .. "\n\nThe ID has been copied to your clipboard.", "OK")
+            else
+                LOG.error(TAG, "Cloud upload failed: " .. tostring(err))
+                showDialog("Failed", "Failed to export bundle string to cloud:\n" .. tostring(err), "OK")
+            end
         end
-            
+    
+        if imgData then
+            local warningMsg = "A custom background image is active. Including this image will increase the export size a lot.\n\nDo you want to proceed?"
+            showDialog("Upload Size Warning", warningMsg, { "Upload Everything", proceedWithUpload }, "Cancel")
+        else
+            proceedWithUpload()
+        end
+    
         done()
     end)
     
+    -- =========================
     -- Import Theme
+    -- =========================
+    
     addModule(container, "import_theme", "Import Theme", "Import custom theme from cloud.", "input", {
         { hint = "Enter Share ID", value = "", type = "text" }
     }, function(done, val)
-        if not val or val == "" then 
+        local TAG = "ImportTheme"
+        local shareId = (type(val) == "table") and val[1] or val
+        if not shareId or shareId == "" then
+            LOG.warn(TAG, "Import cancelled due to blank input field.")
             done()
             return
         end
-        
+    
         showToast("Downloading theme...")
-        local rawText, err = paste.get("https://paste.rs/" .. val) -- Note: Ensure val[1] index is targetted if 'val' is a table
-        
-        if rawText then
-            local loadedChunk, compileErr = load(rawText)
-            if loadedChunk then
-                local imported_prefs = loadedChunk()
-                
-                -- Apply the imported values onto the live UI state
-                for k, v in pairs(imported_prefs) do
-                    if UI[k] ~= nil then 
-                        UI[k] = v 
-                    end
+        LOG.info(TAG, "Requesting bundle payload for ID: " .. tostring(shareId))
+    
+        local targetUrl = "https://paste.rs/" .. shareId
+        local rawText, err = paste.get(targetUrl)
+    
+        if not rawText then
+            LOG.error(TAG, "Download failed for source: " .. targetUrl .. " -> " .. tostring(err))
+            showDialog("Failed", "Failed to fetch data from cloud:\n" .. tostring(err), "OK")
+            done()
+            return
+        end
+    
+        LOG.info(TAG, "Payload downloaded. Compiling bundle structure...")
+        local loadedChunk, compileErr = load(rawText)
+    
+        if not loadedChunk then
+            LOG.error(TAG, "Lua chunk compilation failure: " .. tostring(compileErr))
+            showDialog("Failed", "Failed to parse theme data:\n" .. tostring(compileErr), "OK")
+            done()
+            return
+        end
+    
+        local ok, exportData = pcall(loadedChunk)
+        if not ok or type(exportData) ~= "table" then
+            LOG.error(TAG, "Invalid payload container returned from cloud.")
+            showDialog("Failed", "Invalid theme data format structure.", "OK")
+            done()
+            return
+        end
+    
+        local imported_prefs = exportData.ui or exportData
+        local imgHex = exportData.img_hex
+        local imgName = exportData.img_name
+    
+        LOG.dbg(TAG, "Merging layout preferences into UI state memory...")
+        if type(imported_prefs) == "table" then
+            for k, v in pairs(imported_prefs) do
+                if UI[k] ~= nil then
+                    UI[k] = deepCopy(v)
                 end
-                
-                -- Auto-save to global memory so it persists natively on next boot
-                memory:save_global("ui_prefs", UI)
-                saveAndRefresh()
-                showDialog("Success", "Theme successfully imported and saved!", {"OK"})
+            end
+        end
+    
+        if imgHex and imgHex ~= "" then
+            LOG.info(TAG, "Hex wallpaper found. Decoding...")
+            local imgData = hexToBytes(imgHex)
+    
+            if imgData and imgData ~= "" then
+                local finalName = getFileName(imgName or "imported_wallpaper.png")
+                local finalDestPath = safeJoinPath(gg.FILES_DIR, finalName)
+    
+                local fileWrite = io.open(finalDestPath, "wb")
+                if fileWrite then
+                    fileWrite:write(imgData)
+                    fileWrite:close()
+    
+                    if UI.BG_IMAGE then
+                        UI.BG_IMAGE.PATH = finalDestPath
+                    end
+    
+                    LOG.info(TAG, "Wallpaper written successfully to: " .. finalDestPath)
+                else
+                    LOG.error(TAG, "Failed to write image file to gg.FILES_DIR.")
+                end
             else
-                showDialog("Failed", "Failed to parse theme data:\n" .. tostring(compileErr), {"OK"})
+                LOG.error(TAG, "Failed to decode wallpaper hex.")
             end
         else
-            showDialog("Failed", "Failed to fetch data from cloud:\n" .. tostring(err), {"OK"})
+            if UI.BG_IMAGE then
+                UI.BG_IMAGE.PATH = "no_media"
+            end
         end
-        
-        done()
-    end)
     
+        memory:save_global("ui_prefs", UI)
+        saveAndRefresh()
+    
+        LOG.info(TAG, "Import completed successfully.")
+        showDialog("Success", "Theme and assets successfully imported and saved!", "OK")
+        done()
+        rebuildMenu()
+    end)
+
     -- ── Background Opacity ────────────────────────────────────────────────────
     -- Writes to the alpha byte of UI.BG; HEADER, CARD, and GLASS track it at
     -- fixed ratios so the visual hierarchy stays consistent.
@@ -142,6 +469,59 @@ return function(container)
             done()
         end
     )
+    
+    -- ── Background Image Opacity ─────────────────────
+    addModule(container, "bg_image_opacity", "Background Image Opacity",
+        "Adjust visibility alpha settings directly using pure integer channels.",
+        "slider",
+        {min = 0, max = 255, current = UI.BG_IMAGE.ALPHA & 0xFF, title = "Alpha"},
+        function(done, val) 
+            UI.BG_IMAGE.ALPHA = val & 0xFF
+            
+            saveAndRefresh()
+            done()
+        end
+    )
+
+    -- ── Background Image ────────────────────────────────────────────────
+    -- Updates the absolute storage location path pointing to the wallpaper image.
+
+    addModule(container, "bg_image_picker", "Background Image", "Tap to modify the absolute file path destination for your custom layout wallpaper.", "button", nil, function(done)
+        local response = gg.prompt(
+            { "Absolute Image File Path (.jpg or .png):", "Remove BG Image" },
+            { UI.BG_IMAGE.PATH == "no_media" and gg.EXT_STORAGE or UI.BG_IMAGE.PATH, false },
+            { "file", "checkbox" }
+        )
+        
+        if response then
+            if response[2] == true then
+                UI.BG_IMAGE.PATH = "no_media"
+                saveAndRefresh()
+                showDialog("Successfully", "Restart this script to see the results", {"OK"})
+            else
+                if response[1] then
+                    local parsedPath = response[1]:gsub("^%s*(.-)%s*$", "%1")
+        
+                    if parsedPath ~= "" then
+                        local verificationHandle = io.open(parsedPath, "r")
+                        
+                        if verificationHandle then
+                            verificationHandle:close()
+                            
+                            UI.BG_IMAGE.PATH = parsedPath
+                            saveAndRefresh()
+                            showDialog("Successfully", "Restart this script to see the results", {"OK"})
+                        else
+                            showDialog("Failed", "File not found or read operation refused:\n" .. tostring(parsedPath), {"OK"})
+                        end
+                    end
+                end
+            end
+        end
+        
+        done()
+        rebuildMenu()
+    end)
 
     -- ── Background RGB ────────────────────────────────────────────────────────
     -- Adjusts the R, G, B hue of UI.BG. HEADER and CARD are derived at fixed
