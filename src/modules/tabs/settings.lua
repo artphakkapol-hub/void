@@ -341,9 +341,6 @@ return function(container)
         if val == nil or val == "" then
             showToast("Cannot be empty")
             done()
-        elseif #val > 2 then
-            showToast("Length cannot be more than 2")
-            done()
         else
             UI.TABS_ICON = val
             saveAndRefresh()
