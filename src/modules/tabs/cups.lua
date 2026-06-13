@@ -46,7 +46,9 @@ return function(container)
         end)
     end)
     
-    addArchModule(container, "auto_win", "Auto Win", "Automatically win no matter what your race results is", "switch", nil, aobs.autoWinPatches)
+    addArchModule(container, "auto_win", "Auto Win", "Automatically win no matter what your race results is", "switch", nil, aobs.autoWin)
+    
+    addArchModule(container, "force_boss", "Force Boss", "Force boss always appears", "switch", nil, aobs.forceBoss)
     
     addModule(container, "force_cup", "Force Cup", "Forces a single cup", "switch", nil,
     function(done, state)

@@ -1,14 +1,12 @@
 # Changelog
-## v1.0.20
+## v1.0.17
 
 Added:
-- Fake Unlock
-- Custom Background Image
-- Auto Updat & Check for Update
+- Allow any VM to run this script
 
 Fixed:
-- Unsupported VM error on Known VM
-- Set Distance on 1.73.3
+- Events Rewards Patch (for rooted devices)
+- Unlock Parts
 
-Improved:
-- GUI & UX
+Removed:
+- Multi App Ultra only Support
