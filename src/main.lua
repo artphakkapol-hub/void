@@ -455,16 +455,32 @@ if auto_update and not IS_DEV then
         local msg = "v" .. remote_ver .. " is available (current: v" .. CURRENT_VERSION .. ")\n\n" .. (release_body or "No changelog.") .. "\n\nUpdate now?"
         showDialog("Update Available", msg, {"UPDATE", function()
             showToast("Downloading v" .. remote_ver .. "...")
-            local content = paste.get(download_url)
-            if content then
-                os.remove(SCRIPT_PATH)
-                local f = io.open(SCRIPT_PATH, "w")
-                if f then f:write(content); f:close() end
-                showToast("Updated to v" .. remote_ver .. ", restarting...")
-                exitScript()
-            else
-                showDialog("Failed", "Could not download the update.", {"OK"})
+            local content, err = paste.get(download_url)
+            if not content then
+                showDialog("Failed", "Could not download the update:\n" .. tostring(err), {"OK"})
+                return
             end
+
+            -- Save as a new file next to the current script
+            local script_dir  = SCRIPT_PATH:match("^(.*[/\\])") or ""
+            local new_path    = script_dir .. "void_v" .. remote_ver .. ".lua"
+
+            local f = io.open(new_path, "w")
+            if not f then
+                showDialog("Failed", "Could not write to:\n" .. new_path, {"OK"})
+                return
+            end
+            f:write(content)
+            f:close()
+
+            showToast("Launching v" .. remote_ver .. "...")
+            local ok, load_err = pcall(function() dofile(new_path) end)
+            if not ok then
+                showDialog("Launch Failed", "Downloaded but could not run:\n" .. tostring(load_err), {"OK"})
+                return
+            end
+
+            exitScript()
         end}, {"Later"})
     end
 end
@@ -540,172 +556,174 @@ local function detectVirtualSpace()
     return 1, chosen
 end
 
-local vm_status
-vm_status, game_path = detectVirtualSpace()
-
-if vm_status == 3 then
-    showDialog("Permission Error", "Please allow the script to run the terminal command. Check Void source code if you want to verify.", {"OK"})
-    os.exit()
-end
-
-if vm_status == 2 or game_path == nil then
-    showDialog("Data Path Error", "We can't find the Hill Climb Racing 2 data path. Some features that rely on this path will not work. You can try manual mode if you know how to do it.",
-    {"PROCEED ANYWAY"}, {"MANUAL MODE", function()
-        local response = gg.prompt({"Enter the Data Path"}, {"/data/data/" .. tostring(Config.E) .. "/"}, {"path"})
-        if response and response[1] then
-            vm_status = 1
-            game_path = response[1]
-        else
-            showToast("Cancelled")
+if not exit then
+    local vm_status
+    vm_status, game_path = detectVirtualSpace()
+    
+    if vm_status == 3 then
+        showDialog("Permission Error", "Please allow the script to run the terminal command. Check Void source code if you want to verify.", {"OK"})
+        os.exit()
+    end
+    
+    if vm_status == 2 or game_path == nil then
+        showDialog("Data Path Error", "We can't find the Hill Climb Racing 2 data path. Some features that rely on this path will not work. You can try manual mode if you know how to do it.",
+        {"PROCEED ANYWAY"}, {"MANUAL MODE", function()
+            local response = gg.prompt({"Enter the Data Path"}, {"/data/data/" .. tostring(Config.E) .. "/"}, {"path"})
+            if response and response[1] then
+                vm_status = 1
+                game_path = response[1]
+            else
+                showToast("Cancelled")
+            end
+        end})
+    end
+    
+    local function attachToProcess(pkg)
+        gg.showUiButton()
+        local tick_count = 0
+        local has_warned = false
+        while gg.getTargetPackage() ~= pkg do
+            if gg.isVisible() and not has_warned then
+                gg.alert('Click "Sx" to stop'); has_warned = true
+            end
+            if gg.isClickedUiButton() then gg.hideUiButton(); return false end
+            tick_count = tick_count + 1
+            if tick_count % 7 == 0 then showToast("Waiting for " .. pkg .. "...") end
+            gg.setProcess(pkg); gg.sleep(500)
         end
-    end})
-end
-
-local function attachToProcess(pkg)
-    gg.showUiButton()
-    local tick_count = 0
-    local has_warned = false
-    while gg.getTargetPackage() ~= pkg do
-        if gg.isVisible() and not has_warned then
-            gg.alert('Click "Sx" to stop'); has_warned = true
+        gg.hideUiButton(); return true
+    end
+    
+    if target_info.packageName ~= PKG then
+        if not attachToProcess(PKG) then showToast("Cancelled"); os.exit() end
+    end
+    
+    local function awaitLib(lib)
+        local tick_count = 0
+        while #gg.getRangesList(lib) == 0 do
+            tick_count = tick_count + 1
+            if tick_count % 7 == 0 then showToast("Waiting for " .. lib .. "...") end
+            gg.sleep(500)
+            if tick_count > 120 then return false end
         end
-        if gg.isClickedUiButton() then gg.hideUiButton(); return false end
-        tick_count = tick_count + 1
-        if tick_count % 7 == 0 then showToast("Waiting for " .. pkg .. "...") end
-        gg.setProcess(pkg); gg.sleep(500)
+        return true
     end
-    gg.hideUiButton(); return true
-end
-
-if target_info.packageName ~= PKG then
-    if not attachToProcess(PKG) then showToast("Cancelled"); os.exit() end
-end
-
-local function awaitLib(lib)
-    local tick_count = 0
-    while #gg.getRangesList(lib) == 0 do
-        tick_count = tick_count + 1
-        if tick_count % 7 == 0 then showToast("Waiting for " .. lib .. "...") end
-        gg.sleep(500)
-        if tick_count > 120 then return false end
+    
+    if not awaitLib("libcocos2dcpp.so") then os.exit() end
+    
+    function readString(addr, max_len)
+        max_len = max_len or 64
+        local reads = {}
+        for i = 0, max_len - 1 do
+            table.insert(reads, { address = addr + i, flags = 1 })
+        end
+        local result = gg.getValues(reads)
+        local bytes  = {}
+        for _, v in ipairs(result) do
+            if v.value == 0 then break end
+            local b = v.value < 0 and v.value + 256 or v.value
+            table.insert(bytes, string.char(b))
+        end
+        return table.concat(bytes)
     end
-    return true
-end
-
-if not awaitLib("libcocos2dcpp.so") then os.exit() end
-
-function readString(addr, max_len)
-    max_len = max_len or 64
-    local reads = {}
-    for i = 0, max_len - 1 do
-        table.insert(reads, { address = addr + i, flags = 1 })
-    end
-    local result = gg.getValues(reads)
-    local bytes  = {}
-    for _, v in ipairs(result) do
-        if v.value == 0 then break end
-        local b = v.value < 0 and v.value + 256 or v.value
-        table.insert(bytes, string.char(b))
-    end
-    return table.concat(bytes)
-end
-
--- ── GameStatus resolution ─────────────────────────────────────────────────────
-
-local SEARCH_REGIONS = { gg.REGION_C_ALLOC, gg.REGION_OTHER }
-local saved_status   = memory:load("gamestatus")
-
-shellStates   = memory:load("shell_states")   or { root = false }
-toggleStates  = memory:load("toggle_states")  or {}
-inputStates   = memory:load("input_states")   or {}
-spinnerStates = memory:load("spinner_states") or {}
-sliderStates  = memory:load("slider_states")  or {}
-
-if saved_status then
-    BaseRegion, BaseGameStatus, BaseGameStatusRaw = saved_status[1], saved_status[2], saved_status[3]
-else
-    for _, region in ipairs(SEARCH_REGIONS) do
-        gg.clearResults(); gg.setRanges(region)
-        gg.searchNumber("h 73 74 61 72 74 75 70 5F 63 6F 75 6E 74", gg.TYPE_BYTE)
-        gg.refineNumber("h 73", gg.TYPE_BYTE)
-        local scan_results = gg.getResults(gg.getResultsCount())
-        gg.clearResults()
-        local status_hits     = {}
-        local status_raw_hits = {}
-        for _, d in ipairs(scan_results) do
-            local ptr = gg.getValues({ { address = d.address + 0x1F, flags = gg.TYPE_QWORD } })[1]
-            if ptr and ptr.value ~= 0 then
-                local ver = gg.getValues({ { address = ptr.value + 0x10, flags = gg.TYPE_DWORD } })[1]
-                local v   = ver and tonumber(ver.value)
-                if v == 65792 or v == 65793 or v == 16843008 or v == 16843009 then
-                    table.insert(status_raw_hits, ver.address)
-                    local tp = gg.getValues({ { address = ptr.value + 0x80, flags = gg.TYPE_QWORD } })[1]
-                    if tp and tp.value ~= 0 then
-                        local td = gg.getValues({ { address = tp.value, flags = gg.TYPE_DWORD } })[1]
-                        if td then table.insert(status_hits, td.address) end
+    
+    -- ── GameStatus resolution ─────────────────────────────────────────────────────
+    
+    local SEARCH_REGIONS = { gg.REGION_C_ALLOC, gg.REGION_OTHER }
+    local saved_status   = memory:load("gamestatus")
+    
+    shellStates   = memory:load("shell_states")   or { root = false }
+    toggleStates  = memory:load("toggle_states")  or {}
+    inputStates   = memory:load("input_states")   or {}
+    spinnerStates = memory:load("spinner_states") or {}
+    sliderStates  = memory:load("slider_states")  or {}
+    
+    if saved_status then
+        BaseRegion, BaseGameStatus, BaseGameStatusRaw = saved_status[1], saved_status[2], saved_status[3]
+    else
+        for _, region in ipairs(SEARCH_REGIONS) do
+            gg.clearResults(); gg.setRanges(region)
+            gg.searchNumber("h 73 74 61 72 74 75 70 5F 63 6F 75 6E 74", gg.TYPE_BYTE)
+            gg.refineNumber("h 73", gg.TYPE_BYTE)
+            local scan_results = gg.getResults(gg.getResultsCount())
+            gg.clearResults()
+            local status_hits     = {}
+            local status_raw_hits = {}
+            for _, d in ipairs(scan_results) do
+                local ptr = gg.getValues({ { address = d.address + 0x1F, flags = gg.TYPE_QWORD } })[1]
+                if ptr and ptr.value ~= 0 then
+                    local ver = gg.getValues({ { address = ptr.value + 0x10, flags = gg.TYPE_DWORD } })[1]
+                    local v   = ver and tonumber(ver.value)
+                    if v == 65792 or v == 65793 or v == 16843008 or v == 16843009 then
+                        table.insert(status_raw_hits, ver.address)
+                        local tp = gg.getValues({ { address = ptr.value + 0x80, flags = gg.TYPE_QWORD } })[1]
+                        if tp and tp.value ~= 0 then
+                            local td = gg.getValues({ { address = tp.value, flags = gg.TYPE_DWORD } })[1]
+                            if td then table.insert(status_hits, td.address) end
+                        end
                     end
                 end
             end
+            if #status_hits > 0 then
+                BaseRegion, BaseGameStatus, BaseGameStatusRaw = region, status_hits[1], status_raw_hits[1]
+                memory:save("gamestatus", { region, status_hits[1], status_raw_hits[1] })
+                break
+            end
         end
-        if #status_hits > 0 then
-            BaseRegion, BaseGameStatus, BaseGameStatusRaw = region, status_hits[1], status_raw_hits[1]
-            memory:save("gamestatus", { region, status_hits[1], status_raw_hits[1] })
+    end
+    
+    showToast("Initialized", true)
+    LOG.info("INIT", "Initialized | BaseGameStatus=" .. tostring(BaseGameStatus) .. " BaseRegion=" .. tostring(BaseRegion))
+    
+    if BaseGameStatus == nil or BaseRegion == nil then
+        LOG.fatal("INIT", "BaseGameStatus or BaseRegion is NIL — floating menu will NOT appear!")
+        LOG.flush()
+        showToast("GameStatus Not Found"); exit = true
+    else
+        LOG.info("INIT", "BaseGameStatus OK=" .. tostring(BaseGameStatus) .. " | scheduling initUI() via MainHandler")
+        
+        local saved_prefs = memory:load_global("ui_prefs")
+        if saved_prefs then
+            LOG.info("INIT", "User preferences RE-APPLIED")
+            for k, v in pairs(saved_prefs) do
+                if UI[k] ~= nil then UI[k] = v end
+            end
+        end
+    
+        MainHandler.post(function()
+            LOG.info("INIT", "MainHandler: calling initUI()")
+            local ok, err = _safePcall(function() initUI() end)
+            if not ok then
+                LOG.fatal("INIT", "initUI() CRASHED: " .. tostring(err))
+                LOG.flush()
+            else
+                LOG.info("INIT", "initUI() completed | menuView=" .. tostring(menuView) .. " iconView=" .. tostring(iconView) .. " activeView=" .. tostring(activeView))
+            end
+        end)
+    end
+    
+    LOG.info("INIT", "activeView check before switchToIcon: activeView=" .. tostring(activeView))
+    if activeView == nil then
+        LOG.warn("INIT", "activeView is nil — calling switchToIcon() as fallback")
+        switchToIcon()
+    end
+    
+    
+    -- ── Main loop ─────────────────────────────────────────────────────────────────
+    LOG.info("MAIN", "Entering main loop | exit=" .. tostring(exit) .. " activeView=" .. tostring(activeView))
+    LOG.flush()
+    
+    while not exit do
+        local ok, err = pcall(function()
+            if gg.isVisible(true) then gg.setVisible(false); gg.toast("Don't interrupt this script") end
+            if FORCE_EXIT then exitScript() end
+            gg.sleep(100)
+        end)
+        if not ok then
+            LOG.fatal("MAIN", "Main loop crashed: " .. tostring(err))
+            LOG.flush()
+            exitScript()
             break
         end
-    end
-end
-
-showToast("Initialized", true)
-LOG.info("INIT", "Initialized | BaseGameStatus=" .. tostring(BaseGameStatus) .. " BaseRegion=" .. tostring(BaseRegion))
-
-if BaseGameStatus == nil or BaseRegion == nil then
-    LOG.fatal("INIT", "BaseGameStatus or BaseRegion is NIL — floating menu will NOT appear!")
-    LOG.flush()
-    showToast("GameStatus Not Found"); exit = true
-else
-    LOG.info("INIT", "BaseGameStatus OK=" .. tostring(BaseGameStatus) .. " | scheduling initUI() via MainHandler")
-    
-    local saved_prefs = memory:load_global("ui_prefs")
-    if saved_prefs then
-        LOG.info("INIT", "User preferences RE-APPLIED")
-        for k, v in pairs(saved_prefs) do
-            if UI[k] ~= nil then UI[k] = v end
-        end
-    end
-
-    MainHandler.post(function()
-        LOG.info("INIT", "MainHandler: calling initUI()")
-        local ok, err = _safePcall(function() initUI() end)
-        if not ok then
-            LOG.fatal("INIT", "initUI() CRASHED: " .. tostring(err))
-            LOG.flush()
-        else
-            LOG.info("INIT", "initUI() completed | menuView=" .. tostring(menuView) .. " iconView=" .. tostring(iconView) .. " activeView=" .. tostring(activeView))
-        end
-    end)
-end
-
-LOG.info("INIT", "activeView check before switchToIcon: activeView=" .. tostring(activeView))
-if activeView == nil then
-    LOG.warn("INIT", "activeView is nil — calling switchToIcon() as fallback")
-    switchToIcon()
-end
-
-
--- ── Main loop ─────────────────────────────────────────────────────────────────
-LOG.info("MAIN", "Entering main loop | exit=" .. tostring(exit) .. " activeView=" .. tostring(activeView))
-LOG.flush()
-
-while not exit do
-    local ok, err = pcall(function()
-        if gg.isVisible(true) then gg.setVisible(false); gg.toast("Don't interrupt this script") end
-        if FORCE_EXIT then exitScript() end
-        gg.sleep(100)
-    end)
-    if not ok then
-        LOG.fatal("MAIN", "Main loop crashed: " .. tostring(err))
-        LOG.flush()
-        exitScript()
-        break
     end
 end
