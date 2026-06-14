@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-14 10:48:48
+-- Packed by bundle.py  •  2026-06-14 17:18:44
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -21222,7 +21222,7 @@ __vfs['modules/tabs/adventure.lua'] = function(...)
 ]]
 
 return function(container)
-    addModule(container, "auto_adventure_chests", "Auto Adventure Chests", "Automatically level up your adventure chests", "button", nil,
+    addModule(container, "auto_adventure_chests", "Auto Adventure Chests (unstable)", "Automatically level up your adventure chests", "button", nil,
     function(done)
         local TAG = "AutoAdventureChests"
         LOG.info(TAG, "Module activated.")
@@ -21231,9 +21231,9 @@ return function(container)
             gg.clearResults()
             gg.setRanges(BaseRegion)
             gg.searchNumber("500;500::5", 4)
-            local count = gg.getResultsCount()
+            local res = gg.getResults(gg.getResultsCount())
 
-            if count == 0 then
+            if #res == 0 then
                 showToast("No adventure chests found")
                 LOG.warn(TAG, "Search returned 0 results.")
                 finishTask()
