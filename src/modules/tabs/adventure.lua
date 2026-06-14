@@ -6,6 +6,38 @@
 ]]
 
 return function(container)
+    addModule(container, "auto_adventure_chests", "Auto Adventure Chests", "Automatically level up your adventure chests", "button", nil,
+    function(done)
+        local TAG = "AutoAdventureChests"
+        LOG.info(TAG, "Module activated.")
+
+        scheduler:add(function(finishTask)
+            gg.clearResults()
+            gg.setRanges(BaseRegion)
+            gg.searchNumber("500;500::5", 4)
+            local count = gg.getResultsCount()
+
+            if count == 0 then
+                showToast("No adventure chests found")
+                LOG.warn(TAG, "Search returned 0 results.")
+                finishTask()
+                done()
+                return
+            end
+
+            LOG.dbg(TAG, "Results found: " .. tostring(count))
+
+            gg.editAll("-1", 4)
+            gg.clearResults()
+
+            LOG.info(TAG, "Done.")
+            showToast("Done")
+
+            finishTask()
+            done()
+        end)
+    end)
+    
     addArchModule(container, "set_distance", "Set Distance", "Sets your Adventure race distance to a custom value. Must be in an active race. Higher distance can gain more stars. Max stars that can be gained is 5000. (Not a teleport function)", "slider",
     {title="Meters", min=0, max=5000, current=0},
     function(done, vals)

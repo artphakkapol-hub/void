@@ -11,9 +11,6 @@ return function(container)
     {title="Seconds", min=0, max=10, current=3},
     function(done, vals)
         local countdownValue = vals
-        if countdownValue < 1 then
-            countdownValue = 0.25 --prevent crashes
-        end
 
         scheduler:add(function(finishTask)
             local TAG = "AdjustCountdown"
@@ -211,6 +208,109 @@ return function(container)
             else
                 showToast("No tasks to freeze")
                 LOG.warn(TAG, "freezeItems is empty.")
+            end
+
+            finishTask()
+            done()
+        end)
+    end)
+    
+    addModule(container, "rank_points_bonus", "+498 Rank Points", "Make all league tasks gives you 498 points instead of 200 points, also remove other rewards.", "switch", nil,
+    function(done, state)
+        local TAG = "RankPointsBonus"
+        LOG.info(TAG, "Module activated. state=" .. tostring(state))
+
+        scheduler:add(function(finishTask)
+            if state then
+                gg.clearResults()
+                gg.setRanges(BaseRegion)
+                gg.searchNumber("h 1C 4C 65 61 67 75 65 54", 1)
+                gg.refineNumber("h 1C", 1)
+                local results = gg.getResults(gg.getResultsCount())
+                gg.clearResults()
+
+                if #results == 0 then
+                    showToast("No league tasks found")
+                    LOG.warn(TAG, "Anchor search returned 0 results.")
+                    finishTask()
+                    done()
+                    return
+                end
+
+                LOG.dbg(TAG, "Anchor results: " .. tostring(#results))
+
+                local saved = {}
+                local successCount = 0
+
+                for idx, result in ipairs(results) do
+                    local check = gg.getValues({{ address = result.address + 0x1C, flags = 4 }})
+
+                    if not check or not check[1] then
+                        LOG.warn(TAG, string.format("result[%d] check read failed", idx))
+                        goto continueResult
+                    end
+
+                    if check[1].value ~= 0x3E4CCCCD then
+                        LOG.dbg(TAG, string.format("result[%d] +0x1C = 0x%X, not 0.2, skipping", idx, check[1].value))
+                        goto continueResult
+                    end
+                    
+                    local readAddrs = {}
+                    table.insert(readAddrs, { address = result.address + 0x1C, flags = 4 })
+                    
+                    local original = gg.getValues(readAddrs)
+
+                    local values = {}
+                    for i, v in ipairs(original) do
+                        values[i] = v.value
+                    end
+                    table.insert(saved, { base = result.address, values = values })
+                    
+                    local edits = {
+                        { address = result.address + 0x1C, flags = 16, value = 0.498 }
+                    }
+                    
+                    gg.setValues(edits)
+
+                    successCount = successCount + 1
+
+                    ::continueResult::
+                end
+
+                memory:save("rank_points_bonus", saved)
+                LOG.info(TAG, "Done. Patched: " .. tostring(successCount))
+
+                if successCount > 0 then
+                    showToast("Rank points boosted: " .. tostring(successCount))
+                else
+                    showToast("No matching league tasks found")
+                end
+            else
+                -- DISABLE: restore original values from saved data
+                local saved = memory:load("rank_points_bonus")
+
+                if not saved or #saved == 0 then
+                    LOG.warn(TAG, "No saved data to restore.")
+                    showToast("Nothing to restore")
+                    finishTask()
+                    done()
+                    return
+                end
+
+                local restoreCount = 0
+
+                for idx, entry in ipairs(saved) do
+                    local edits = {}
+                    
+                    table.insert(edits, { address = entry.base + 0x1C, flags = 4, value = entry.values[i] })
+                    
+                    gg.setValues(edits)
+                    restoreCount = restoreCount + 1
+                end
+
+                memory:save("rank_points_bonus", {})
+                LOG.info(TAG, "Restored: " .. tostring(restoreCount))
+                showToast("Restored: " .. tostring(restoreCount))
             end
 
             finishTask()

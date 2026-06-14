@@ -239,9 +239,9 @@ function addArchModule(parent, id, title, desc, mode, extra, patch_or_callback)
             scheduler:add(function(finish_task)
                 local fail_count = apply_patch(id, resolved, state)
                 if fail_count == 0 then
-                    showToast(title .. (state and " Enabled" or " Disabled"), true)
+                    showToast(title .. (state and " Enabled" or " Disabled"))
                 else
-                    showToast("Failed: " .. fail_count .. " pattern(s) not found", true)
+                    showToast("Failed: " .. fail_count .. " pattern(s) not found")
                 end
                 gg.clearResults()
                 finish_task()

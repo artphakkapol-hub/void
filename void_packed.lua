@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-13 17:11:55
+-- Packed by bundle.py  •  2026-06-14 10:48:48
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -19712,9 +19712,9 @@ function addArchModule(parent, id, title, desc, mode, extra, patch_or_callback)
             scheduler:add(function(finish_task)
                 local fail_count = apply_patch(id, resolved, state)
                 if fail_count == 0 then
-                    showToast(title .. (state and " Enabled" or " Disabled"), true)
+                    showToast(title .. (state and " Enabled" or " Disabled"))
                 else
-                    showToast("Failed: " .. fail_count .. " pattern(s) not found", true)
+                    showToast("Failed: " .. fail_count .. " pattern(s) not found")
                 end
                 gg.clearResults()
                 finish_task()
@@ -20521,7 +20521,17 @@ return {
             
         },
     },
+    
+    ["x86_64"] = {
+        default_base = "data/x86_64/1.73.3.lua", -- 1.73
 
+        ["1"] = {
+            ["73"] = {
+                ["3"] = "data/x86_64/1.73.3.lua",
+            },
+            
+        },
+    },
 }
 
 end
@@ -20532,9 +20542,6 @@ __vfs['data/arm64-v8a/1.73.3.lua'] = function(...)
 -- Inherits everything from base.lua EXCEPT the keys listed below.
 -- See data/manifest.lua for how merging works.
 --
--- Changed:
---   lib_setDistanceBase shifted (0x2009C28 → 0x200BC58) due to lib
---   recompilation in this version.
 
 return {
     offsets = {
@@ -20574,9 +20581,16 @@ return {
             {scan = "h 08 20 20 1E 85 00 00 54 E0 03 13 AA E1 03 14 AA", offset = 4, patch = "h 1F 20 03 D5", unpatch = "h 85 00 00 54"},
         },
 
-        autoWinPatches = {
+        autoWin = {
             {scan = "h E8 5F 5D A9 16 61 40 B9", offset = 4, patch = "h 55 00 80 52", unpatch = "h 16 61 40 B9"},
             {scan = "h E0 5F 40 F9 09 4D 40 BD", offset = 4, patch = "h 0A 90 32 1E", unpatch = "h 09 4D 40 BD"},
+            {scan = "h 60 56 08 BD 60 56 48 BD 08 20 20 1E", offset = 12, patch = "h 00 00 80 52", unpatch = "h 45 00 00 54"},
+            {scan = "h 60 56 08 BD 60 56 48 BD 08 20 20 1E", offset = 16, patch = "h 60 56 08 B9", unpatch = "h 7F 56 08 B9"},
+        },
+        
+        forceBoss = {
+            {scan = "h 00 CD 41 BD FD 7B C1 A8 C0 03 5F D6", offset = 0, patch = "h 00 C1 5F BC", unpatch = "h 00 CD 41 BD"},
+            {scan = "h 00 29 44 BD FD 7B C1 A8 C0 03 5F D6", offset = 0, patch = "h 00 C1 5F BC", unpatch = "h 00 29 44 BD"},
         },
     },
 
@@ -20587,40 +20601,16 @@ return {
 
 end
 
-__vfs['data/arm64-v8a/v1.73.x.lua'] = function(...)
--- data/arm64-v8a/v1.73.x.lua
--- Covers: 1.73.0, 1.73.2
--- Architecture: arm64-v8a
+__vfs['data/x86_64/1.73.3.lua'] = function(...)
+-- data/x86_64/1.73.3.lua — Override for 1.73.3 (x86_64)
 --
--- AoB entry format:
---   scan    = hex byte pattern (GG TYPE_BYTE search string)
---   offset  = byte delta from scan hit to target DWORD
---   patch   = value to write when enabling
---   unpatch = original value to restore when disabling
+-- Inherits everything from base.lua EXCEPT the keys listed below.
+-- See data/manifest.lua for how merging works.
 --
--- Offset entry format:
---   key = byte offset from BaseGameStatus (or named base pointer)
 
 return {
-    aobs = {
-        fakeVip = {
-            {scan = "h 93 D6 01 F9 68 B2 40 39 1F 01 00 71", offset = 4, patch = "h 28 00 80 52", unpatch = "h 68 B2 40 39"},
-        },
-
-        autoDetach = {
-            {scan = "h 08 20 20 1E 85 00 00 54 E0 03 13 AA E1 03 14 AA", offset = 4, patch = "h 1F 20 03 D5", unpatch = "h 85 00 00 54"},
-        },
-        
-        autoWinPatches = {
-            {scan = "h E8 5F 5D A9 16 61 40 B9", offset = 4, patch = "h 55 00 80 52", unpatch = "h 16 61 40 B9"},
-            {scan = "h E0 5F 40 F9 09 4D 40 BD", offset = 4, patch = "h 0A 90 32 1E", unpatch = "h 09 4D 40 BD"}
-        },
-        -- Add new AoBs here. Each key maps to a flat array of patch entries.
-        -- Grouped features can use subtables: e.g. aobs.speedHack = { {…}, {…} }
-    },
-
     offsets = {
-        lib_setDistanceBase = 0x2009C28,
+        lib_setDistanceBase = 0x2066508,
     },
 }
 
@@ -21232,6 +21222,38 @@ __vfs['modules/tabs/adventure.lua'] = function(...)
 ]]
 
 return function(container)
+    addModule(container, "auto_adventure_chests", "Auto Adventure Chests", "Automatically level up your adventure chests", "button", nil,
+    function(done)
+        local TAG = "AutoAdventureChests"
+        LOG.info(TAG, "Module activated.")
+
+        scheduler:add(function(finishTask)
+            gg.clearResults()
+            gg.setRanges(BaseRegion)
+            gg.searchNumber("500;500::5", 4)
+            local count = gg.getResultsCount()
+
+            if count == 0 then
+                showToast("No adventure chests found")
+                LOG.warn(TAG, "Search returned 0 results.")
+                finishTask()
+                done()
+                return
+            end
+
+            LOG.dbg(TAG, "Results found: " .. tostring(count))
+
+            gg.editAll("-1", 4)
+            gg.clearResults()
+
+            LOG.info(TAG, "Done.")
+            showToast("Done")
+
+            finishTask()
+            done()
+        end)
+    end)
+    
     addArchModule(container, "set_distance", "Set Distance", "Sets your Adventure race distance to a custom value. Must be in an active race. Higher distance can gain more stars. Max stars that can be gained is 5000. (Not a teleport function)", "slider",
     {title="Meters", min=0, max=5000, current=0},
     function(done, vals)
@@ -21369,9 +21391,6 @@ return function(container)
     {title="Seconds", min=0, max=10, current=3},
     function(done, vals)
         local countdownValue = vals
-        if countdownValue < 1 then
-            countdownValue = 0.25 --prevent crashes
-        end
 
         scheduler:add(function(finishTask)
             local TAG = "AdjustCountdown"
@@ -21404,7 +21423,9 @@ return function(container)
         end)
     end)
     
-    addArchModule(container, "auto_win", "Auto Win", "Automatically win no matter what your race results is", "switch", nil, aobs.autoWinPatches)
+    addArchModule(container, "auto_win", "Auto Win", "Automatically win no matter what your race results is", "switch", nil, aobs.autoWin)
+    
+    addArchModule(container, "force_boss", "Force Boss", "Force boss always appears", "switch", nil, aobs.forceBoss)
     
     addModule(container, "force_cup", "Force Cup", "Forces a single cup", "switch", nil,
     function(done, state)
@@ -21567,6 +21588,109 @@ return function(container)
             else
                 showToast("No tasks to freeze")
                 LOG.warn(TAG, "freezeItems is empty.")
+            end
+
+            finishTask()
+            done()
+        end)
+    end)
+    
+    addModule(container, "rank_points_bonus", "+498 Rank Points", "Make all league tasks gives you 498 points instead of 200 points, also remove other rewards.", "switch", nil,
+    function(done, state)
+        local TAG = "RankPointsBonus"
+        LOG.info(TAG, "Module activated. state=" .. tostring(state))
+
+        scheduler:add(function(finishTask)
+            if state then
+                gg.clearResults()
+                gg.setRanges(BaseRegion)
+                gg.searchNumber("h 1C 4C 65 61 67 75 65 54", 1)
+                gg.refineNumber("h 1C", 1)
+                local results = gg.getResults(gg.getResultsCount())
+                gg.clearResults()
+
+                if #results == 0 then
+                    showToast("No league tasks found")
+                    LOG.warn(TAG, "Anchor search returned 0 results.")
+                    finishTask()
+                    done()
+                    return
+                end
+
+                LOG.dbg(TAG, "Anchor results: " .. tostring(#results))
+
+                local saved = {}
+                local successCount = 0
+
+                for idx, result in ipairs(results) do
+                    local check = gg.getValues({{ address = result.address + 0x1C, flags = 4 }})
+
+                    if not check or not check[1] then
+                        LOG.warn(TAG, string.format("result[%d] check read failed", idx))
+                        goto continueResult
+                    end
+
+                    if check[1].value ~= 0x3E4CCCCD then
+                        LOG.dbg(TAG, string.format("result[%d] +0x1C = 0x%X, not 0.2, skipping", idx, check[1].value))
+                        goto continueResult
+                    end
+                    
+                    local readAddrs = {}
+                    table.insert(readAddrs, { address = result.address + 0x1C, flags = 4 })
+                    
+                    local original = gg.getValues(readAddrs)
+
+                    local values = {}
+                    for i, v in ipairs(original) do
+                        values[i] = v.value
+                    end
+                    table.insert(saved, { base = result.address, values = values })
+                    
+                    local edits = {
+                        { address = result.address + 0x1C, flags = 16, value = 0.498 }
+                    }
+                    
+                    gg.setValues(edits)
+
+                    successCount = successCount + 1
+
+                    ::continueResult::
+                end
+
+                memory:save("rank_points_bonus", saved)
+                LOG.info(TAG, "Done. Patched: " .. tostring(successCount))
+
+                if successCount > 0 then
+                    showToast("Rank points boosted: " .. tostring(successCount))
+                else
+                    showToast("No matching league tasks found")
+                end
+            else
+                -- DISABLE: restore original values from saved data
+                local saved = memory:load("rank_points_bonus")
+
+                if not saved or #saved == 0 then
+                    LOG.warn(TAG, "No saved data to restore.")
+                    showToast("Nothing to restore")
+                    finishTask()
+                    done()
+                    return
+                end
+
+                local restoreCount = 0
+
+                for idx, entry in ipairs(saved) do
+                    local edits = {}
+                    
+                    table.insert(edits, { address = entry.base + 0x1C, flags = 4, value = entry.values[i] })
+                    
+                    gg.setValues(edits)
+                    restoreCount = restoreCount + 1
+                end
+
+                memory:save("rank_points_bonus", {})
+                LOG.info(TAG, "Restored: " .. tostring(restoreCount))
+                showToast("Restored: " .. tostring(restoreCount))
             end
 
             finishTask()
@@ -24522,7 +24646,7 @@ end
 -- VOID v1 — HCR2 Modding Framework
 -- Load order: env → imports → constants → core → patches → arch+data → modules → ui → init → loop
 
-scriptSubHeader = " v1.0.20 • By Vekendian"
+scriptSubHeader = " v1.0.21 • By Vekendian"
 
 do
     local LOG_TO_FILE  = true
