@@ -1,12 +1,12 @@
 # Changelog
-## v1.0.17
+## v1.0.21
 
 Added:
-- Allow any VM to run this script
+- Force Boss
+- +498 Points Boost
+- Auto Distance Chest
 
-Fixed:
-- Events Rewards Patch (for rooted devices)
-- Unlock Parts
+Imroved:
+- Auto Win
 
-Removed:
-- Multi App Ultra only Support
+and etc.
