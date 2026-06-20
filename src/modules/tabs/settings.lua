@@ -281,6 +281,7 @@ return function(container)
             local lang = LANG_AVAILABLE[index]
             if lang and setLanguage(lang.code) then
                 showToast(t("language.changed", lang.name))
+                showDialog(T("common.success"), t("language.restart_msg"), {T("common.ok")})
                 done()
                 rebuildMenu()
             else

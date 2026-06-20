@@ -161,6 +161,7 @@ return {
 ["settings.language.desc"] = "Choose your preferred language for the menu",
 ["settings.language.changed"] = "Language set to %s",
 ["settings.language.failed"] = "Failed to load that language",
+["settings.language.restart_msg"] = "Restart the script to fully apply the language",
 
 ["settings.region.other"] = "O: Other",
 ["settings.region.cpp_alloc"] = "Ca: C++ alloc",
@@ -251,7 +252,7 @@ return {
 
 -- ── modules/tabs/about.lua ────────────────────────────────────────────────────
 ["about.about_script.title"] = "About Script",
-["about.about_script.desc"] = "A powerful and highly optimized memory manipulation script built for Hill Climb Racing 2 on the custom GG: ME (GameGuardian: Memory Editor) environment.\n\nDownload ME:\nhttps://github.com/vekendianorg/me/releases/",
+["about.about_script.desc"] = "A powerful and highly optimized memory manipulation script built for Hill Climb Racing 2 on the custom Pivot environment.\n\nDownload Pivot:\nhttps://github.com/vekendianorg/pivot/releases/",
 ["about.script_owner.title"] = "Script Owner",
 ["about.script_owner.desc"] = "- Vekendian Organization (github: vekendianorg)",
 ["about.script_dev.title"] = "Script Developer",
