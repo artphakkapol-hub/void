@@ -1,12 +1,9 @@
 # Changelog
-## v1.0.17
+## v1.0.22
 
 Added:
-- Allow any VM to run this script
+- Theme Store
+- Set Distance (loop options)
+- etc
 
-Fixed:
-- Events Rewards Patch (for rooted devices)
-- Unlock Parts
-
-Removed:
-- Multi App Ultra only Support
+I forgot some changes, just check it youself.
