@@ -226,8 +226,8 @@ function addArchModule(parent, id, title, desc, mode, extra, patch_or_callback)
     -- No data for this arch → show a disabled placeholder card.
     if not resolved then
         addModule(parent, id .. "_na", title,
-            "Requires " .. arch_list_string(arch_map) .. " device (your device: " .. DEVICE_ARCH .. ")",
-            "ro", "Not Available", nil)
+            T("patches.requires_arch", arch_list_string(arch_map), DEVICE_ARCH),
+            "ro", T("common.not_available"), nil)
         return
     end
 
@@ -239,9 +239,9 @@ function addArchModule(parent, id, title, desc, mode, extra, patch_or_callback)
             scheduler:add(function(finish_task)
                 local fail_count = apply_patch(id, resolved, state)
                 if fail_count == 0 then
-                    showToast(title .. (state and " Enabled" or " Disabled"))
+                    showToast(title .. (state and T("patches.suffix_enabled") or T("patches.suffix_disabled")))
                 else
-                    showToast("Failed: " .. fail_count .. " pattern(s) not found")
+                    showToast(T("patches.pattern_not_found", fail_count))
                 end
                 gg.clearResults()
                 finish_task()

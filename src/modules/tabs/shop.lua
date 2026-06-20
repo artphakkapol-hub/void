@@ -6,7 +6,9 @@
 ]]
 
 return function(container)
-    addModule(container, "free_chest", "Free Chest", "Make the chests free in Shop Tab", "switch", nil, function(done, state)
+    local function t(key, ...) return T("shop." .. key, ...) end
+
+    addModule(container, "free_chest", t("free_chest.title"), t("free_chest.desc"), "switch", nil, function(done, state)
         scheduler:add(function(finishTask)
             local TAG = "FreeChest"
             local cache = memory:load("free_chest")
@@ -28,10 +30,10 @@ return function(container)
             
             if state then
                 gg.editAll("0", 1)
-                showToast("Free Chest Enabled", true)
+                showToast(t("free_chest.enabled"), true)
             else
                 gg.editAll("h CD CC CC 3D", 1)
-                showToast("Free Chest Disabled", true)
+                showToast(t("free_chest.disabled"), true)
             end
             
             gg.clearResults()
@@ -40,7 +42,7 @@ return function(container)
         end)
     end)
     
-    addModule(container, "free_purchases", "Free Purchases", "Make some daily deals purchases free in the shop tab (also works for special offers as popup/badges)", "button", nil, function(done)
+    addModule(container, "free_purchases", t("free_purchases.title"), t("free_purchases.desc"), "button", nil, function(done)
         scheduler:add(function(finishTask)
             gg.clearResults()
             gg.setRanges(4)
@@ -62,7 +64,7 @@ return function(container)
                         table.insert(tptrs, {address = sp.address + 0x18, flags = 4})
                     end
                     counter = counter + 1
-                    showToast(tostring(counter) .. "/" .. tostring(totalres), true)
+                    showToast(t("free_purchases.progress", counter, totalres), true)
                 end
                 
                 tptrs = gg.getValues(tptrs)
@@ -77,7 +79,7 @@ return function(container)
                 
                 if #edits > 0 then
                     gg.setValues(edits)
-                    gg.toast("Free Purchase Successful")
+                    gg.toast(t("free_purchases.success"))
                 end
             end
 
@@ -87,14 +89,8 @@ return function(container)
         end)
     end)
     
-    addModule(container, "change_chest", "Change Chest", "Change legendary chest to selected chest", "spinner", {
-        options = {
-            "Common Chest", "Uncommon Chest", "Rare Chest", "Epic Chest",
-            "Champion Chest", "Special Chest 1", "Xmas Chest", "Legendary Chest",
-            "Blue Chest", "VIP Chest 1", "VIP Chest 2", "Video Chest",
-            "Starter Chest", "Special Chest 2", "Fingersoft Chest", "Mega Chest",
-            "Team Spirit Chest", "Style Chest", "Mythic Chest"
-        },
+    addModule(container, "change_chest", t("change_chest.title"), t("change_chest.desc"), "spinner", {
+        options = t("change_chest.options"),
         default = 8
     }, function(done, item, index)
         scheduler:add(function(finishTask)
@@ -120,7 +116,7 @@ return function(container)
             end
             
             gg.editAll(chestIDs[index], 1)
-            showToast("Chest changed to " .. item)
+            showToast(t("change_chest.changed", item))
             
             gg.clearResults()
             finishTask()

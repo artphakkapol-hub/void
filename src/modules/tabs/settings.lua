@@ -12,7 +12,11 @@ return function(container)
     -- =========================
     -- Helpers
     -- =========================
-    
+
+    -- Shorthand for this tab's translation namespace: t("auto_update.title")
+    -- instead of T("settings.auto_update.title").
+    local function t(key, ...) return T("settings." .. key, ...) end
+
     local function deepCopy(orig, seen)
         if type(orig) ~= "table" then
             return orig
@@ -173,7 +177,7 @@ return function(container)
                     for k, v in pairs(exportData.ui) do if UI[k] ~= nil then UI[k] = deepCopy(v) end end
     
                     if exportData.img_url then
-                        showToast("Downloading background image...")
+                        showToast(t("theme_downloading_bg"))
                         local dest = gg.FILES_DIR .. "/" .. (exportData.name or "background_image_" .. tostring(os.time()).. ".png")
                         local path, dErr = catbox.download(exportData.img_url, dest)
                         if path then UI.BG_IMAGE.PATH = path else LOG.error(TAG, "Background image download failed") end
@@ -183,24 +187,24 @@ return function(container)
     
                     memory:save_global("ui_prefs", UI)
                     saveAndRefresh()
-                    showDialog("Success", "Theme imported!", "OK")
+                    showDialog(T("common.success"), t("theme_imported"), T("common.ok"))
                 else
-                    showDialog("Failed", "Invalid bundle format.", "OK")
+                    showDialog(T("common.failed"), t("theme_invalid_bundle"), T("common.ok"))
                 end
             else
-                showDialog("Failed", "Cloud error: " .. tostring(err), "OK")
+                showDialog(T("common.failed"), t("theme_cloud_error", tostring(err)), T("common.ok"))
             end
         end
     end
     
     -- --- Updater ────────────────────────────────────────────────────────
     
-    addModuleSep(container, "Updates")
+    addModuleSep(container, t("section_updates"))
     
     -- ── Auto Update switch ────────────────────────────────────────────────────────
-    addModule(container, "auto_update", "Auto Update", "Auto update VOID on startup", "switch", nil, function(done, state)
+    addModule(container, "auto_update", t("auto_update.title"), t("auto_update.desc"), "switch", nil, function(done, state)
         if IS_DEV then
-            showDialog("Dev Mode", "Auto update is disabled for main.lua (dev build).", {"OK"})
+            showDialog(t("dev_mode_title"), t("auto_update.dev_mode_msg"), {T("common.ok")})
         else
             memory:save_global("auto_update", state)
         end
@@ -208,74 +212,100 @@ return function(container)
     end)
     
     -- ── Check for Update button ───────────────────────────────────────────────────
-    addModule(container, "check_updates", "Check for Update", "Check for the latest VOID release on GitHub", "button", nil, function(done)
+    addModule(container, "check_updates", t("check_updates.title"), t("check_updates.desc"), "button", nil, function(done)
         if IS_DEV then
-            showDialog("Dev Mode", "Update check is disabled for main.lua (dev build).\n\nPull from the repo manually.", {"OK"})
+            showDialog(t("dev_mode_title"), t("check_updates.dev_mode_msg"), {T("common.ok")})
             done()
             return
         end
     
-        showToast("Checking for updates...")
+        showToast(t("check_updates.checking"))
         local remote_ver, download_url, release_body = fetchLatestVersion()
 
         if not remote_ver then
-            showDialog("Update Check Failed", "Could not reach GitHub:\n" .. tostring(download_url), {"OK"})
+            showDialog(t("check_updates.failed_title"), t("check_updates.failed_msg", tostring(download_url)), {T("common.ok")})
             done()
             return
         end
     
         if not versionNewer(remote_ver, CURRENT_VERSION) then
-            showDialog("Up to date", "You are already on the latest version (v" .. CURRENT_VERSION .. ").", {"OK"})
+            showDialog(t("check_updates.up_to_date_title"), t("check_updates.up_to_date_msg", CURRENT_VERSION), {T("common.ok")})
             done()
             return
         end
     
-        local msg = "v" .. remote_ver .. "  (current: v" .. CURRENT_VERSION .. ")\n\n" .. (release_body or "No changelog available.") .. "\n\nDownload and replace this script?"
-        showDialog("Update Available", msg, {"UPDATE", function()
+        local msg = t("check_updates.available_msg", remote_ver, CURRENT_VERSION, release_body or t("check_updates.no_changelog"))
+        showDialog(T("main.update_available_title"), msg, {T("common.update_button"), function()
             if not download_url then
-                showDialog("Failed", "No .lua asset found in the release.", {"OK"})
+                showDialog(T("common.failed"), t("check_updates.no_asset_msg"), {T("common.ok")})
                 return
             end
     
-            showToast("Downloading v" .. remote_ver .. "...")
+            showToast(T("main.downloading_version", remote_ver))
             local content, err = paste.get(download_url)
             if not content then
-                showDialog("Download Failed", tostring(err), {"OK"})
+                showDialog(t("check_updates.download_failed_title"), tostring(err), {T("common.ok")})
                 return
             end
     
             local f = io.open(SCRIPT_PATH, "w")
             if not f then
-                showDialog("Write Failed", "Could not write to:\n" .. SCRIPT_PATH, {"OK"})
+                showDialog(t("check_updates.write_failed_title"), T("main.update_write_failed_msg", SCRIPT_PATH), {T("common.ok")})
                 return
             end
             f:write(content)
             f:close()
     
-            showDialog("Done", "Updated to v" .. remote_ver .. ". Restart the script to apply.", {"Restart", function()
+            showDialog(t("check_updates.done_title"), t("check_updates.done_msg", remote_ver), {t("check_updates.restart_button"), function()
                 MainHandler.post(function() os.exit() end)
-            end}, {"Later"})
-        end}, {"Cancel"})
+            end}, {T("common.later")})
+        end}, {T("common.cancel")})
     
         done()
     end)
     
+    -- ── Language ──────────────────────────────────────────────────────────────
+    addModuleSep(container, t("section_language"))
+
+    do
+        local langOptions     = {}
+        local currentIndex    = 1
+        for i, lang in ipairs(LANG_AVAILABLE) do
+            langOptions[i] = lang.name
+            if lang.code == LANG_CODE then currentIndex = i end
+        end
+
+        addModule(container, "language", t("language.title"), t("language.desc"), "spinner",
+        { options = langOptions, default = currentIndex },
+        function(done, item, index)
+            local lang = LANG_AVAILABLE[index]
+            if lang and setLanguage(lang.code) then
+                showToast(t("language.changed", lang.name))
+                done()
+                rebuildMenu()
+            else
+                showToast(t("language.failed"))
+                done()
+            end
+        end)
+    end
+    
     -- ── Read-only info ────────────────────────────────────────────────────────
 
     local function regionName()
-        if BaseRegion == -2080896 then return "O: Other"
-        elseif BaseRegion == 4 then return "Ca: C++ alloc"
-        else return "U: Unknown" end
+        if BaseRegion == -2080896 then return t("region.other")
+        elseif BaseRegion == 4 then return t("region.cpp_alloc")
+        else return t("region.unknown") end
     end
     
-    addModuleSep(container, "Memory")
+    addModuleSep(container, t("section_memory"))
 
-    addModule(container, "memory_range", "Memory Range", "Current selected memory range\n(automatically chosen by script)", "ro", regionName(), nil)
-    addModule(container, "gamestatus_address", "GameStatus", "Current gamestatus address\n(automatically chosen by script)", "ro", string.format("0x%X", BaseGameStatus or 0), nil)
-    addModule(container, "gamestatus_raw_address", "GameStatus (Raw)", "Current gamestatus (raw) address\n(automatically chosen by script)", "ro", string.format("0x%X", BaseGameStatusRaw or 0), nil)
+    addModule(container, "memory_range", t("memory_range.title"), t("memory_range.desc"), "ro", regionName(), nil)
+    addModule(container, "gamestatus_address", t("gamestatus.title"), t("gamestatus.desc"), "ro", string.format("0x%X", BaseGameStatus or 0), nil)
+    addModule(container, "gamestatus_raw_address", t("gamestatus_raw.title"), t("gamestatus_raw.desc"), "ro", string.format("0x%X", BaseGameStatusRaw or 0), nil)
     
     -- ── Session Control ────────────────────────────────────────────────────────
-    addModule(container, "clear_memory", "Clear Saved Memory", "Clear all VOID saved memory without needed to restart the whole game.", "button", nil, function(done)
+    addModule(container, "clear_memory", t("clear_memory.title"), t("clear_memory.desc"), "button", nil, function(done)
         LOG.info("Settings", "User triggered clear_all()")
         memory:clear_all()
         done()
@@ -283,16 +313,16 @@ return function(container)
     
     -- ── Custom Colors Info ────────────────────────────────────────────────────
     -- Allow user to change colors of this script.
-    addModuleSep(container, "UI Customizations")
+    addModuleSep(container, t("section_ui_customizations"))
     
-    addModule(container, "theme_store", "Theme Store", "Browse and install community Void themes", "button", nil,
+    addModule(container, "theme_store", t("theme_store.title"), t("theme_store.desc"), "button", nil,
     function(done)
         local TAG = "ThemeStore"
         LOG.info(TAG, "Opening theme store...")
 
         local raw, err = paste.get("https://raw.githubusercontent.com/vekendianorg/void-themes/refs/heads/main/index.json")
         if not raw then
-            showDialog("Failed", "Could not reach theme store:\n" .. tostring(err), {"OK"})
+            showDialog(T("common.failed"), t("theme_store.unreachable_msg", tostring(err)), {T("common.ok")})
             done()
             return
         end
@@ -303,7 +333,7 @@ return function(container)
         end)
 
         if not ok or not index or not index.themes then
-            showDialog("Failed", "Could not parse theme store data.", {"OK"})
+            showDialog(T("common.failed"), t("theme_store.parse_failed_msg"), {T("common.ok")})
             done()
             return
         end
@@ -313,20 +343,20 @@ return function(container)
 
         local function openStore(allThemes, currentThemes)
             local isFiltered = currentThemes ~= allThemes
-            local title = "Void Theme Store"
+            local title = t("theme_store.list_title")
             local desc  = isFiltered
-                and "Search results: " .. tostring(#currentThemes) .. " found"
-                or  tostring(#allThemes) .. " themes available"
+                and t("theme_store.search_results_desc", tostring(#currentThemes))
+                or  t("theme_store.available_desc", tostring(#allThemes))
         
             local items = {}
             for _, theme in ipairs(currentThemes) do
-                table.insert(items, theme.name .. " • by " .. theme.author)
+                table.insert(items, theme.name .. " • " .. t("theme_store.by_author", theme.author))
             end
         
             -- Search as first item
-            table.insert(items, 1, "🔍 Search...")
+            table.insert(items, 1, t("theme_store.search_item"))
             if isFiltered then
-                table.insert(items, 2, "✕ Clear search")
+                table.insert(items, 2, t("theme_store.clear_search_item"))
             end
         
             return showList(title, desc, items)
@@ -342,8 +372,8 @@ return function(container)
         
             elseif choice == 1 then
                 -- Search
-                local result = showPrompt("Search Themes", {
-                    {"Theme name, author or description", "text", ""}
+                local result = showPrompt(t("theme_store.search_title"), {
+                    {t("theme_store.search_hint"), "text", ""}
                 })
                 if result and result[1] ~= "" then
                     local q = result[1]:lower()
@@ -359,7 +389,7 @@ return function(container)
                     currentThemes = filtered
                     
                     if #filtered == 0 then
-                        showToast("No themes found for: " .. result[1])
+                        showToast(t("theme_store.no_results", result[1]))
                     end
                 end
         
@@ -374,8 +404,8 @@ return function(container)
                 if theme then
                     local choice = showDialog(
                         theme.name,
-                        "By " .. theme.author .. "\n\n" .. (theme.description or "") .. "\n\nID: " .. theme.id,
-                        {"Install Theme", function() applyTheme(theme.id); refreshMenu = true end}, {"Cancel"}
+                        t("theme_store.detail_msg", theme.author, theme.description or "", theme.id),
+                        {t("theme_store.install_button"), function() applyTheme(theme.id); refreshMenu = true end}, {T("common.cancel")}
                     )
                 end
             end
@@ -386,7 +416,7 @@ return function(container)
         rebuildMenu()
     end)
     
-    addModule(container, "reset_theme", "Reset Theme", "Reset custom theme and background image to the default", "button", nil, function(done)
+    addModule(container, "reset_theme", t("reset_theme.title"), t("reset_theme.desc"), "button", nil, function(done)
         local TAG = "ResetTheme"
         LOG.info(TAG, "User triggered theme reset")
         
@@ -397,8 +427,8 @@ return function(container)
         rebuildMenu()
     end)
     
-    addModule(container, "import_theme", "Import Theme", "Import custom theme from cloud", "input", {
-        { hint = "Enter Share ID", value = "", type = "text" }
+    addModule(container, "import_theme", t("import_theme.title"), t("import_theme.desc"), "input", {
+        { hint = t("import_theme.hint"), value = "", type = "text" }
     }, function(done, val)
         local TAG = "ImportTheme"
         local shareId = (type(val) == "table") and val[1] or val
@@ -410,7 +440,7 @@ return function(container)
         rebuildMenu()
     end)
     
-    addModule(container, "export_theme", "Export Theme", "Export custom theme and background image to cloud", "button", nil, function(done)
+    addModule(container, "export_theme", t("export_theme.title"), t("export_theme.desc"), "button", nil, function(done)
         local TAG = "ExportTheme"
         LOG.info(TAG, "User triggered theme export")
         local exportUI = deepCopy(UI)
@@ -430,21 +460,21 @@ return function(container)
             if link then
                 local pasteId = link:match("[^/]+$")
                 gg.copyText(pasteId)
-                showDialog("Success", "Share ID: " .. pasteId .. "\n\nCopied to clipboard.", "OK")
+                showDialog(T("common.success"), t("export_theme.share_id_msg", pasteId), T("common.ok"))
             else
-                showDialog("Failed", "Upload failed: " .. tostring(err), "OK")
+                showDialog(T("common.failed"), t("export_theme.upload_failed_msg", tostring(err)), T("common.ok"))
             end
             done()
         end
     
         if UI.BG_IMAGE and UI.BG_IMAGE.PATH and UI.BG_IMAGE.PATH ~= "no_media" then
-            showDialog("Upload Size Warning", "Include custom background image? It will increase the Upload Size depending what size is your image is.",
-            {"Yes", function()
-                showToast("Uploading background image to Catbox...")
+            showDialog(t("export_theme.size_warning_title"), t("export_theme.size_warning_msg"),
+            {T("common.yes"), function()
+                showToast(t("export_theme.uploading_bg"))
                 local url, err = catbox.upload(UI.BG_IMAGE.PATH)
-                if url then finalizeExport(url) else showDialog("Error", "Image upload failed: " .. err, "OK"); done() end
+                if url then finalizeExport(url) else showDialog(t("export_theme.image_upload_failed_title"), t("export_theme.image_upload_failed_msg", err), T("common.ok")); done() end
             end},
-            {"No"})
+            {T("common.no")})
         else
             finalizeExport(nil)
         end
@@ -453,11 +483,11 @@ return function(container)
     end)
     
     -- Tabs icon
-    addModule(container, "tabs_icon", "Tabs Icon", "Change tabs icon", "input", {
-        { hint = "Enter Icon", value = UI.TABS_ICON, type = "text" }
+    addModule(container, "tabs_icon", t("tabs_icon.title"), t("tabs_icon.desc"), "input", {
+        { hint = t("tabs_icon.hint"), value = UI.TABS_ICON, type = "text" }
     }, function(done, val)
         if val == nil or val == "" then
-            showToast("Cannot be empty")
+            showToast(t("tabs_icon.empty_error"))
             done()
         else
             UI.TABS_ICON = val
@@ -485,10 +515,10 @@ return function(container)
         UI.GLASS = recolor(UI.GLASS, 0.75)
     end
 
-    addModule(container, "bg_opacity", "Background Opacity",
-        "Transparency of panels, cards, and header",
+    addModule(container, "bg_opacity", t("bg_opacity.title"),
+        t("bg_opacity.desc"),
         "slider",
-        {min = 1, max = 255, current = getAlpha(UI.BG), title = "Alpha"},
+        {min = 1, max = 255, current = getAlpha(UI.BG), title = t("slider.alpha")},
         function(done, val)
             setLayerAlpha(val)
             saveAndRefresh()
@@ -497,10 +527,10 @@ return function(container)
     )
     
     -- ── Background Image Opacity ─────────────────────
-    addModule(container, "bg_image_opacity", "Background Image Opacity",
-        "Adjust visibility alpha settings directly using pure integer channels.",
+    addModule(container, "bg_image_opacity", t("bg_image_opacity.title"),
+        t("bg_image_opacity.desc"),
         "slider",
-        {min = 0, max = 255, current = UI.BG_IMAGE.ALPHA & 0xFF, title = "Alpha"},
+        {min = 0, max = 255, current = UI.BG_IMAGE.ALPHA & 0xFF, title = t("slider.alpha")},
         function(done, val) 
             UI.BG_IMAGE.ALPHA = val & 0xFF
             
@@ -513,9 +543,9 @@ return function(container)
     -- ── Background Image ────────────────────────────────────────────────
     -- Updates the absolute storage location path pointing to the background image image.
 
-    addModule(container, "bg_image_picker", "Background Image", "Tap to modify the absolute file path destination for your custom layout background image", "button", nil, function(done)
+    addModule(container, "bg_image_picker", t("bg_image_picker.title"), t("bg_image_picker.desc"), "button", nil, function(done)
         local response = gg.prompt(
-            { "Absolute Image File Path (.jpg or .png):", "Remove BG Image" },
+            { t("bg_image_picker.path_label"), t("bg_image_picker.remove_label") },
             { UI.BG_IMAGE.PATH == "no_media" and gg.EXT_STORAGE or UI.BG_IMAGE.PATH, false },
             { "file", "checkbox" }
         )
@@ -524,7 +554,7 @@ return function(container)
             if response[2] == true then
                 UI.BG_IMAGE.PATH = "no_media"
                 saveAndRefresh()
-                showDialog("Successfully", "Background Image Removed", {"OK"})
+                showDialog(t("bg_image_picker.success_title"), t("bg_image_picker.removed_msg"), {T("common.ok")})
             else
                 if response[1] then
                     local parsedPath = response[1]:gsub("^%s*(.-)%s*$", "%1")
@@ -537,9 +567,9 @@ return function(container)
                             
                             UI.BG_IMAGE.PATH = parsedPath
                             saveAndRefresh()
-                            showDialog("Successfully", "Background image added", {"OK"})
+                            showDialog(t("bg_image_picker.success_title"), t("bg_image_picker.added_msg"), {T("common.ok")})
                         else
-                            showDialog("Failed", "File not found or read operation refused:\n" .. tostring(parsedPath), {"OK"})
+                            showDialog(T("common.failed"), t("bg_image_picker.not_found_msg", tostring(parsedPath)), {T("common.ok")})
                         end
                     end
                 end
@@ -568,13 +598,13 @@ return function(container)
         UI.CARD = recolorRgb(UI.CARD, 1.55)
     end
 
-    addModule(container, "bg_rgb", "Background RGB",
-        "Hue for panel backgrounds (Header and Card scale automatically)",
+    addModule(container, "bg_rgb", t("bg_rgb.title"),
+        t("bg_rgb.desc"),
         "slider",
         {
-            {min = 0, max = 255, current = (UI.BG >> 16) & 0xFF, title = "R"},
-            {min = 0, max = 255, current = (UI.BG >> 8) & 0xFF, title = "G"},
-            {min = 0, max = 255, current = UI.BG & 0xFF, title = "B"},
+            {min = 0, max = 255, current = (UI.BG >> 16) & 0xFF, title = t("slider.r")},
+            {min = 0, max = 255, current = (UI.BG >> 8) & 0xFF, title = t("slider.g")},
+            {min = 0, max = 255, current = UI.BG & 0xFF, title = t("slider.b")},
         },
         function(done, vals)
             setBgRgb(vals[1], vals[2], vals[3])
@@ -592,13 +622,13 @@ return function(container)
         UI.MUTED = (0x4D << 24) | ((r >> 1) << 16) | ((g >> 1) << 8) | (b >> 1)
     end
 
-    addModule(container, "accent_rgb", "Accent RGB",
-        "Tint for buttons, toggles, and active cards (muted color auto-derived)",
+    addModule(container, "accent_rgb", t("accent_rgb.title"),
+        t("accent_rgb.desc"),
         "slider",
         {
-            {min = 0, max = 255, current = (UI.ACCENT >> 16) & 0xFF, title = "R"},
-            {min = 0, max = 255, current = (UI.ACCENT >> 8) & 0xFF, title = "G"},
-            {min = 0, max = 255, current = UI.ACCENT & 0xFF, title = "B"},
+            {min = 0, max = 255, current = (UI.ACCENT >> 16) & 0xFF, title = t("slider.r")},
+            {min = 0, max = 255, current = (UI.ACCENT >> 8) & 0xFF, title = t("slider.g")},
+            {min = 0, max = 255, current = UI.ACCENT & 0xFF, title = t("slider.b")},
         },
         function(done, vals)
             buildAccent(vals[1], vals[2], vals[3])
@@ -615,13 +645,13 @@ return function(container)
         UI.LOGO = (0xFF << 24) | (r << 16) | (g << 8) | b
     end
 
-    addModule(container, "logo_rgb", "Highlight RGB",
-        "Color for labels, icons, and interactive text (always fully opaque)",
+    addModule(container, "logo_rgb", t("logo_rgb.title"),
+        t("logo_rgb.desc"),
         "slider",
         {
-            {min = 0, max = 255, current = (UI.LOGO >> 16) & 0xFF, title = "R"},
-            {min = 0, max = 255, current = (UI.LOGO >> 8) & 0xFF, title = "G"},
-            {min = 0, max = 255, current = UI.LOGO & 0xFF, title = "B"},
+            {min = 0, max = 255, current = (UI.LOGO >> 16) & 0xFF, title = t("slider.r")},
+            {min = 0, max = 255, current = (UI.LOGO >> 8) & 0xFF, title = t("slider.g")},
+            {min = 0, max = 255, current = UI.LOGO & 0xFF, title = t("slider.b")},
         },
         function(done, vals)
             buildLogo(vals[1], vals[2], vals[3])
@@ -638,13 +668,13 @@ return function(container)
         UI.SUB = (0xDD << 24) | (r << 16) | (g << 8) | b
     end
 
-    addModule(container, "sub_rgb", "Sub-text RGB",
-        "Color for descriptions and inactive tab labels",
+    addModule(container, "sub_rgb", t("sub_rgb.title"),
+        t("sub_rgb.desc"),
         "slider",
         {
-            {min = 0, max = 255, current = (UI.SUB >> 16) & 0xFF, title = "R"},
-            {min = 0, max = 255, current = (UI.SUB >> 8) & 0xFF, title = "G"},
-            {min = 0, max = 255, current = UI.SUB & 0xFF, title = "B"},
+            {min = 0, max = 255, current = (UI.SUB >> 16) & 0xFF, title = t("slider.r")},
+            {min = 0, max = 255, current = (UI.SUB >> 8) & 0xFF, title = t("slider.g")},
+            {min = 0, max = 255, current = UI.SUB & 0xFF, title = t("slider.b")},
         },
         function(done, vals)
             buildSub(vals[1], vals[2], vals[3])
@@ -661,13 +691,13 @@ return function(container)
         UI.LOGO = UI.TEXT
     end
     
-    addModule(container, "text_rgb", "Text RGB",
-        "Color for main menu text",
+    addModule(container, "text_rgb", t("text_rgb.title"),
+        t("text_rgb.desc"),
         "slider",
         {
-            {min = 0, max = 255, current = (UI.TEXT >> 16) & 0xFF, title = "R"},
-            {min = 0, max = 255, current = (UI.TEXT >> 8) & 0xFF, title = "G"},
-            {min = 0, max = 255, current = UI.TEXT & 0xFF, title = "B"},
+            {min = 0, max = 255, current = (UI.TEXT >> 16) & 0xFF, title = t("slider.r")},
+            {min = 0, max = 255, current = (UI.TEXT >> 8) & 0xFF, title = t("slider.g")},
+            {min = 0, max = 255, current = UI.TEXT & 0xFF, title = t("slider.b")},
         },
         function(done, vals)
             buildText(vals[1], vals[2], vals[3])
@@ -678,20 +708,20 @@ return function(container)
 
     -- ── Window Size ───────────────────────────────────────────────────────────
     
-    addModule(container, "win_width", "Menu Width",
-        "Width of the floating menu (" .. RESIZE_MIN_W .. " – " .. RESIZE_MAX_W .. " dp)",
+    addModule(container, "win_width", t("win_width.title"),
+        t("win_width.desc", RESIZE_MIN_W, RESIZE_MAX_W),
         "slider",
-        {min = RESIZE_MIN_W, max = RESIZE_MAX_W, current = WIN_W, title = "Width"},
+        {min = RESIZE_MIN_W, max = RESIZE_MAX_W, current = WIN_W, title = t("slider.width")},
         function(done, val)
             applyWindowResize(val, WIN_H)
             done()
         end
     )
 
-    addModule(container, "win_height", "Menu Height",
-        "Height of the scrollable content area (" .. RESIZE_MIN_H .. " – " .. RESIZE_MAX_H .. " dp)",
+    addModule(container, "win_height", t("win_height.title"),
+        t("win_height.desc", RESIZE_MIN_H, RESIZE_MAX_H),
         "slider",
-        {min = RESIZE_MIN_H, max = RESIZE_MAX_H, current = WIN_H, title = "Height"},
+        {min = RESIZE_MIN_H, max = RESIZE_MAX_H, current = WIN_H, title = t("slider.height")},
         function(done, val)
             applyWindowResize(WIN_W, val)
             done()

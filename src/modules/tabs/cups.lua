@@ -6,9 +6,10 @@
 ]]
 
 return function(container)
+    local function t(key, ...) return T("cups." .. key, ...) end
     
-    addModule(container, "adjust_countdown", "Adjust Countdown", "Adjust the countdown before starting race", "slider",
-    {title="Seconds", min=0, max=10, current=3},
+    addModule(container, "adjust_countdown", t("adjust_countdown.title"), t("adjust_countdown.desc"), "slider",
+    {title=t("slider.seconds"), min=0, max=10, current=3},
     function(done, vals)
         local countdownValue = vals
 
@@ -35,7 +36,7 @@ return function(container)
             
             gg.editAll(cast.float(countdownValue), 1)
             
-            showToast("Countdown adjusted to " .. tostring(countdownValue) .. "s", true)
+            showToast(t("adjust_countdown.applied", tostring(countdownValue)), true)
             LOG.info(TAG, "Done")
             gg.clearResults()
             finishTask()
@@ -43,11 +44,11 @@ return function(container)
         end)
     end)
     
-    addArchModule(container, "auto_win", "Auto Win", "Automatically win no matter what your race results is", "switch", nil, aobs.autoWin)
+    addArchModule(container, "auto_win", t("auto_win.title"), t("auto_win.desc"), "switch", nil, aobs.autoWin)
     
-    addArchModule(container, "force_boss", "Force Boss", "Force boss always appears", "switch", nil, aobs.forceBoss)
+    addArchModule(container, "force_boss", t("force_boss.title"), t("force_boss.desc"), "switch", nil, aobs.forceBoss)
     
-    addModule(container, "force_cup", "Force Cup", "Forces a single cup", "switch", nil,
+    addModule(container, "force_cup", t("force_cup.title"), t("force_cup.desc"), "switch", nil,
     function(done, state)
         local TAG = "ForceCup"
 
@@ -81,7 +82,7 @@ return function(container)
                     gg.clearResults()
 
                     if #results == 0 then
-                        showToast("Force Cup not found. Try again later.")
+                        showToast(t("force_cup.not_found"))
                         LOG.error(TAG, "Pattern not found in memory.")
                         finishTask()
                         done()
@@ -118,7 +119,7 @@ return function(container)
                 end
 
                 gg.addListItems(freezeItems)
-                showToast("Force Cup Enabled")
+                showToast(t("force_cup.enabled"))
                 LOG.info(TAG, "Force Cup enabled. Items frozen.")
 
             else
@@ -143,7 +144,7 @@ return function(container)
                     LOG.warn(TAG, "No cache found on disable. Nothing to unfreeze.")
                 end
 
-                showToast("Force Cup Disabled")
+                showToast(t("force_cup.disabled"))
             end
 
             finishTask()
@@ -151,7 +152,7 @@ return function(container)
         end)
     end)
     
-    addModule(container, "unlimited_tasks", "Unlimited Tasks", "Freeze all tasks as completed and always claimable. Claim rewards repeatedly.", "switch", nil,
+    addModule(container, "unlimited_tasks", t("unlimited_tasks.title"), t("unlimited_tasks.desc"), "switch", nil,
     function(done, state)
         local TAG = "UnlimitedTasks"
 
@@ -159,7 +160,7 @@ return function(container)
             local ptr1 = gg.getValues({{ address = BaseGameStatus + 0x6F8, flags = 32 }})[1].value
 
             if not ptr1 or ptr1 == 0 then
-                showToast("Failed to resolve task list")
+                showToast(t("unlimited_tasks.resolve_failed"))
                 LOG.fatal(TAG, "Ptr1 is nil or 0.")
                 finishTask()
                 done()
@@ -169,7 +170,7 @@ return function(container)
             local totalTasks = gg.getValues({{ address = BaseGameStatus + 0x700, flags = 4 }})[1].value
 
             if not totalTasks or totalTasks == 0 then
-                showToast("No tasks found")
+                showToast(t("unlimited_tasks.none_found"))
                 LOG.warn(TAG, "totalTasks is 0.")
                 finishTask()
                 done()
@@ -198,15 +199,15 @@ return function(container)
             if #freezeItems > 0 then
                 if state then
                     gg.addListItems(freezeItems)
-                    showToast("Unlimited Tasks Enabled")
+                    showToast(t("unlimited_tasks.enabled"))
                     LOG.info(TAG, "Enabled. Frozen " .. tostring(#freezeItems / 3) .. " tasks.")
                 else
                     gg.removeListItems(freezeItems)
-                    showToast("Unlimited Tasks Disabled")
+                    showToast(t("unlimited_tasks.disabled"))
                     LOG.info(TAG, "Disabled. Unfrozen " .. tostring(#freezeItems / 3) .. " tasks.")
                 end
             else
-                showToast("No tasks to freeze")
+                showToast(t("unlimited_tasks.none_to_freeze"))
                 LOG.warn(TAG, "freezeItems is empty.")
             end
 
@@ -215,7 +216,7 @@ return function(container)
         end)
     end)
     
-    addModule(container, "rank_points_bonus", "+498 Rank Points", "Make all league tasks gives you 498 points instead of 200 points, also remove other rewards.", "switch", nil,
+    addModule(container, "rank_points_bonus", t("rank_points_bonus.title"), t("rank_points_bonus.desc"), "switch", nil,
     function(done, state)
         local TAG = "RankPointsBonus"
         LOG.info(TAG, "Module activated. state=" .. tostring(state))
@@ -230,7 +231,7 @@ return function(container)
                 gg.clearResults()
 
                 if #results == 0 then
-                    showToast("No league tasks found")
+                    showToast(t("rank_points_bonus.none_found"))
                     LOG.warn(TAG, "Anchor search returned 0 results.")
                     finishTask()
                     done()
@@ -281,9 +282,9 @@ return function(container)
                 LOG.info(TAG, "Done. Patched: " .. tostring(successCount))
 
                 if successCount > 0 then
-                    showToast("Rank points boosted: " .. tostring(successCount))
+                    showToast(t("rank_points_bonus.boosted", tostring(successCount)))
                 else
-                    showToast("No matching league tasks found")
+                    showToast(t("rank_points_bonus.no_match"))
                 end
             else
                 -- DISABLE: restore original values from saved data
@@ -291,7 +292,7 @@ return function(container)
 
                 if not saved or #saved == 0 then
                     LOG.warn(TAG, "No saved data to restore.")
-                    showToast("Nothing to restore")
+                    showToast(t("rank_points_bonus.nothing_to_restore"))
                     finishTask()
                     done()
                     return
@@ -310,7 +311,7 @@ return function(container)
 
                 memory:save("rank_points_bonus", {})
                 LOG.info(TAG, "Restored: " .. tostring(restoreCount))
-                showToast("Restored: " .. tostring(restoreCount))
+                showToast(t("rank_points_bonus.restored", tostring(restoreCount)))
             end
 
             finishTask()

@@ -11,26 +11,29 @@
 --   3. Add icons to _TAB_ICONS in ui/ui.lua.
 
 local TAB_DEFS = {
-    -- { id, display_name }
-    { "separator", "GAME MENU" },
-    { "account", "ACCOUNT MENU" },
-    { "player", "PLAYER MENU" },
-    { "adventure", "ADVENTURE MENU" },
-    { "cups", "CUPS MENU" },
-    { "team", "TEAM MENU" },
-    { "event", "EVENT MENU" },
-    { "creative", "CREATIVE MENU" },
-    { "shop", "SHOP MENU" },
-    { "other", "OTHER MENU" },
-    { "separator", "SCRIPT MENU" },
-    { "settings", "SETTINGS" },
-    { "about", "ABOUT" },
+    -- { id, display_name_key }
+    { "separator", "tabs.sep_game" },
+    { "account", "tabs.account" },
+    { "vehicle", "tabs.vehicle" },
+    { "player", "tabs.player" },
+    { "adventure", "tabs.adventure" },
+    { "cups", "tabs.cups" },
+    { "team", "tabs.team" },
+    { "event", "tabs.event" },
+    { "creative", "tabs.creative" },
+    { "shop", "tabs.shop" },
+    { "other", "tabs.other" },
+    { "separator", "tabs.sep_script" },
+    { "settings", "tabs.settings" },
+    { "about", "tabs.about" },
 }
 
 -- tabHandlers: ordered list of { id, display_name } used by ui.lua for the sidebar.
+-- display_name is resolved through T() here (not at TAB_DEFS-literal time) so
+-- it always reflects the language active when the menu is (re)built.
 local tabHandlers = {}
 for _, def in ipairs(TAB_DEFS) do
-    tabHandlers[#tabHandlers + 1] = def
+    tabHandlers[#tabHandlers + 1] = { def[1], T(def[2]) }
 end
 
 -- loadCache: id → render function on success, false on permanent failure.
@@ -48,7 +51,7 @@ for _, def in ipairs(TAB_DEFS) do
         -- Previously failed — show a permanent error card.
         if loadCache[id] == false then
             addModule(container, id .. "_err", id,
-                "Module failed to load. Check logs for details.", "ro", "Error", nil)
+                T("registry.module_load_failed"), "ro", T("registry.error"), nil)
             return
         end
 
@@ -63,7 +66,7 @@ for _, def in ipairs(TAB_DEFS) do
                 LOG.error("Registry", "Failed to load module [" .. id .. "]: " .. tostring(result))
                 loadCache[id] = false
                 addModule(container, id .. "_err", id,
-                    "Module failed to load. Check logs for details.", "ro", "Error", nil)
+                    T("registry.module_load_failed"), "ro", T("registry.error"), nil)
                 return
             end
         end
@@ -73,7 +76,7 @@ for _, def in ipairs(TAB_DEFS) do
         if not ok then
             LOG.error("Registry", "Runtime error in module [" .. id .. "]: " .. tostring(err))
             addModule(container, id .. "_err", id,
-                "Runtime error: " .. tostring(err), "ro", "Error", nil)
+                T("registry.module_runtime_error", tostring(err)), "ro", T("registry.error"), nil)
         end
     end
 end

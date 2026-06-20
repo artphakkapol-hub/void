@@ -55,13 +55,13 @@ function loadCategory(id, tabView)
         local status, err = pcall(function() setCategory(moduleContainer) end)
         if not status then
             local errTxt = TextView(activity)
-            errTxt.setText("Error: " .. tostring(err))
+            errTxt.setText(T("ui.category_error", tostring(err)))
             errTxt.setTextColor(UI.RED)
             moduleContainer.addView(errTxt)
         end
     else
         local errTxt = TextView(activity)
-        errTxt.setText("Category Not Found")
+        errTxt.setText(T("ui.category_not_found"))
         errTxt.setTextColor(UI.SUB)
         moduleContainer.addView(errTxt)
     end
@@ -280,7 +280,7 @@ function addModule(parent, id, title, desc, mode, extra, callback)
 
     elseif mode == "ro" then
         local info = TextView(activity)
-        local rawText = tostring(extra or "N/A")
+        local rawText = tostring(extra or T("ui.na"))
         info.setText(rawText)
         info.setTextColor(UI.LOGO)
         info.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
@@ -308,7 +308,7 @@ function addModule(parent, id, title, desc, mode, extra, callback)
         local currentIdx = savedIdx or defaultIdx
 
         local options     = extra.options or extra
-        local initialText = options[currentIdx] or "Select"
+        local initialText = options[currentIdx] or T("ui.spinner_select")
 
         local val = TextView(activity)
         val.setText(tostring(initialText))
@@ -379,7 +379,7 @@ function addModule(parent, id, title, desc, mode, extra, callback)
 
         for i, cfg in ipairs(slidersData) do
             local valTxt = TextView(activity)
-            valTxt.setText((cfg.title or "Value") .. ": " .. currentValues[i])
+            valTxt.setText((cfg.title or T("ui.slider_default_title")) .. ": " .. currentValues[i])
             valTxt.setTextColor(UI.SUB)
             valTxt.setTextSize(1, 10)
             valTxt.setPadding(dp(2), dp(5), 0, 0)
@@ -402,7 +402,7 @@ function addModule(parent, id, title, desc, mode, extra, callback)
                     local newVal = p + cfg.min
                     currentValues[i] = newVal
                     if isMulti then sliderStates[id][i] = newVal else sliderStates[id] = newVal end
-                    valTxt.setText((cfg.title or "Value") .. ": " .. newVal)
+                    valTxt.setText((cfg.title or T("ui.slider_default_title")) .. ": " .. newVal)
                 end
             }))
             controlsRow.addView(seek)
@@ -734,13 +734,13 @@ function createIconView()
     end
     
     addHeaderBtn("✕", UI.RED, function()
-        showDialog("Confirm Exit", "Exit The Script?", {"Yes", function()
+        showDialog(T("common.confirm_exit_title"), T("common.confirm_exit_msg"), {T("common.yes"), function()
             memory:save("toggle_states",  toggleStates)
             memory:save("input_states",   inputStates)
             memory:save("spinner_states", spinnerStates)
             memory:save("slider_states",  sliderStates)
             exitScript()
-        end}, {"No"})
+        end}, {T("common.no")})
     end)
     
     -- Drag & Click
@@ -870,13 +870,13 @@ local function _buildMenuHeader(root)
         onClick = function()
             Thread(Runnable({ run = function()
                 pcall(function()
-                    showDialog("Confirm Exit", "Exit The Script?", {"Yes", function()
+                    showDialog(T("common.confirm_exit_title"), T("common.confirm_exit_msg"), {T("common.yes"), function()
                         memory:save("toggle_states",  toggleStates)
                         memory:save("input_states",   inputStates)
                         memory:save("spinner_states", spinnerStates)
                         memory:save("slider_states",  sliderStates)
                         exitScript()
-                    end}, {"No"})
+                    end}, {T("common.no")})
                 end)
             end })).start()
         end
@@ -977,7 +977,7 @@ function applyWindowResize(newW, newH)
     WIN_W = math.max(RESIZE_MIN_W, math.min(RESIZE_MAX_W, math.floor(newW)))
     WIN_H = math.max(RESIZE_MIN_H, math.min(RESIZE_MAX_H, math.floor(newH)))
     memory:save_global("window_size", { w = WIN_W, h = WIN_H })
-    showToast("Size saved! Restart the script")
+    showToast(T("ui.size_saved_restart"))
     exitScript()
 end
 

@@ -8,10 +8,11 @@
 -- Dependencies: addModule, addArchModule, showToast, memory, BaseGameStatus, BaseRegion, scheduler
 
 return function(container)
+    local function t(key, ...) return T("player." .. key, ...) end
     
-    addArchModule(container, "auto_detach", "Auto Detach", "Automatically detach parts like the Rally Car roof", "switch", nil, aobs.autoDetach)
+    addArchModule(container, "auto_detach", t("auto_detach.title"), t("auto_detach.desc"), "switch", nil, aobs.autoDetach)
 
-    addModule(container, "no_clip", "No-Clip", "Make your player go through objects without dying (You can go over the finish lines in cups)", "switch", nil,
+    addModule(container, "no_clip", t("no_clip.title"), t("no_clip.desc"), "switch", nil,
     function(done, state)
         scheduler:add(function(finishTask)
             local TAG = "NoClip"
@@ -33,11 +34,11 @@ return function(container)
             end
             if state then
                 gg.editAll("h CD CC 08 C1", 1)
-                showToast("No-Clip Enabled", true)
+                showToast(t("no_clip.enabled"), true)
                 LOG.info(TAG, "Enabled")
             else
                 gg.editAll("h 0A D7 23 3C", 1)
-                showToast("No-Clip Disabled", true)
+                showToast(t("no_clip.disabled"), true)
                 LOG.info(TAG, "Disabled")
             end
             gg.clearResults()
@@ -47,7 +48,7 @@ return function(container)
         end)
     end)
 
-    addModule(container, "hide_name", "Hide Name", "Hide your player name at race", "switch", nil,
+    addModule(container, "hide_name", t("hide_name.title"), t("hide_name.desc"), "switch", nil,
     function(done, state)
         scheduler:add(function(finishTask)
             local TAG = "HideName"
@@ -69,11 +70,11 @@ return function(container)
             end
             if state then
                 gg.editAll("h 00 00 00 00 00 00 00 00", 1)
-                showToast("Hide Name Enabled", true)
+                showToast(t("hide_name.enabled"), true)
                 LOG.info(TAG, "Enabled")
             else
                 gg.editAll("h 71 3D 0A 3F 71 3D 0A 3F", 1)
-                showToast("Hide Name Disabled", true)
+                showToast(t("hide_name.disabled"), true)
                 LOG.info(TAG, "Disabled")
             end
             gg.clearResults()
@@ -83,7 +84,7 @@ return function(container)
         end)
     end)
 
-    addModule(container, "hide_flag", "Hide Flag", "Hide your player flag at race", "switch", nil,
+    addModule(container, "hide_flag", t("hide_flag.title"), t("hide_flag.desc"), "switch", nil,
     function(done, state)
         scheduler:add(function(finishTask)
             local TAG = "HideFlag"
@@ -129,11 +130,11 @@ return function(container)
             end
             if state then
                 gg.editAll("h 00 00 00 00", 1)
-                showToast("Hide Flag Enabled", true)
+                showToast(t("hide_flag.enabled"), true)
                 LOG.info(TAG, "Enabled")
             else
                 gg.editAll("h FF FF FF FF", 1)
-                showToast("Hide Flag Disabled", true)
+                showToast(t("hide_flag.disabled"), true)
                 LOG.info(TAG, "Disabled")
             end
             gg.clearResults()
@@ -143,9 +144,9 @@ return function(container)
         end)
     end)
 
-    addModule(container, "zoom", "Adjust Zoom", "Adjust how close or far your camera", "slider", {
-        {title="Min", min=10, max=100, current=20},
-        {title="Max", min=10, max=100, current=50}
+    addModule(container, "zoom", t("zoom.title"), t("zoom.desc"), "slider", {
+        {title=t("slider.min"), min=10, max=100, current=20},
+        {title=t("slider.max"), min=10, max=100, current=50}
     }, function(done, vals)
         scheduler:add(function(finishTask)
             local TAG = "Zoom"
@@ -178,9 +179,9 @@ return function(container)
         end)
     end)
 
-    addModule(container, "gravity", "Adjust Gravity", "Adjust how strong is the gravity", "slider", {
-        {title="X", min=-100, max=100, current=0},
-        {title="Y", min=-100, max=100, current=-10}
+    addModule(container, "gravity", t("gravity.title"), t("gravity.desc"), "slider", {
+        {title=t("slider.x"), min=-100, max=100, current=0},
+        {title=t("slider.y"), min=-100, max=100, current=-10}
     }, function(done, vals)
         scheduler:add(function(finishTask)
             local TAG = "Gravity"

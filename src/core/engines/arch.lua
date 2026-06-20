@@ -26,16 +26,16 @@ end
 
 if DEVICE_ARCH == "unknown" then
     LOG.warn("Arch", "Architecture unrecognized — ELF e_machine not in ARCH_MAP")
-    showDialog("Architecture Warning",
-        "Your architecture is unknown. Is the lib loaded? What system are you using?",
-        "Proceed Anyway")
+    showDialog(T("arch.warning_title"),
+        T("arch.unknown_arch_msg"),
+        T("common.proceed_anyway"))
 end
 
 if DEVICE_ARCH ~= "arm64-v8a" then
     LOG.warn("Arch", "Non-primary architecture: " .. DEVICE_ARCH .. " — lib patches may not work")
-    showDialog("Architecture Warning",
-        ("Detected: %s\nSome or all lib-patches may not work."):format(DEVICE_ARCH),
-        "Proceed Anyway")
+    showDialog(T("arch.warning_title"),
+        T("arch.non_primary_arch_msg", DEVICE_ARCH),
+        T("common.proceed_anyway"))
 end
 
 
@@ -52,7 +52,7 @@ LOG.info("Arch", "Game version: " .. tostring(pkg_version) .. " | Arch: " .. tos
 
 if type(pkg_version) ~= "string" then
     LOG.fatal("Arch", "pkg_version is not a string: " .. type(pkg_version))
-    showDialog("Warning", "Game version unknown. Try again after the game loads.", "OK")
+    showDialog(T("common.warning"), T("arch.unknown_version_msg"), T("common.ok"))
     os.exit(0)
 end
 
@@ -82,7 +82,7 @@ end
 
 if not arch_t or not arch_t.default_base then
     LOG.fatal("Arch", "Manifest missing default_base for resolved arch — cannot continue")
-    showDialog("Warning", "Internal error: no base data available for this architecture.", "OK")
+    showDialog(T("common.warning"), T("arch.no_base_data_msg"), T("common.ok"))
     
 end
 

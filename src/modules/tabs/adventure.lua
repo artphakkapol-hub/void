@@ -6,7 +6,9 @@
 ]]
 
 return function(container)
-    addModule(container, "auto_adventure_chests", "Auto Adventure Chests (unstable)", "Automatically level up your adventure chests", "button", nil,
+    local function t(key, ...) return T("adventure." .. key, ...) end
+
+    addModule(container, "auto_adventure_chests", t("auto_adventure_chests.title"), t("auto_adventure_chests.desc"), "button", nil,
     function(done)
         local TAG = "AutoAdventureChests"
         LOG.info(TAG, "Module activated.")
@@ -18,7 +20,7 @@ return function(container)
             local res = gg.getResults(gg.getResultsCount())
 
             if #res == 0 then
-                showToast("No adventure chests found")
+                showToast(t("auto_adventure_chests.none_found"))
                 LOG.warn(TAG, "Search returned 0 results.")
                 finishTask()
                 done()
@@ -31,36 +33,36 @@ return function(container)
             gg.clearResults()
 
             LOG.info(TAG, "Done.")
-            showToast("Done")
+            showToast(t("auto_adventure_chests.done"))
 
             finishTask()
             done()
         end)
     end)
     
-    addArchModule(container, "set_distance", "Set Distance", "Sets your Adventure race distance to a custom value. Must be in an active race. Higher distance can gain more stars. Max stars at 5000m. (Not a teleport function)", "button", nil,
+    addArchModule(container, "set_distance", t("set_distance.title"), t("set_distance.desc"), "button", nil,
     function(done)
         local TAG = "SetDistance"
         LOG.info(TAG, "Module activated.")
         
         if memory:load("set_distance_loop") then
             local action = showDialog(
-                "Set Distance — Loop Active",
-                "The distance loop is currently running.\nWhat do you want to do?",
-                {"Stop Loop"}, {"Keep Running"}
+                t("set_distance.loop_active_title"),
+                t("set_distance.loop_active_msg"),
+                {t("set_distance.stop_loop")}, {t("set_distance.keep_running")}
             )
             if action == 1 then
                 memory:save("set_distance_loop", false)
-                showToast("Loop will stop after current tick.")
+                showToast(t("set_distance.loop_will_stop"))
             end
             done()
             return
         end
 
-        local result = showPrompt("Set Distance", {
-            {"Target distance (meters)", "number", "5000"},
-            {"Loop (auto re-apply)",     "switch",  "false"},
-            {"Loop interval (ms, min 250)", "number", "1000"},
+        local result = showPrompt(t("set_distance.title"), {
+            {t("set_distance.prompt_target"), "number", "5000"},
+            {t("set_distance.prompt_loop"),     "switch",  "false"},
+            {t("set_distance.prompt_interval"), "number", "1000"},
         })
 
         if not result then
@@ -75,9 +77,9 @@ return function(container)
         -- Warn if > 5000m — no stars, but race still counts distance
         if target_meters > 5000 then
             local warn = showDialog(
-                "Distance Warning",
-                "Distance over 5000m won't give you any stars.\n\nThe race will still register the distance, but no star rewards will be given. Continue?",
-                {"Continue"}, {"Cancel"}
+                t("set_distance.over_max_title"),
+                t("set_distance.over_max_msg"),
+                {t("set_distance.continue_button")}, {T("common.cancel")}
             )
             if warn ~= 1 then
                 done()
@@ -193,14 +195,14 @@ return function(container)
 
             if not isAdventureTab then
                 LOG.warn(TAG, "Not in Adventure tab.")
-                showToast("Go to Adventure tab and start a race first")
+                showToast(t("set_distance.not_in_adventure"))
                 return false
             end
 
             local distanceBase = resolveDistanceBase()
             if not distanceBase then
                 LOG.fatal(TAG, "Failed to resolve distanceBase.")
-                showToast("Start a race first")
+                showToast(t("set_distance.start_race_first"))
                 return false
             end
 
@@ -223,7 +225,7 @@ return function(container)
                 return
             end
 
-            showToast("Distance set: " .. tostring(target_meters) .. "m")
+            showToast(t("set_distance.applied", tostring(target_meters)))
 
             if not loop_enabled then
                 finishTask()
@@ -240,7 +242,7 @@ return function(container)
             local function loopTick()
                 if not memory:load("set_distance_loop") then
                     LOG.info(TAG, "Loop stopped.")
-                    showToast("Set Distance loop stopped.")
+                    showToast(t("set_distance.loop_stopped"))
                     memory:save("set_distance_ptr", nil) -- clear cache on stop
                     return
                 end
@@ -252,7 +254,7 @@ return function(container)
 
                 -- Reminder every 2 ticks
                 if tickCount % 2 == 0 then
-                    showToast("Distance loop running — tap Set Distance to stop", true)
+                    showToast(t("set_distance.loop_running"), true)
                 end
 
                 scheduler:add(function(ft)

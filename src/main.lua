@@ -1,7 +1,7 @@
 -- VOID v1 — HCR2 Modding Framework
 -- Load order: env → imports → constants → core → patches → arch+data → modules → ui → init → loop
 
-scriptSubHeader = " v1.0.22 • By Vekendian"
+scriptSubHeader = " v1.0.23 • By Vekendian"
 
 do
     local LOG_TO_FILE  = true
@@ -420,10 +420,10 @@ function exitScript()
     -- FIX: use renamed public scheduler API
     local pending = scheduler:get_queue_count() or 0
     if pending > 0 or scheduler:is_processing() then
-        showDialog("Warning: Active Operations",
-            ("There are %d background task(s) running.\nForce exit may corrupt game state."):format(pending),
-            {"Wait (Safe)", function() showToast("Waiting...") end},
-            {"Force Exit",  function()
+        showDialog(T("main.exit_active_ops_title"),
+            T("main.exit_active_ops_msg", pending),
+            {T("common.wait_safe"), function() showToast(T("common.waiting")) end},
+            {T("common.force_exit"),  function()
                 if activeView then pcall(function() windowManager.removeView(activeView) end) end
                 exit = true
             end})
@@ -436,6 +436,7 @@ end
 -- ── Core modules ──────────────────────────────────────────────────────────────
 
 memory    = loadModule("core/engines/memory.lua")
+loadModule("core/utils/lang.lua") -- sets globals: T, setLanguage, LANG_CODE, LANG_AVAILABLE
 scheduler = loadModule("core/engines/scheduler.lua")
 loader    = loadModule("core/utils/loader.lua")
 catbox    = loadModule("core/utils/catbox.lua")
@@ -496,12 +497,12 @@ loadModule("ui/ui.lua")
 
 local PKG = "com.fingersoft.hcr2"
 gg.setVisible(false)
-showToast("Initializing...", true)
+showToast(T("main.initializing"), true)
 
 local target_info = gg.getTargetInfo()
-if not target_info then gg.alert("No app found"); os.exit() end
+if not target_info then gg.alert(T("main.no_app_found")); os.exit() end
 if not target_info.x64 then
-    showDialog("64-bit Required", "ARMv8a is mandatory. x86_64 is partially supported.")
+    showDialog(T("main.arch_64bit_required_title"), T("main.arch_64bit_required_msg"))
     os.exit()
 end
 
@@ -550,12 +551,12 @@ local auto_update = memory:load_global("auto_update")
 if auto_update and not IS_DEV then
     local remote_ver, download_url, release_body = fetchLatestVersion()
     if remote_ver and versionNewer(remote_ver, CURRENT_VERSION) and download_url then
-        local msg = "v" .. remote_ver .. " is available (current: v" .. CURRENT_VERSION .. ")\n\n" .. (release_body or "No changelog.") .. "\n\nUpdate now?"
-        showDialog("Update Available", msg, {"UPDATE", function()
-            showToast("Downloading v" .. remote_ver .. "...")
+        local msg = T("main.update_available_msg", remote_ver, CURRENT_VERSION, release_body or T("main.no_changelog"))
+        showDialog(T("main.update_available_title"), msg, {T("common.update_button"), function()
+            showToast(T("main.downloading_version", remote_ver))
             local content, err = paste.get(download_url)
             if not content then
-                showDialog("Failed", "Could not download the update:\n" .. tostring(err), {"OK"})
+                showDialog(T("common.failed"), T("main.update_download_failed_msg", tostring(err)), {T("common.ok")})
                 return
             end
 
@@ -565,27 +566,27 @@ if auto_update and not IS_DEV then
 
             local f = io.open(new_path, "w")
             if not f then
-                showDialog("Failed", "Could not write to:\n" .. new_path, {"OK"})
+                showDialog(T("common.failed"), T("main.update_write_failed_msg", new_path), {T("common.ok")})
                 return
             end
             f:write(content)
             f:close()
             
             showDialog(
-                "VOID Updated to v" .. remote_ver,
-                "VOID has been updated successfully.\n\nThe new script has been saved as:\nvoid_v" .. remote_ver .. ".lua\n\nRun it from GameGuardian to apply the update.",
-                {"Got it"}
+                T("main.update_done_title", remote_ver),
+                T("main.update_done_msg", remote_ver),
+                {T("common.got_it")}
             )
             
-            showToast("Launching v" .. remote_ver .. "...")
+            showToast(T("main.launching_version", remote_ver))
             local ok, load_err = pcall(function() dofile(new_path) end)
             if not ok then
-                showDialog("Launch Failed", "Downloaded but could not run:\n" .. tostring(load_err), {"OK"})
+                showDialog(T("common.launch_failed"), T("main.launch_failed_msg", tostring(load_err)), {T("common.ok")})
                 return
             end
 
             exitScript()
-        end}, {"Later"})
+        end}, {T("common.later")})
     end
 end
 
@@ -671,18 +672,18 @@ local function detectVirtualSpace()
     for _, path in ipairs(paths) do
         local uid = path:match("/user/(%d+)/") or "?"
         local short = path:match("(user/.-/" .. PKG .. ")") or path
-        table.insert(items, "User " .. uid .. "  —  " .. short)
+        table.insert(items, T("main.user_space_item", uid, short))
     end
     
     local selected = nil
     while not selected or selected == 0 do
         selected = showList(
-            "Multiple Spaces Detected",
-            "HCR2 was found in " .. tostring(#paths) .. " virtual spaces.\nSelect the space you are currently playing in.",
+            T("main.multiple_spaces_title"),
+            T("main.multiple_spaces_desc", tostring(#paths)),
             items
         )
         if not selected or selected == 0 then
-            showToast("Please select a space to continue.")
+            showToast(T("main.select_space_toast"))
         end
     end
 
@@ -696,17 +697,17 @@ if not exit then
     vm_status, game_path = detectVirtualSpace()
     
     if vm_status == 3 then
-        showDialog("Permission Error",
-            "Shell access was denied.\n\nVoid needs this to locate HCR2 in your virtual space. Check Void source code if you want to verify what command is being run.",
-            {"OK"})
+        showDialog(T("main.permission_error_title"),
+            T("main.permission_error_msg"),
+            {T("common.ok")})
         os.exit()
     end
     
     if vm_status == 2 or game_path == nil then
         local action = showDialog(
-            "HCR2 Data Not Found",
-            "Void couldn't locate HCR2 data in your virtual space. This may happen if HCR2 hasn't been launched yet, or your virtual space app uses an unusual path structure.\n\nFeatures that rely on game files (Event Rewards, etc.) will not work without a valid path.",
-            {"Proceed Anyway"}, {"Manual Mode"}, {"Retry"}
+            T("main.hcr2_not_found_title"),
+            T("main.hcr2_not_found_msg"),
+            {T("common.proceed_anyway")}, {T("common.manual_mode")}, {T("common.retry")}
         )
     
         if action == 1 then
@@ -715,15 +716,15 @@ if not exit then
     
         elseif action == 2 then
             -- Manual mode — replace gg.prompt with showPrompt
-            local response = showPrompt("Manual Data Path", {
-                {"Enter the HCR2 data path", "text", "/"}
+            local response = showPrompt(T("main.manual_data_path_title"), {
+                {T("main.manual_data_path_hint"), "text", "/"}
             })
             if response and response[1] and response[1] ~= "" then
                 vm_status = 1
                 game_path = response[1]
                 LOG.info("Main", "Manual path set: " .. game_path)
             else
-                showToast("Cancelled — proceeding without path.")
+                showToast(T("main.manual_path_cancelled"))
                 LOG.warn("Main", "Manual path cancelled.")
             end
     
@@ -738,7 +739,7 @@ if not exit then
         local tick_count = 0
         while #gg.getRangesList(lib) == 0 do
             tick_count = tick_count + 1
-            if tick_count % 7 == 0 then showToast("Waiting for " .. lib .. "...") end
+            if tick_count % 7 == 0 then showToast(T("main.waiting_for_lib", lib)) end
             gg.sleep(500)
             if tick_count > 120 then return false end
         end
@@ -808,13 +809,13 @@ if not exit then
         end
     end
     
-    showToast("Initialized", true)
+    showToast(T("main.initialized"), true)
     LOG.info("INIT", "Initialized | BaseGameStatus=" .. tostring(BaseGameStatus) .. " BaseRegion=" .. tostring(BaseRegion))
     
     if BaseGameStatus == nil or BaseRegion == nil then
         LOG.fatal("INIT", "BaseGameStatus or BaseRegion is NIL — floating menu will NOT appear!")
         LOG.flush()
-        showToast("GameStatus Not Found"); exit = true
+        showToast(T("main.gamestatus_not_found")); exit = true
     else
         LOG.info("INIT", "BaseGameStatus OK=" .. tostring(BaseGameStatus) .. " | scheduling initUI() via MainHandler")
         
@@ -843,7 +844,7 @@ if not exit then
     
     while not exit do
         local ok, err = pcall(function()
-            if gg.isVisible(true) then gg.setVisible(false); gg.toast("Don't interrupt this script") end
+            if gg.isVisible(true) then gg.setVisible(false); gg.toast(T("main.dont_interrupt")) end
             if FORCE_EXIT then exitScript() end
             gg.sleep(100)
         end)

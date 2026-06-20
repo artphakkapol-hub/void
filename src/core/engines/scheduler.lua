@@ -47,7 +47,7 @@ function scheduler:_next()
 
     if not ok then
         LOG.error(TAG, "Task crashed: " .. tostring(err))
-        gg.alert("Scheduler Warning: Task crashed -> " .. tostring(err))
+        gg.alert(T("scheduler.task_crashed", tostring(err)))
         self:_next()
     end
 end

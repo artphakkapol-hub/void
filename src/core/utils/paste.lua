@@ -40,13 +40,13 @@ function paste.post(content)
             return pasteUrl:gsub("%s+", "")
         else
             conn.disconnect()
-            return nil, "HTTP Error Code: " .. tostring(responseCode)
+            return nil, T("errors.http_error_code", tostring(responseCode))
         end
     end)
 
     if not status then
         LOG.error(TAG, "POST Request Crashed: " .. tostring(res))
-        return nil, tostring(res)
+        return nil, T("errors.crashed", tostring(res))
     end
 
     if not res and err then
@@ -59,7 +59,7 @@ end
 function paste.get(pasteUrl)
     if not pasteUrl or pasteUrl == "" then
         LOG.warn(TAG, "GET Aborted: URL parameter is missing or empty")
-        return nil, "URL parameter is missing or empty"
+        return nil, T("errors.url_missing")
     end
 
     -- Wrap execution to handle invalid URLs or connection dropping out mid-stream
@@ -93,14 +93,14 @@ function paste.get(pasteUrl)
             return content
         else
             conn.disconnect()
-            return nil, "HTTP Error Code: " .. tostring(responseCode)
+            return nil, T("errors.http_error_code", tostring(responseCode))
         end
     end)
 
     -- If pcall caught an exception (e.g., MalformedURLException)
     if not status then
         LOG.error(TAG, "GET Request Crashed: " .. tostring(res))
-        return nil, tostring(res)
+        return nil, T("errors.crashed", tostring(res))
     end
 
     if not res and err then

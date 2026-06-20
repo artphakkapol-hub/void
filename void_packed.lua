@@ -1,9 +1,13 @@
--- Packed by bundle.py  •  2026-06-20 21:05:14
+-- Packed by bundle.py  •  2026-06-21 02:23:31
 
 -- Do not edit — regenerate with:  python bundle.py
 
 
 local __vfs = {}
+
+__vfs['test.lua'] = function(...)
+
+end
 
 __vfs['configs/colors.lua'] = function(...)
 UI = {
@@ -19093,6 +19097,502 @@ return [[
 
 end
 
+__vfs['configs/lang/en.lua'] = function(...)
+--[[
+  configs/lang/en.lua — English (default/fallback language)
+
+  Flat table of dotted keys -> strings, loaded by core/utils/lang.lua.
+  Looked up at runtime via the global T(key, ...) function, e.g.:
+      T("common.ok")                          -> "OK"
+      T("settings.window_width_desc", 400, 650) -> "Width of the floating menu (400 - 650 dp)"
+
+  Conventions:
+    - Keys are namespaced by file: "settings.*", "account.*", "cups.*", etc.
+    - %s / %d / %X etc. are string.format placeholders — keep them in the
+      same order when translating, but they don't need to keep the same
+      letter (e.g. %s can become %d if the translated grammar needs it).
+    - Entries that are Lua arrays (e.g. spinner option lists) are returned
+      as-is, untouched by string.format.
+    - LOG.*() calls, debug tags, and internal cache/state keys are NOT
+      translated — only user-visible text (dialogs, toasts, buttons,
+      module titles/descriptions) lives here.
+
+  This file is the always-present fallback: every other language file only
+  needs to cover the keys it has translations for. Missing keys silently
+  fall back to English.
+]]
+
+return {
+
+-- ── Common / shared (buttons, generic dialog text) ───────────────────────────
+["common.ok"] = "OK",
+["common.cancel"] = "Cancel",
+["common.yes"] = "Yes",
+["common.no"] = "No",
+["common.failed"] = "Failed",
+["common.success"] = "Success",
+["common.later"] = "Later",
+["common.got_it"] = "Got it",
+["common.retry"] = "Retry",
+["common.wait_safe"] = "Wait (Safe)",
+["common.waiting"] = "Waiting...",
+["common.force_exit"] = "Force Exit",
+["common.proceed_anyway"] = "Proceed Anyway",
+["common.manual_mode"] = "Manual Mode",
+["common.update_button"] = "UPDATE",
+["common.launch_failed"] = "Launch Failed",
+["common.confirm_exit_title"] = "Confirm Exit",
+["common.confirm_exit_msg"] = "Exit The Script?",
+["common.not_available"] = "Not Available",
+["common.warning"] = "Warning",
+
+-- ── main.lua (boot, updater, virtual-space detection, main loop) ─────────────
+["main.exit_active_ops_title"] = "Warning: Active Operations",
+["main.exit_active_ops_msg"] = "There are %d background task(s) running.\nForce exit may corrupt game state.",
+["main.initializing"] = "Initializing...",
+["main.no_app_found"] = "No app found",
+["main.arch_64bit_required_title"] = "64-bit Required",
+["main.arch_64bit_required_msg"] = "ARMv8a is mandatory. x86_64 is partially supported.",
+
+["main.update_available_title"] = "Update Available",
+["main.update_available_msg"] = "v%s is available (current: v%s)\n\n%s\n\nUpdate now?",
+["main.no_changelog"] = "No changelog.",
+["main.downloading_version"] = "Downloading v%s...",
+["main.update_download_failed_msg"] = "Could not download the update:\n%s",
+["main.update_write_failed_msg"] = "Could not write to:\n%s",
+["main.update_done_title"] = "VOID Updated to v%s",
+["main.update_done_msg"] = "VOID has been updated successfully.\n\nThe new script has been saved as:\nvoid_v%s.lua\n\nRun it from GameGuardian to apply the update.",
+["main.launching_version"] = "Launching v%s...",
+["main.launch_failed_msg"] = "Downloaded but could not run:\n%s",
+
+["main.multiple_spaces_title"] = "Multiple Spaces Detected",
+["main.multiple_spaces_desc"] = "HCR2 was found in %d virtual spaces.\nSelect the space you are currently playing in.",
+["main.select_space_toast"] = "Please select a space to continue.",
+["main.user_space_item"] = "User %s  —  %s",
+["main.permission_error_title"] = "Permission Error",
+["main.permission_error_msg"] = "Shell access was denied.\n\nVoid needs this to locate HCR2 in your virtual space. Check Void source code if you want to verify what command is being run.",
+["main.hcr2_not_found_title"] = "HCR2 Data Not Found",
+["main.hcr2_not_found_msg"] = "Void couldn't locate HCR2 data in your virtual space. This may happen if HCR2 hasn't been launched yet, or your virtual space app uses an unusual path structure.\n\nFeatures that rely on game files (Event Rewards, etc.) will not work without a valid path.",
+["main.manual_data_path_title"] = "Manual Data Path",
+["main.manual_data_path_hint"] = "Enter the HCR2 data path",
+["main.manual_path_cancelled"] = "Cancelled — proceeding without path.",
+["main.waiting_for_lib"] = "Waiting for %s...",
+["main.initialized"] = "Initialized",
+["main.gamestatus_not_found"] = "GameStatus Not Found",
+["main.dont_interrupt"] = "Don't interrupt this script",
+
+-- ── ui/ui.lua (framework chrome: menu, cards, dialogs) ────────────────────────
+["ui.size_saved_restart"] = "Size saved! Restart the script",
+["ui.category_error"] = "Error: %s",
+["ui.category_not_found"] = "Category Not Found",
+["ui.na"] = "N/A",
+["ui.spinner_select"] = "Select",
+["ui.slider_default_title"] = "Value",
+
+-- ── core/engines/patches.lua (addArchModule patch engine) ────────────────────
+["patches.requires_arch"] = "Requires %s device (your device: %s)",
+["patches.suffix_enabled"] = " Enabled",
+["patches.suffix_disabled"] = " Disabled",
+["patches.pattern_not_found"] = "Failed: %d pattern(s) not found",
+
+-- ── core/engines/arch.lua (architecture detection warnings) ──────────────────
+["arch.warning_title"] = "Architecture Warning",
+["arch.unknown_arch_msg"] = "Your architecture is unknown. Is the lib loaded? What system are you using?",
+["arch.non_primary_arch_msg"] = "Detected: %s\nSome or all lib-patches may not work.",
+["arch.unknown_version_msg"] = "Game version unknown. Try again after the game loads.",
+["arch.no_base_data_msg"] = "Internal error: no base data available for this architecture.",
+
+-- ── core/engines/scheduler.lua ────────────────────────────────────────────────
+["scheduler.task_crashed"] = "Scheduler Warning: Task crashed -> %s",
+
+-- ── core/utils/paste.lua + catbox.lua (network error strings) ────────────────
+["errors.http_error_code"] = "HTTP Error Code: %s",
+["errors.crashed"] = "Crashed: %s",
+["errors.url_missing"] = "URL parameter is missing or empty",
+["errors.file_path_missing"] = "File path is missing",
+["errors.download_url_missing"] = "URL is missing",
+["errors.dest_path_missing"] = "Destination path is missing",
+
+-- ── modules/registry.lua (sidebar tab labels + module-load error cards) ──────
+["tabs.sep_game"] = "GAME MENU",
+["tabs.account"] = "ACCOUNT MENU",
+["tabs.vehicle"] = "VEHICLE MENU",
+["tabs.player"] = "PLAYER MENU",
+["tabs.adventure"] = "ADVENTURE MENU",
+["tabs.cups"] = "CUPS MENU",
+["tabs.team"] = "TEAM MENU",
+["tabs.event"] = "EVENT MENU",
+["tabs.creative"] = "CREATIVE MENU",
+["tabs.shop"] = "SHOP MENU",
+["tabs.other"] = "OTHER MENU",
+["tabs.sep_script"] = "SCRIPT MENU",
+["tabs.settings"] = "SETTINGS",
+["tabs.about"] = "ABOUT",
+
+["registry.module_load_failed"] = "Module failed to load. Check logs for details.",
+["registry.module_runtime_error"] = "Runtime error: %s",
+["registry.error"] = "Error",
+
+-- ── modules/tabs/settings.lua ─────────────────────────────────────────────────
+["settings.section_updates"] = "Updates",
+["settings.auto_update.title"] = "Auto Update",
+["settings.auto_update.desc"] = "Auto update VOID on startup",
+["settings.dev_mode_title"] = "Dev Mode",
+["settings.auto_update.dev_mode_msg"] = "Auto update is disabled for main.lua (dev build).",
+["settings.check_updates.title"] = "Check for Update",
+["settings.check_updates.desc"] = "Check for the latest VOID release on GitHub",
+["settings.check_updates.dev_mode_msg"] = "Update check is disabled for main.lua (dev build).\n\nPull from the repo manually.",
+["settings.check_updates.checking"] = "Checking for updates...",
+["settings.check_updates.failed_title"] = "Update Check Failed",
+["settings.check_updates.failed_msg"] = "Could not reach GitHub:\n%s",
+["settings.check_updates.up_to_date_title"] = "Up to date",
+["settings.check_updates.up_to_date_msg"] = "You are already on the latest version (v%s).",
+["settings.check_updates.no_changelog"] = "No changelog available.",
+["settings.check_updates.available_msg"] = "v%s  (current: v%s)\n\n%s\n\nDownload and replace this script?",
+["settings.check_updates.no_asset_msg"] = "No .lua asset found in the release.",
+["settings.check_updates.download_failed_title"] = "Download Failed",
+["settings.check_updates.write_failed_title"] = "Write Failed",
+["settings.check_updates.done_title"] = "Done",
+["settings.check_updates.done_msg"] = "Updated to v%s. Restart the script to apply.",
+["settings.check_updates.restart_button"] = "Restart",
+
+["settings.section_language"] = "Language",
+["settings.language.title"] = "Language",
+["settings.language.desc"] = "Choose your preferred language for the menu",
+["settings.language.changed"] = "Language set to %s",
+["settings.language.failed"] = "Failed to load that language",
+
+["settings.region.other"] = "O: Other",
+["settings.region.cpp_alloc"] = "Ca: C++ alloc",
+["settings.region.unknown"] = "U: Unknown",
+["settings.section_memory"] = "Memory",
+["settings.memory_range.title"] = "Memory Range",
+["settings.memory_range.desc"] = "Current selected memory range\n(automatically chosen by script)",
+["settings.gamestatus.title"] = "GameStatus",
+["settings.gamestatus.desc"] = "Current gamestatus address\n(automatically chosen by script)",
+["settings.gamestatus_raw.title"] = "GameStatus (Raw)",
+["settings.gamestatus_raw.desc"] = "Current gamestatus (raw) address\n(automatically chosen by script)",
+["settings.clear_memory.title"] = "Clear Saved Memory",
+["settings.clear_memory.desc"] = "Clear all VOID saved memory without needed to restart the whole game.",
+
+["settings.section_ui_customizations"] = "UI Customizations",
+["settings.theme_store.title"] = "Theme Store",
+["settings.theme_store.desc"] = "Browse and install community Void themes",
+["settings.theme_store.unreachable_msg"] = "Could not reach theme store:\n%s",
+["settings.theme_store.parse_failed_msg"] = "Could not parse theme store data.",
+["settings.theme_store.list_title"] = "Void Theme Store",
+["settings.theme_store.search_results_desc"] = "Search results: %s found",
+["settings.theme_store.available_desc"] = "%s themes available",
+["settings.theme_store.by_author"] = "by %s",
+["settings.theme_store.search_item"] = "🔍 Search...",
+["settings.theme_store.clear_search_item"] = "✕ Clear search",
+["settings.theme_store.search_title"] = "Search Themes",
+["settings.theme_store.search_hint"] = "Theme name, author or description",
+["settings.theme_store.no_results"] = "No themes found for: %s",
+["settings.theme_store.detail_msg"] = "By %s\n\n%s\n\nID: %s",
+["settings.theme_store.install_button"] = "Install Theme",
+["settings.theme_downloading_bg"] = "Downloading background image...",
+["settings.theme_imported"] = "Theme imported!",
+["settings.theme_invalid_bundle"] = "Invalid bundle format.",
+["settings.theme_cloud_error"] = "Cloud error: %s",
+["settings.reset_theme.title"] = "Reset Theme",
+["settings.reset_theme.desc"] = "Reset custom theme and background image to the default",
+["settings.import_theme.title"] = "Import Theme",
+["settings.import_theme.desc"] = "Import custom theme from cloud",
+["settings.import_theme.hint"] = "Enter Share ID",
+["settings.export_theme.title"] = "Export Theme",
+["settings.export_theme.desc"] = "Export custom theme and background image to cloud",
+["settings.export_theme.share_id_msg"] = "Share ID: %s\n\nCopied to clipboard.",
+["settings.export_theme.upload_failed_msg"] = "Upload failed: %s",
+["settings.export_theme.size_warning_title"] = "Upload Size Warning",
+["settings.export_theme.size_warning_msg"] = "Include custom background image? It will increase the Upload Size depending what size is your image is.",
+["settings.export_theme.uploading_bg"] = "Uploading background image to Catbox...",
+["settings.export_theme.image_upload_failed_title"] = "Error",
+["settings.export_theme.image_upload_failed_msg"] = "Image upload failed: %s",
+["settings.tabs_icon.title"] = "Tabs Icon",
+["settings.tabs_icon.desc"] = "Change tabs icon",
+["settings.tabs_icon.hint"] = "Enter Icon",
+["settings.tabs_icon.empty_error"] = "Cannot be empty",
+
+["settings.bg_opacity.title"] = "Background Opacity",
+["settings.bg_opacity.desc"] = "Transparency of panels, cards, and header",
+["settings.slider.alpha"] = "Alpha",
+["settings.bg_image_opacity.title"] = "Background Image Opacity",
+["settings.bg_image_opacity.desc"] = "Adjust visibility alpha settings directly using pure integer channels.",
+["settings.bg_image_picker.title"] = "Background Image",
+["settings.bg_image_picker.desc"] = "Tap to modify the absolute file path destination for your custom layout background image",
+["settings.bg_image_picker.path_label"] = "Absolute Image File Path (.jpg or .png):",
+["settings.bg_image_picker.remove_label"] = "Remove BG Image",
+["settings.bg_image_picker.success_title"] = "Successfully",
+["settings.bg_image_picker.removed_msg"] = "Background Image Removed",
+["settings.bg_image_picker.added_msg"] = "Background image added",
+["settings.bg_image_picker.not_found_msg"] = "File not found or read operation refused:\n%s",
+
+["settings.bg_rgb.title"] = "Background RGB",
+["settings.bg_rgb.desc"] = "Hue for panel backgrounds (Header and Card scale automatically)",
+["settings.slider.r"] = "R",
+["settings.slider.g"] = "G",
+["settings.slider.b"] = "B",
+["settings.accent_rgb.title"] = "Accent RGB",
+["settings.accent_rgb.desc"] = "Tint for buttons, toggles, and active cards (muted color auto-derived)",
+["settings.logo_rgb.title"] = "Highlight RGB",
+["settings.logo_rgb.desc"] = "Color for labels, icons, and interactive text (always fully opaque)",
+["settings.sub_rgb.title"] = "Sub-text RGB",
+["settings.sub_rgb.desc"] = "Color for descriptions and inactive tab labels",
+["settings.text_rgb.title"] = "Text RGB",
+["settings.text_rgb.desc"] = "Color for main menu text",
+
+["settings.win_width.title"] = "Menu Width",
+["settings.win_width.desc"] = "Width of the floating menu (%d – %d dp)",
+["settings.slider.width"] = "Width",
+["settings.win_height.title"] = "Menu Height",
+["settings.win_height.desc"] = "Height of the scrollable content area (%d – %d dp)",
+["settings.slider.height"] = "Height",
+
+-- ── modules/tabs/about.lua ────────────────────────────────────────────────────
+["about.about_script.title"] = "About Script",
+["about.about_script.desc"] = "A powerful and highly optimized memory manipulation script built for Hill Climb Racing 2 on the custom GG: ME (GameGuardian: Memory Editor) environment.\n\nDownload ME:\nhttps://github.com/vekendianorg/me/releases/",
+["about.script_owner.title"] = "Script Owner",
+["about.script_owner.desc"] = "- Vekendian Organization (github: vekendianorg)",
+["about.script_dev.title"] = "Script Developer",
+["about.script_dev.desc"] = "- Lazor (github: lazor-git)\n- AMR (github: amr-gt)\n- Erik (github: eomthix)",
+["about.script_translator.title"] = "Script Translator",
+["about.script_translator.desc"] = "- English: Lazor (github: lazor-git)",
+["about.credits.title"] = "Credits",
+["about.credits.desc"] = "- Lazor (github: lazor-git)\n- Lan9118 (discord: lan9118)\n- AMR (github: amr-gt)\n- Erik (github: eomthix)\n- Sr Romero",
+["about.special_thanks.title"] = "Special Thanks",
+["about.special_thanks.desc"] = "- Aryan/KokushiboModz",
+
+-- ── modules/tabs/other.lua ────────────────────────────────────────────────────
+["other.debug_mode.title"] = "Debug Mode",
+["other.debug_mode.desc"] = "Toggle the in-game debug mode",
+["other.debug_mode.enabled"] = "Debug Mode Enabled",
+["other.debug_mode.disabled"] = "Debug Mode Disabled",
+["other.hint.width"] = "Width",
+["other.hint.height"] = "Height",
+["other.resolution.title"] = "Adjust Resolution",
+["other.resolution.desc"] = "Adjust the game width and height (default is 1280x720)",
+["other.resolution.applied"] = "Resolution set to %dx%d",
+["other.resolution_offset.title"] = "Adjust Resolution Offset",
+["other.resolution_offset.desc"] = "Adjust the game width offset and height offset (default is 0x0), best for small resolution in a large screen.",
+["other.resolution_offset.applied"] = "Resolution offset set to %dx%d",
+["other.glsurface_not_found"] = "GLSurfaceView not found",
+
+-- ── modules/tabs/shop.lua ─────────────────────────────────────────────────────
+["shop.free_chest.title"] = "Free Chest",
+["shop.free_chest.desc"] = "Make the chests free in Shop Tab",
+["shop.free_chest.enabled"] = "Free Chest Enabled",
+["shop.free_chest.disabled"] = "Free Chest Disabled",
+["shop.free_purchases.title"] = "Free Purchases",
+["shop.free_purchases.desc"] = "Make some daily deals purchases free in the shop tab (also works for special offers as popup/badges)",
+["shop.free_purchases.progress"] = "%d/%d",
+["shop.free_purchases.success"] = "Free Purchase Successful",
+["shop.change_chest.title"] = "Change Chest",
+["shop.change_chest.desc"] = "Change legendary chest to selected chest",
+["shop.change_chest.changed"] = "Chest changed to %s",
+["shop.change_chest.options"] = {
+    "Common Chest", "Uncommon Chest", "Rare Chest", "Epic Chest",
+    "Champion Chest", "Special Chest 1", "Xmas Chest", "Legendary Chest",
+    "Blue Chest", "VIP Chest 1", "VIP Chest 2", "Video Chest",
+    "Starter Chest", "Special Chest 2", "Fingersoft Chest", "Mega Chest",
+    "Team Spirit Chest", "Style Chest", "Mythic Chest"
+},
+
+-- ── modules/tabs/player.lua ───────────────────────────────────────────────────
+["player.auto_detach.title"] = "Auto Detach",
+["player.auto_detach.desc"] = "Automatically detach parts like the Rally Car roof",
+["player.no_clip.title"] = "No-Clip",
+["player.no_clip.desc"] = "Make your player go through objects without dying (You can go over the finish lines in cups)",
+["player.no_clip.enabled"] = "No-Clip Enabled",
+["player.no_clip.disabled"] = "No-Clip Disabled",
+["player.hide_name.title"] = "Hide Name",
+["player.hide_name.desc"] = "Hide your player name at race",
+["player.hide_name.enabled"] = "Hide Name Enabled",
+["player.hide_name.disabled"] = "Hide Name Disabled",
+["player.hide_flag.title"] = "Hide Flag",
+["player.hide_flag.desc"] = "Hide your player flag at race",
+["player.hide_flag.enabled"] = "Hide Flag Enabled",
+["player.hide_flag.disabled"] = "Hide Flag Disabled",
+["player.zoom.title"] = "Adjust Zoom",
+["player.zoom.desc"] = "Adjust how close or far your camera",
+["player.slider.min"] = "Min",
+["player.slider.max"] = "Max",
+["player.gravity.title"] = "Adjust Gravity",
+["player.gravity.desc"] = "Adjust how strong is the gravity",
+["player.slider.x"] = "X",
+["player.slider.y"] = "Y",
+
+-- ── modules/tabs/adventure.lua ────────────────────────────────────────────────
+["adventure.auto_adventure_chests.title"] = "Auto Adventure Chests (unstable)",
+["adventure.auto_adventure_chests.desc"] = "Automatically level up your adventure chests",
+["adventure.auto_adventure_chests.none_found"] = "No adventure chests found",
+["adventure.auto_adventure_chests.done"] = "Done",
+
+["adventure.set_distance.title"] = "Set Distance",
+["adventure.set_distance.desc"] = "Sets your Adventure race distance to a custom value. Must be in an active race. Higher distance can gain more stars. Max stars at 5000m. (Not a teleport function)",
+["adventure.set_distance.loop_active_title"] = "Set Distance — Loop Active",
+["adventure.set_distance.loop_active_msg"] = "The distance loop is currently running.\nWhat do you want to do?",
+["adventure.set_distance.stop_loop"] = "Stop Loop",
+["adventure.set_distance.keep_running"] = "Keep Running",
+["adventure.set_distance.loop_will_stop"] = "Loop will stop after current tick.",
+["adventure.set_distance.prompt_target"] = "Target distance (meters)",
+["adventure.set_distance.prompt_loop"] = "Loop (auto re-apply)",
+["adventure.set_distance.prompt_interval"] = "Loop interval (ms, min 250)",
+["adventure.set_distance.over_max_title"] = "Distance Warning",
+["adventure.set_distance.over_max_msg"] = "Distance over 5000m won't give you any stars.\n\nThe race will still register the distance, but no star rewards will be given. Continue?",
+["adventure.set_distance.continue_button"] = "Continue",
+["adventure.set_distance.not_in_adventure"] = "Go to Adventure tab and start a race first",
+["adventure.set_distance.start_race_first"] = "Start a race first",
+["adventure.set_distance.applied"] = "Distance set: %sm",
+["adventure.set_distance.loop_stopped"] = "Set Distance loop stopped.",
+["adventure.set_distance.loop_running"] = "Distance loop running — tap Set Distance to stop",
+
+-- ── modules/tabs/cups.lua ─────────────────────────────────────────────────────
+["cups.adjust_countdown.title"] = "Adjust Countdown",
+["cups.adjust_countdown.desc"] = "Adjust the countdown before starting race",
+["cups.slider.seconds"] = "Seconds",
+["cups.adjust_countdown.applied"] = "Countdown adjusted to %ss",
+["cups.auto_win.title"] = "Auto Win",
+["cups.auto_win.desc"] = "Automatically win no matter what your race results is",
+["cups.force_boss.title"] = "Force Boss",
+["cups.force_boss.desc"] = "Force boss always appears",
+["cups.force_cup.title"] = "Force Cup",
+["cups.force_cup.desc"] = "Forces a single cup",
+["cups.force_cup.not_found"] = "Force Cup not found. Try again later.",
+["cups.force_cup.enabled"] = "Force Cup Enabled",
+["cups.force_cup.disabled"] = "Force Cup Disabled",
+["cups.unlimited_tasks.title"] = "Unlimited Tasks",
+["cups.unlimited_tasks.desc"] = "Freeze all tasks as completed and always claimable. Claim rewards repeatedly.",
+["cups.unlimited_tasks.resolve_failed"] = "Failed to resolve task list",
+["cups.unlimited_tasks.none_found"] = "No tasks found",
+["cups.unlimited_tasks.enabled"] = "Unlimited Tasks Enabled",
+["cups.unlimited_tasks.disabled"] = "Unlimited Tasks Disabled",
+["cups.unlimited_tasks.none_to_freeze"] = "No tasks to freeze",
+["cups.rank_points_bonus.title"] = "+498 Rank Points",
+["cups.rank_points_bonus.desc"] = "Make all league tasks gives you 498 points instead of 200 points, also remove other rewards.",
+["cups.rank_points_bonus.none_found"] = "No league tasks found",
+["cups.rank_points_bonus.boosted"] = "Rank points boosted: %s",
+["cups.rank_points_bonus.no_match"] = "No matching league tasks found",
+["cups.rank_points_bonus.nothing_to_restore"] = "Nothing to restore",
+["cups.rank_points_bonus.restored"] = "Restored: %s",
+
+-- ── modules/tabs/event.lua ────────────────────────────────────────────────────
+["event.patch_rewards.title"] = "Event Rewards Patch",
+["event.patch_rewards.desc"] = "Patch the current public event rewards to custom one provided by VOID (require game restart)",
+["event.restore_events.title"] = "Event Rewards Restore",
+["event.restore_events.desc"] = "Delete modified event JSONs to force game server recovery (requires game restart)",
+
+["event.checking_permissions"] = "Checking environment permissions...",
+["event.scanning_files"] = "Scanning active files...",
+["event.decode_rewards_failed"] = "Failed to decode rewards JSON",
+["event.workspace_creation_failed"] = "FATAL: Workspace creation failed: %s",
+["event.workspace_creation_failed_dialog"] = "FATAL: Could not create workspace directory.\n%s",
+["event.file_inaccessible"] = "File inaccessible at path: %s",
+["event.predecrypt_not_found"] = "Pre-decrypt: source not found: %s",
+["event.predecrypt_empty"] = "Pre-decrypt: source is empty (0 bytes): %s",
+["event.decode_active_failed"] = "Failed to decode active_events.json at path: %s",
+["event.no_active_events"] = "No active events found at path: %s",
+["event.cannot_open_active"] = "Cannot open active_events.json at path: %s",
+["event.decrypt_active_failed"] = "Failed to decrypt active_events.json at path: %s",
+["event.root_copy_failed"] = "Root copy failed: %s",
+
+["event.select_events_patch"] = "Select events to patch:\nPath: %s",
+["event.user_cancelled"] = "User cancelled selection for path: %s",
+["event.rewards_unavailable"] = "Embedded rewards not available, skipping patches for path: %s",
+["event.skipped_unreadable"] = "Skipped unreadable event: %s",
+["event.predecrypt_event_not_found"] = "Pre-decrypt: event not found: %s",
+["event.predecrypt_event_empty"] = "Pre-decrypt: event is empty (0 bytes): %s",
+["event.processing_failed"] = "Failed processing %s: %s",
+["event.cannot_open_decrypted"] = "Cannot open decrypted file: %s",
+["event.decrypt_event_failed"] = "Failed to decrypt event: %s",
+["event.loop_crash"] = "Critical file processing loop crash: %s",
+
+["event.success_header"] = "Successfully:",
+["event.success_removed_header"] = "Successfully Removed (Will Restore on Restart):",
+["event.success_item"] = "- %s",
+["event.success_item_json"] = "- %s.json",
+["event.failed_header"] = "Failed:",
+["event.failed_item"] = "- %s",
+
+["event.patch_results_title"] = "Patch Results",
+["event.restore_results_title"] = "Restore Results",
+["event.restart_required_title"] = "Restart Required",
+["event.patch_restart_msg"] = "Game is killed and this script gonna exit, start it again and see the patch effects",
+["event.restore_restart_msg"] = "Game will now close to allow server file synchronization.",
+["event.finishing_tasks_patch"] = "Finishing pending background tasks... Please wait.",
+["event.finishing_tasks_restore"] = "Finishing pending background tasks...",
+["event.patch_failed_msg"] = "Failed to patch, try again.",
+
+["event.select_events_restore"] = "Select files to restore (delete):\nPath: %s",
+["event.delete_failed"] = "Failed to delete %s: %s",
+
+-- ── modules/tabs/account.lua ──────────────────────────────────────────────────
+["account.change_name.title"] = "Change Name",
+["account.change_name.desc"] = "Change your player name",
+["account.change_name.hint"] = "Enter Name",
+["account.change_name.empty"] = "Enter a name first",
+["account.change_name.too_long_title"] = "Name Too Long",
+["account.change_name.too_long_msg"] = "Your name is too long, please shorten it",
+["account.change_name.resolve_failed"] = "Failed to resolve name pointer",
+["account.change_name.applied"] = "Name changed to %s",
+
+["account.change_gp.title"] = "Change Garage Power",
+["account.change_gp.desc"] = "Changes profile garage power (persists if higher). Set to 8 to reset if over max, but only if your actual GP is already fixed under the limit.",
+["account.change_gp.hint"] = "Enter Garage Power",
+["account.change_gp.max_int_title"] = "Max 32bit int Reached",
+["account.change_gp.lower_value"] = "Please lower your value",
+["account.change_gp.too_low_title"] = "Too Low",
+["account.change_gp.higher_value"] = "Please higher your value",
+["account.change_gp.applied"] = "Garage Power has been changed to %s",
+
+["account.fake_unlock.title"] = "Fake Unlock",
+["account.fake_unlock.desc"] = "Unlock all customizations temporarily",
+["account.fake_vip.title"] = "Fake VIP",
+["account.fake_vip.desc"] = "Toggle vip subscription state locally",
+["account.fake_rank.title"] = "Fake Rank",
+["account.fake_rank.desc"] = "Set your rank to fake legendary automatically",
+["account.fake_rank.applied"] = "Fake Rank has been injected.",
+
+
+-- ── modules/tabs/vehicle.lua ──────────────────────────────────────────────────
+["vehicle.parts_slot.title"] = "Adjust Parts Slot",
+["vehicle.parts_slot.desc"] = "Adjust the parts slot for all vehicles",
+["vehicle.parts_slot.slider_title"] = "Slots",
+["vehicle.parts_slot.no_vehicles"] = "No vehicles found",
+["vehicle.parts_slot.applied"] = "Parts slot adjusted: %d vehicles",
+
+["vehicle.unlock_vehicles.title"] = "Unlock Vehicles",
+["vehicle.unlock_vehicles.desc"] = "Unlock all vehicles to be available to purchase with coins",
+["vehicle.unlock_vehicles.no_vehicles"] = "No vehicles found",
+["vehicle.unlock_vehicles.unlocked"] = "Vehicles unlocked: %d",
+["vehicle.unlock_vehicles.none_to_unlock"] = "No vehicles to unlock",
+
+["vehicle.max_vehicles.title"] = "Max Vehicles",
+["vehicle.max_vehicles.desc"] = "Max all unlocked vehicles upgrade levels instantly",
+["vehicle.max_vehicles.no_vehicles"] = "Failed to resolve vehicle list",
+["vehicle.max_vehicles.all_maxed"] = "All vehicles maxed",
+["vehicle.max_vehicles.failed"] = "Failed to max vehicles",
+
+["vehicle.max_mastery.title"] = "Max Mastery",
+["vehicle.max_mastery.desc"] = "Max all unlocked and maxed vehicles masteries instantly.",
+["vehicle.max_mastery.all_maxed"] = "All masteries maxed",
+["vehicle.max_mastery.failed"] = "Failed to max masteries",
+
+["vehicle.max_parts.title"] = "Max Parts",
+["vehicle.max_parts.desc"] = "Max all unlocked parts levels for all vehicles instantly.",
+["vehicle.max_parts.no_vehicles"] = "Failed to resolve vehicle list",
+["vehicle.max_parts.all_maxed"] = "All parts maxed",
+["vehicle.max_parts.failed"] = "Failed to max parts",
+
+["vehicle.common.no_vehicles"] = "No vehicles found",
+["vehicle.common.progress"] = "%d/%d",
+["vehicle.common.resolve_list_failed"] = "Failed to resolve vehicle list",
+["vehicle.common.no_zero_region"] = "No zero region found",
+
+}
+
+end
+
 __vfs['core/env.lua'] = function(...)
 -- core/env.lua — Java/Android environment gate
 -- Loaded before any imports. Calls os.exit() on failure; no return value.
@@ -19160,16 +19660,16 @@ end
 
 if DEVICE_ARCH == "unknown" then
     LOG.warn("Arch", "Architecture unrecognized — ELF e_machine not in ARCH_MAP")
-    showDialog("Architecture Warning",
-        "Your architecture is unknown. Is the lib loaded? What system are you using?",
-        "Proceed Anyway")
+    showDialog(T("arch.warning_title"),
+        T("arch.unknown_arch_msg"),
+        T("common.proceed_anyway"))
 end
 
 if DEVICE_ARCH ~= "arm64-v8a" then
     LOG.warn("Arch", "Non-primary architecture: " .. DEVICE_ARCH .. " — lib patches may not work")
-    showDialog("Architecture Warning",
-        ("Detected: %s\nSome or all lib-patches may not work."):format(DEVICE_ARCH),
-        "Proceed Anyway")
+    showDialog(T("arch.warning_title"),
+        T("arch.non_primary_arch_msg", DEVICE_ARCH),
+        T("common.proceed_anyway"))
 end
 
 
@@ -19186,7 +19686,7 @@ LOG.info("Arch", "Game version: " .. tostring(pkg_version) .. " | Arch: " .. tos
 
 if type(pkg_version) ~= "string" then
     LOG.fatal("Arch", "pkg_version is not a string: " .. type(pkg_version))
-    showDialog("Warning", "Game version unknown. Try again after the game loads.", "OK")
+    showDialog(T("common.warning"), T("arch.unknown_version_msg"), T("common.ok"))
     os.exit(0)
 end
 
@@ -19216,7 +19716,7 @@ end
 
 if not arch_t or not arch_t.default_base then
     LOG.fatal("Arch", "Manifest missing default_base for resolved arch — cannot continue")
-    showDialog("Warning", "Internal error: no base data available for this architecture.", "OK")
+    showDialog(T("common.warning"), T("arch.no_base_data_msg"), T("common.ok"))
     
 end
 
@@ -19699,8 +20199,8 @@ function addArchModule(parent, id, title, desc, mode, extra, patch_or_callback)
     -- No data for this arch → show a disabled placeholder card.
     if not resolved then
         addModule(parent, id .. "_na", title,
-            "Requires " .. arch_list_string(arch_map) .. " device (your device: " .. DEVICE_ARCH .. ")",
-            "ro", "Not Available", nil)
+            T("patches.requires_arch", arch_list_string(arch_map), DEVICE_ARCH),
+            "ro", T("common.not_available"), nil)
         return
     end
 
@@ -19712,9 +20212,9 @@ function addArchModule(parent, id, title, desc, mode, extra, patch_or_callback)
             scheduler:add(function(finish_task)
                 local fail_count = apply_patch(id, resolved, state)
                 if fail_count == 0 then
-                    showToast(title .. (state and " Enabled" or " Disabled"))
+                    showToast(title .. (state and T("patches.suffix_enabled") or T("patches.suffix_disabled")))
                 else
-                    showToast("Failed: " .. fail_count .. " pattern(s) not found")
+                    showToast(T("patches.pattern_not_found", fail_count))
                 end
                 gg.clearResults()
                 finish_task()
@@ -19787,7 +20287,7 @@ function scheduler:_next()
 
     if not ok then
         LOG.error(TAG, "Task crashed: " .. tostring(err))
-        gg.alert("Scheduler Warning: Task crashed -> " .. tostring(err))
+        gg.alert(T("scheduler.task_crashed", tostring(err)))
         self:_next()
     end
 end
@@ -19932,7 +20432,7 @@ end
 function catbox.upload(filePath, fileName)
     if not filePath or filePath == "" then
         if LOG and LOG.warn then LOG.warn(TAG, "Upload Aborted: File path is missing") end
-        return nil, "File path is missing"
+        return nil, T("errors.file_path_missing")
     end
 
     -- Automatically extract filename from path if not provided
@@ -19988,13 +20488,13 @@ function catbox.upload(filePath, fileName)
             return catboxUrl
         else
             conn.disconnect()
-            return nil, "HTTP Error Code: " .. tostring(responseCode)
+            return nil, T("errors.http_error_code", tostring(responseCode))
         end
     end)
 
     if not status then
         if LOG and LOG.error then LOG.error(TAG, "Upload Request Crashed: " .. tostring(res)) end
-        return nil, "Crashed: " .. tostring(res)
+        return nil, T("errors.crashed", tostring(res))
     end
 
     if not res and err then
@@ -20010,12 +20510,12 @@ end
 function catbox.download(fileUrl, destPath)
     if not fileUrl or fileUrl == "" then
         if LOG and LOG.warn then LOG.warn(TAG, "Download Aborted: URL is missing") end
-        return nil, "URL is missing"
+        return nil, T("errors.download_url_missing")
     end
     
     if not destPath or destPath == "" then
         if LOG and LOG.warn then LOG.warn(TAG, "Download Aborted: Destination path missing") end
-        return nil, "Destination path is missing"
+        return nil, T("errors.dest_path_missing")
     end
 
     local status, res, err = pcall(function()
@@ -20048,13 +20548,13 @@ function catbox.download(fileUrl, destPath)
             return destPath
         else
             conn.disconnect()
-            return nil, "HTTP Error Code: " .. tostring(responseCode)
+            return nil, T("errors.http_error_code", tostring(responseCode))
         end
     end)
 
     if not status then
         if LOG and LOG.error then LOG.error(TAG, "Download Request Crashed: " .. tostring(res)) end
-        return nil, "Crashed: " .. tostring(res)
+        return nil, T("errors.crashed", tostring(res))
     end
 
     if not res and err then
@@ -20266,6 +20766,137 @@ return json
 
 end
 
+__vfs['core/utils/lang.lua'] = function(...)
+--[[
+  core/utils/lang.lua — Multi-language engine
+
+  Loads configs/lang/<code>.lua (a flat table of dotted keys -> strings)
+  and exposes a global T(key, ...) lookup used by every user-facing string
+  in the project. English (configs/lang/en.lua) is always loaded as the
+  fallback table so a partially-translated language file never produces
+  blank UI text — missing keys silently fall back to English, then to the
+  raw key itself if even English is missing it (should never happen).
+
+  Sets globals:
+    T(key, ...)        -- string lookup + optional string.format args
+    setLanguage(code)   -- switch active language at runtime, persists choice
+    LANG_CODE           -- currently active language code, e.g. "en"
+    LANG_AVAILABLE       -- ordered list of { code, name } for the spinner UI
+
+  To add a new language:
+    1. Copy configs/lang/en.lua to configs/lang/<code>.lua and translate
+       every value (keep the %s/%d placeholders intact).
+    2. Add { code = "<code>", name = "<Native Name>" } to AVAILABLE below.
+  That's it — settings.lua's Language spinner picks it up automatically.
+]]
+
+-- ── Available languages ──────────────────────────────────────────────────────
+-- "name" is shown in the Settings → Language picker, in that language's own
+-- script (e.g. "Español", not "Spanish") so users can find their language
+-- without needing to read English first.
+
+local AVAILABLE = {
+    { code = "en", name = "English" },
+    -- more languages soon
+}
+
+-- ── Safe, non-fatal module loader ────────────────────────────────────────────
+-- main.lua's global loadModule() is fatal-on-failure (gg.alert + os.exit),
+-- which is correct for core framework files but wrong here: a missing or
+-- broken language file should silently fall back to English, never crash
+-- the script. This loader returns nil instead of exiting.
+local function tryLoadLangFile(code)
+    local path  = script_dir .. "/configs/lang/" .. code .. ".lua"
+    local chunk = loadfile(path)
+    if not chunk then return nil end
+
+    local ok, result = _safePcall(chunk)
+    if not ok or type(result) ~= "table" then return nil end
+    return result
+end
+
+local EN = tryLoadLangFile("en")
+if not EN then
+    -- English itself is the framework's hard dependency; if it's missing
+    -- something is badly wrong with the install, but we still shouldn't
+    -- crash the whole script over missing translations.
+    LOG.error("Lang", "configs/lang/en.lua failed to load — falling back to raw keys")
+    EN = {}
+end
+
+local ACTIVE      = EN
+local ACTIVE_CODE = "en"
+
+local saved_code = memory:load_global("language")
+if saved_code and saved_code ~= "en" then
+    local loaded = tryLoadLangFile(saved_code)
+    if loaded then
+        ACTIVE      = loaded
+        ACTIVE_CODE = saved_code
+    else
+        LOG.warn("Lang", "Saved language '" .. tostring(saved_code) .. "' failed to load — using English")
+    end
+end
+
+LANG_CODE      = ACTIVE_CODE
+LANG_AVAILABLE = AVAILABLE
+
+---Looks up a translated string by dotted key, with optional string.format args.
+---Falls back to English on a missing key in the active language, then to the
+---bare key string if even English doesn't have it (so missing translations
+---are visibly obvious in testing rather than silently blank).
+---@param key string Dotted key, e.g. "settings.auto_update.title"
+---@param ... any Optional string.format arguments
+---@return any string (or table, for list-valued entries like spinner options)
+function T(key, ...)
+    local entry = ACTIVE[key]
+    if entry == nil then entry = EN[key] end
+    if entry == nil then
+        LOG.warn("Lang", "Missing translation key: " .. tostring(key))
+        return key
+    end
+
+    local n = select("#", ...)
+    if n > 0 and type(entry) == "string" then
+        local ok, formatted = pcall(string.format, entry, ...)
+        if ok then return formatted end
+        LOG.warn("Lang", "Format failed for key: " .. tostring(key))
+    end
+
+    return entry
+end
+
+---Switches the active language at runtime and persists the choice.
+---Returns true on success, false if the language file failed to load
+---(active language is left unchanged on failure).
+---@param code string Language code, e.g. "en"
+---@return boolean
+function setLanguage(code)
+    if code == ACTIVE_CODE then return true end
+
+    if code == "en" then
+        ACTIVE, ACTIVE_CODE = EN, "en"
+        LANG_CODE = "en"
+        memory:save_global("language", "en")
+        return true
+    end
+
+    local loaded = tryLoadLangFile(code)
+    if not loaded then
+        LOG.warn("Lang", "setLanguage failed — could not load: " .. tostring(code))
+        return false
+    end
+
+    ACTIVE, ACTIVE_CODE = loaded, code
+    LANG_CODE = code
+    memory:save_global("language", code)
+    return true
+end
+
+return true
+
+end
+
 __vfs['core/utils/loader.lua'] = function(...)
 -- core/utils/loader.lua — Lazy module registry
 -- Usage:
@@ -20372,13 +21003,13 @@ function paste.post(content)
             return pasteUrl:gsub("%s+", "")
         else
             conn.disconnect()
-            return nil, "HTTP Error Code: " .. tostring(responseCode)
+            return nil, T("errors.http_error_code", tostring(responseCode))
         end
     end)
 
     if not status then
         LOG.error(TAG, "POST Request Crashed: " .. tostring(res))
-        return nil, tostring(res)
+        return nil, T("errors.crashed", tostring(res))
     end
 
     if not res and err then
@@ -20391,7 +21022,7 @@ end
 function paste.get(pasteUrl)
     if not pasteUrl or pasteUrl == "" then
         LOG.warn(TAG, "GET Aborted: URL parameter is missing or empty")
-        return nil, "URL parameter is missing or empty"
+        return nil, T("errors.url_missing")
     end
 
     -- Wrap execution to handle invalid URLs or connection dropping out mid-stream
@@ -20425,14 +21056,14 @@ function paste.get(pasteUrl)
             return content
         else
             conn.disconnect()
-            return nil, "HTTP Error Code: " .. tostring(responseCode)
+            return nil, T("errors.http_error_code", tostring(responseCode))
         end
     end)
 
     -- If pcall caught an exception (e.g., MalformedURLException)
     if not status then
         LOG.error(TAG, "GET Request Crashed: " .. tostring(res))
-        return nil, tostring(res)
+        return nil, T("errors.crashed", tostring(res))
     end
 
     if not res and err then
@@ -20595,26 +21226,29 @@ __vfs['modules/registry.lua'] = function(...)
 --   3. Add icons to _TAB_ICONS in ui/ui.lua.
 
 local TAB_DEFS = {
-    -- { id, display_name }
-    { "separator", "GAME MENU" },
-    { "account", "ACCOUNT MENU" },
-    { "player", "PLAYER MENU" },
-    { "adventure", "ADVENTURE MENU" },
-    { "cups", "CUPS MENU" },
-    { "team", "TEAM MENU" },
-    { "event", "EVENT MENU" },
-    { "creative", "CREATIVE MENU" },
-    { "shop", "SHOP MENU" },
-    { "other", "OTHER MENU" },
-    { "separator", "SCRIPT MENU" },
-    { "settings", "SETTINGS" },
-    { "about", "ABOUT" },
+    -- { id, display_name_key }
+    { "separator", "tabs.sep_game" },
+    { "account", "tabs.account" },
+    { "vehicle", "tabs.vehicle" },
+    { "player", "tabs.player" },
+    { "adventure", "tabs.adventure" },
+    { "cups", "tabs.cups" },
+    { "team", "tabs.team" },
+    { "event", "tabs.event" },
+    { "creative", "tabs.creative" },
+    { "shop", "tabs.shop" },
+    { "other", "tabs.other" },
+    { "separator", "tabs.sep_script" },
+    { "settings", "tabs.settings" },
+    { "about", "tabs.about" },
 }
 
 -- tabHandlers: ordered list of { id, display_name } used by ui.lua for the sidebar.
+-- display_name is resolved through T() here (not at TAB_DEFS-literal time) so
+-- it always reflects the language active when the menu is (re)built.
 local tabHandlers = {}
 for _, def in ipairs(TAB_DEFS) do
-    tabHandlers[#tabHandlers + 1] = def
+    tabHandlers[#tabHandlers + 1] = { def[1], T(def[2]) }
 end
 
 -- loadCache: id → render function on success, false on permanent failure.
@@ -20632,7 +21266,7 @@ for _, def in ipairs(TAB_DEFS) do
         -- Previously failed — show a permanent error card.
         if loadCache[id] == false then
             addModule(container, id .. "_err", id,
-                "Module failed to load. Check logs for details.", "ro", "Error", nil)
+                T("registry.module_load_failed"), "ro", T("registry.error"), nil)
             return
         end
 
@@ -20647,7 +21281,7 @@ for _, def in ipairs(TAB_DEFS) do
                 LOG.error("Registry", "Failed to load module [" .. id .. "]: " .. tostring(result))
                 loadCache[id] = false
                 addModule(container, id .. "_err", id,
-                    "Module failed to load. Check logs for details.", "ro", "Error", nil)
+                    T("registry.module_load_failed"), "ro", T("registry.error"), nil)
                 return
             end
         end
@@ -20657,7 +21291,7 @@ for _, def in ipairs(TAB_DEFS) do
         if not ok then
             LOG.error("Registry", "Runtime error in module [" .. id .. "]: " .. tostring(err))
             addModule(container, id .. "_err", id,
-                "Runtime error: " .. tostring(err), "ro", "Error", nil)
+                T("registry.module_runtime_error", tostring(err)), "ro", T("registry.error"), nil)
         end
     end
 end
@@ -20668,11 +21302,14 @@ end
 
 __vfs['modules/tabs/about.lua'] = function(...)
 return function(container)
-    addModule(container, "about_script", "About Script", "A powerful and highly optimized memory manipulation script built for Hill Climb Racing 2 on the custom GG: ME (GameGuardian: Memory Editor) environment.\n\nDownload ME:\nhttps://github.com/vekendianorg/me/releases/", "ro", " ", nil)
-    addModule(container, "script_owner", "Script Owner", "- Vekendian Organization (github: vekendianorg)", "ro", " ", nil)
-    addModule(container, "script_dev", "Script Developer", "- Lazor (github: lazor-git)\n- AMR (github: amr-gt)\n- Erik (github: eomthix)", "ro", " ", nil)
-    addModule(container, "credits", "Credits", "- Lazor (github: lazor-git)\n- Lan9118 (discord: lan9118)\n- AMR (github: amr-gt)\n- Erik (github: eomthix)\n- Sr Romero", "ro", " ", nil)
-    addModule(container, "special_thanks", "Special Thanks", "- Aryan/KokushiboModz", "ro", " ", nil)
+    local function t(key, ...) return T("about." .. key, ...) end
+
+    addModule(container, "about_script", t("about_script.title"), t("about_script.desc"), "ro", " ", nil)
+    addModule(container, "script_owner", t("script_owner.title"), t("script_owner.desc"), "ro", " ", nil)
+    addModule(container, "script_dev", t("script_dev.title"), t("script_dev.desc"), "ro", " ", nil)
+    addModule(container, "script_translator", t("script_translator.title"), t("script_translator.desc"), "ro", " ", nil)
+    addModule(container, "credits", t("credits.title"), t("credits.desc"), "ro", " ", nil)
+    addModule(container, "special_thanks", t("special_thanks.title"), t("special_thanks.desc"), "ro", " ", nil)
     
 end
 
@@ -20681,47 +21318,22 @@ end
 __vfs['modules/tabs/account.lua'] = function(...)
 --[[
   Account Tab - Player profile modifications
-  Features: Change player name, Fake VIP, Fake Rank,
-            Max Vehicles, Max Mastery, Max Parts
+  Features: Change player name, Fake VIP, Fake Rank
   
   @module callback Receives container View to populate with modules
 ]]
 
--- Part name → max upgrade level. Defined at module scope so it is
--- built once on first tab load, not rebuilt on every render call.
-local PART_MAX_LEVEL = {
-    start_boost           = 10,
-    perfect_landing_boost = 7,
-    jump                  = 10,
-    wheelie_boost         = 10,
-    afterburner           = 7,
-    fume_boost            = 10,
-    thrusters             = 4,
-    glide                 = 15,
-    fuel_boost            = 4,
-    coin_boost            = 4,
-    winter_tyres          = 15,
-    magnet                = 15,
-    spoiler               = 7,
-    turbo_boost           = 7,
-    flip_speed_boost      = 10,
-    nitro                 = 4,
-    air_control           = 15,
-    heavyweight           = 15,
-    rollcage              = 15,
-    echo                  = 3,
-    amplifier             = 3,
-}
-
 return function(container)
-    addModule(container, "change_name", "Change Name", "Change your player name", "input", {
-        { hint = "Enter Name", value = "", type = "text" }
+    local function t(key, ...) return T("account." .. key, ...) end
+
+    addModule(container, "change_name", t("change_name.title"), t("change_name.desc"), "input", {
+        { hint = t("change_name.hint"), value = "", type = "text" }
     }, function(done, val)
         scheduler:add(function(finishTask)
             local TAG = "ChangeName"
 
             if val == nil or val == "" then
-                showToast("Enter a name first")
+                showToast(t("change_name.empty"))
                 LOG.warn(TAG, "Empty input — aborted")
                 finishTask(); done(); return
             end
@@ -20735,7 +21347,7 @@ return function(container)
                 local encoded = utf8.char(code)
                 local bytes   = { encoded:byte(1, -1) }
                 if byteCount + #bytes > 12 then
-                    showDialog("Name Too Long", "Your name is too long, please shorten it", "OK")
+                    showDialog(t("change_name.too_long_title"), t("change_name.too_long_msg"), T("common.ok"))
                     LOG.warn(TAG, "Name exceeds 12 bytes — aborted")
                     finishTask(); done(); return
                 end
@@ -20749,7 +21361,7 @@ return function(container)
 
             local namePtr = gg.getValues({{ address = BaseGameStatus + 0x38, flags = 32 }})[1].value
             if not namePtr or namePtr == 0 then
-                showToast("Failed to resolve name pointer")
+                showToast(t("change_name.resolve_failed"))
                 LOG.fatal(TAG, "namePtr is nil or 0")
                 finishTask(); done(); return
             end
@@ -20760,24 +21372,24 @@ return function(container)
             end
 
             gg.setValues(writes)
-            showToast("Name changed to " .. val)
+            showToast(t("change_name.applied", val))
             LOG.info(TAG, string.format("Done. byteCount=%d namePtr=0x%X", byteCount, namePtr))
             finishTask()
             done()
         end)
     end)
     
-    addModule(container, "change_gp", "Change Garage Power", "Changes profile garage power (persists if higher). Set to 8 to reset if over max, but only if your actual GP is already fixed under the limit.", "input", {
-        { hint = "Enter Garage Power", value = "8", type = "number" }
+    addModule(container, "change_gp", t("change_gp.title"), t("change_gp.desc"), "input", {
+        { hint = t("change_gp.hint"), value = "8", type = "number" }
     }, function(done, val)
         scheduler:add(function(finishTask)
             if tonumber(val) > 2147483647 then
-                showDialog("Max 32bit int Reached", "Please lower your value", {"OK"})
+                showDialog(t("change_gp.max_int_title"), t("change_gp.lower_value"), {T("common.ok")})
                 finishTask()
                 done()
                 return
             elseif tonumber(val) < 8 then
-                showDialog("Too Low", "Please higher your value", {"OK"})
+                showDialog(t("change_gp.too_low_title"), t("change_gp.higher_value"), {T("common.ok")})
                 finishTask()
                 done()
                 return
@@ -20787,393 +21399,26 @@ return function(container)
                 { address = BaseGameStatus + 0x4F4, flags = 4, value = val }
             })
             
-            showToast("Garage Power has been changed to " .. tostring(val))
+            showToast(t("change_gp.applied", tostring(val)))
             finishTask()
             done()
         end)
     end)
     
-    addArchModule(container, "fake_unlock", "Fake Unlock", "Unlock all customizations temporarily", "switch", nil, aobs.fakeUnlock)
+    addArchModule(container, "fake_unlock", t("fake_unlock.title"), t("fake_unlock.desc"), "switch", nil, aobs.fakeUnlock)
     
-    addArchModule(container, "fake_vip", "Fake VIP", "Toggle vip subscription state locally", "switch", nil, aobs.fakeVip)
+    addArchModule(container, "fake_vip", t("fake_vip.title"), t("fake_vip.desc"), "switch", nil, aobs.fakeVip)
     
-    addModule(container, "fake_rank", "Fake Rank", "Set your rank to fake legendary automatically", "button", nil, function(done)
+    addModule(container, "fake_rank", t("fake_rank.title"), t("fake_rank.desc"), "button", nil, function(done)
         scheduler:add(function(finishTask)
             gg.setValues({
                 { address = BaseGameStatus + 0x200, flags = 16, value = 50.0 }
             })
-            showToast("Fake Rank has been injected.")
+            showToast(t("fake_rank.applied"))
             finishTask()
             done()
         end)
     end)
-    
-    addModule(container, "unlock_vehicles", "Unlock Vehicles", "Unlock all vehicles to be available to purchase with coins", "button", nil,
-    function(done)
-        local TAG = "UnlockVehicles"
-        LOG.info(TAG, "Module activated.")
-
-        scheduler:add(function(finishTask)
-            gg.clearResults()
-            gg.setRanges(BaseRegion)
-            gg.searchNumber("h 18 48 49 4C 4C 20 43 4C 49 4D 42 45", 1)
-            gg.refineNumber("h 18", 1)
-            local anchorResults = gg.getResults(gg.getResultsCount())
-            gg.clearResults()
-
-            if #anchorResults == 0 then
-                showToast("No vehicles found")
-                LOG.warn(TAG, "Anchor search returned 0 results.")
-                finishTask()
-                done()
-                return
-            end
-
-            local anchor = anchorResults[1]
-            LOG.dbg(TAG, string.format("Anchor found at 0x%X", anchor.address))
-
-            local pattern = gg.getValues({
-                { address = anchor.address - 0x20, flags = 4 },
-                { address = anchor.address - 0x8,  flags = 4 }
-            })
-
-            if not pattern or not pattern[1] or not pattern[2] then
-                showToast("Failed to read vehicle anchor")
-                LOG.warn(TAG, "Pattern read failed.")
-                finishTask()
-                done()
-                return
-            end
-
-            if pattern[1].value ~= 0x65656A08 or pattern[2].value ~= 0x403147AE then
-                showToast("Failed to find vehicle anchor")
-                LOG.warn(TAG, string.format("Pattern mismatch: 0x%X 0x%X",
-                    pattern[1].value, pattern[2].value))
-                finishTask()
-                done()
-                return
-            end
-
-            LOG.dbg(TAG, "Pattern valid. Searching vehicle list refs...")
-            gg.clearResults()
-            gg.searchNumber(pattern[1].address, 32)
-            local refResults = gg.getResults(gg.getResultsCount())
-            gg.clearResults()
-
-            if not refResults or #refResults == 0 then
-                showToast("No vehicle refs found")
-                LOG.warn(TAG, "Vehicle list ref search returned 0 results.")
-                finishTask()
-                done()
-                return
-            end
-
-            LOG.dbg(TAG, "Vehicle list refs found: " .. tostring(#refResults))
-
-            local successCount = 0
-            local written = {}  -- ← outside both loops
-            
-            for refIdx, ref in ipairs(refResults) do
-                local vehicleIdx = 0
-            
-                while true do
-                    local ptrRead = gg.getValues({{
-                        address = ref.address + vehicleIdx * 8,
-                        flags   = 32
-                    }})
-            
-                    if not ptrRead or not ptrRead[1] or ptrRead[1].value == 0 then
-                        LOG.dbg(TAG, string.format("ref[%d] vehicleIdx[%d] ptr nil/0, stopping", refIdx, vehicleIdx))
-                        break
-                    end
-            
-                    local vehiclePtr = ptrRead[1].value
-            
-                    local deepPtrRead = gg.getValues({{
-                        address = vehiclePtr + 0x530,
-                        flags   = 32
-                    }})
-            
-                    if not deepPtrRead or not deepPtrRead[1] or deepPtrRead[1].value == 0 then
-                        LOG.dbg(TAG, string.format("ref[%d] vehicleIdx[%d] +0x530 failed, stopping", refIdx, vehicleIdx))
-                        break
-                    end
-            
-                    local deepPtr = deepPtrRead[1].value
-            
-                    local verify = gg.getValues({
-                        { address = deepPtr + 0x0, flags = 4 },
-                        { address = deepPtr + 0x4, flags = 4 },
-                        { address = deepPtr + 0x8, flags = 4 },
-                        { address = deepPtr + 0xC, flags = 4 }
-                    })
-            
-                    if not verify or #verify ~= 4
-                    or verify[1].value ~= 0
-                    or verify[2].value ~= 18
-                    or verify[3].value ~= 53 then
-                        LOG.dbg(TAG, string.format("ref[%d] vehicleIdx[%d] structure mismatch, stopping", refIdx, vehicleIdx))
-                        break
-                    end
-            
-                    if written[vehiclePtr] then
-                        LOG.dbg(TAG, string.format("ref[%d] vehicleIdx[%d] already written, skipping", refIdx, vehicleIdx))
-                        vehicleIdx = vehicleIdx + 1
-                        goto continueVehicle
-                    end
-            
-                    LOG.info(TAG, string.format("ref[%d] vehicleIdx[%d] verified! Writing unlock at vehiclePtr=0x%X", refIdx, vehicleIdx, vehiclePtr))
-            
-                    local edits = {
-                        { address = vehiclePtr + 0x110, flags = 4, value = 1 }
-                    }
-                    for off = 0x114, 0x14C, 4 do
-                        table.insert(edits, { address = vehiclePtr + off, flags = 4, value = 0 })
-                    end
-                    gg.setValues(edits)
-            
-                    written[vehiclePtr] = true
-                    successCount = successCount + 1
-                    vehicleIdx = vehicleIdx + 1
-            
-                    ::continueVehicle::
-                end
-            end
-
-            LOG.info(TAG, "Done. Success: " .. tostring(successCount))
-
-            if successCount > 0 then
-                showToast("Vehicles unlocked: " .. tostring(successCount))
-            else
-                showToast("No vehicles to unlock")
-            end
-
-            finishTask()
-            done()
-        end)
-    end)
-
-    addModule(container, "max_vehicles", "Max Vehicles", "Max all unlocked vehicles upgrade levels instantly", "button", nil,
-    function(done)
-        local TAG = "MaxVehicles"
-        LOG.info(TAG, "Module activated.")
-
-        scheduler:add(function(finishTask)
-            local vehicleListPtr = gg.getValues({{ address = BaseGameStatus + 0xB8, flags = 32 }})[1].value
-            local totalVehicles  = gg.getValues({{ address = BaseGameStatus + 0xC0, flags = 4  }})[1].value
-
-            if not vehicleListPtr or vehicleListPtr == 0 then
-                showToast("Failed to resolve vehicle list")
-                LOG.fatal(TAG, "vehicleListPtr is nil or 0.")
-                finishTask(); done(); return
-            end
-
-            LOG.dbg(TAG, "Total vehicles: " .. tostring(totalVehicles))
-
-            local upgradeList = {}
-
-            for i = 0, totalVehicles - 1 do
-                local vehiclePtr = gg.getValues({{ address = vehicleListPtr + i * 8, flags = 32 }})[1].value
-                if vehiclePtr and vehiclePtr ~= 0 then
-                    local namePtr     = gg.getValues({{ address = vehiclePtr + 0x18, flags = 32 }})[1].value
-                    local vehicleName = (namePtr and namePtr ~= 0) and readString(namePtr + 1) or "unknown"
-                    local upgradeSlots = vehicleName:find("lowrider") and 5 or 4
-
-                    local upgradeListPtr = gg.getValues({{ address = vehiclePtr + 0x20, flags = 32 }})[1].value
-                    if upgradeListPtr and upgradeListPtr ~= 0 then
-                        for j = 0, upgradeSlots - 1 do
-                            local upgradePtr = gg.getValues({{ address = upgradeListPtr + j * 8, flags = 32 }})[1].value
-                            if upgradePtr and upgradePtr ~= 0 then
-                                table.insert(upgradeList, { address = upgradePtr + 0x20, flags = 4, value = 19 })
-                                table.insert(upgradeList, { address = upgradePtr + 0x24, flags = 4, value = 19 })
-                            end
-                        end
-                        LOG.dbg(TAG, "[" .. vehicleName .. "] queued " .. tostring(upgradeSlots) .. " upgrade slots.")
-                    end
-                end
-                showToast(tostring(i+1) .. "/" .. tostring(totalVehicles), true)
-            end
-
-            if #upgradeList > 0 then
-                gg.setValues(upgradeList)
-                showToast("All vehicles maxed")
-                LOG.info(TAG, "Done. Total writes: " .. tostring(#upgradeList))
-            else
-                showToast("Failed to max vehicles")
-                LOG.warn(TAG, "upgradeList is empty.")
-            end
-
-            finishTask()
-            done()
-        end)
-    end)
-
-    addModule(container, "max_mastery", "Max Mastery", "Max all unlocked and maxed vehicles masteries instantly.", "button", nil,
-    function(done)
-        local TAG = "MaxMastery"
-        LOG.info(TAG, "Module activated.")
-
-        scheduler:add(function(finishTask)
-            local masteryTimestamp = os.time(os.date("!*t"))
-            local vehicleListPtr   = gg.getValues({{ address = BaseGameStatus + 0xB8, flags = 32 }})[1].value
-            local totalVehicles    = gg.getValues({{ address = BaseGameStatus + 0xC0, flags = 4  }})[1].value
-
-            if not vehicleListPtr or vehicleListPtr == 0 then
-                showToast("Failed to max masteries")
-                LOG.fatal(TAG, "vehicleListPtr is nil or 0.")
-                finishTask(); done(); return
-            end
-
-            if not totalVehicles or totalVehicles == 0 then
-                showToast("Failed to max masteries")
-                LOG.fatal(TAG, "totalVehicles is nil or 0.")
-                finishTask(); done(); return
-            end
-
-            LOG.dbg(TAG, "Total vehicles: " .. tostring(totalVehicles))
-
-            local successCount = 0
-            local skipCount    = 0
-
-            for i = 1, totalVehicles do
-                local vehiclePtr = gg.getValues({{ address = vehicleListPtr + (i - 1) * 8, flags = 32 }})[1].value
-                if not vehiclePtr or vehiclePtr == 0 then
-                    skipCount = skipCount + 1; goto continue
-                end
-
-                local namePtr     = gg.getValues({{ address = vehiclePtr + 0x18, flags = 32 }})[1].value
-                local vehicleName = (namePtr and namePtr ~= 0) and readString(namePtr + 1) or "Unknown"
-
-                local masteryPtr = gg.getValues({{ address = vehiclePtr + 0x120, flags = 32 }})[1].value
-                if not masteryPtr or masteryPtr == 0 then
-                    LOG.dbg(TAG, "[" .. vehicleName .. "] masteryPtr is 0. Skipping (not maxed).")
-                    skipCount = skipCount + 1; goto continue
-                end
-
-                -- Read up to 4 CA pointers
-                local ptrReads  = {}
-                for j = 0, 3 do
-                    table.insert(ptrReads, { address = masteryPtr + j * 8, flags = 32 })
-                end
-                local rawPtrs   = gg.getValues(ptrReads)
-                local validPtrs = {}
-                if rawPtrs then
-                    for _, p in ipairs(rawPtrs) do
-                        if p and p.value and p.value ~= 0 then
-                            table.insert(validPtrs, p.value)
-                        end
-                    end
-                end
-
-                if #validPtrs == 0 then
-                    LOG.dbg(TAG, "[" .. vehicleName .. "] No valid CA pointers. Skipping.")
-                    skipCount = skipCount + 1; goto continue
-                end
-
-                local writes = {}
-                for _, p in ipairs(validPtrs) do
-                    table.insert(writes, { address = p + 0x18, flags = 4, value = 65793 })
-                    table.insert(writes, { address = p + 0x1C, flags = 4, value = masteryTimestamp })
-                end
-
-                gg.setValues({
-                    { address = vehiclePtr + 0x120, flags = 32, value = masteryPtr },
-                    { address = vehiclePtr + 0x128, flags = 4,  value = 4 },
-                    { address = vehiclePtr + 0x12C, flags = 4,  value = 4 },
-                    { address = vehiclePtr + 0x130, flags = 4,  value = 4 },
-                })
-                gg.setValues(writes)
-
-                LOG.info(TAG, "[" .. vehicleName .. "] Mastery maxed.")
-                successCount = successCount + 1
-                
-                showToast(tostring(i) .. "/" .. tostring(totalVehicles), true)
-                ::continue::
-            end
-
-            LOG.info(TAG, string.format("Complete. Success: %d | Skipped: %d", successCount, skipCount))
-            showToast(successCount > 0 and "All masteries maxed" or "Failed to max masteries")
-            finishTask()
-            done()
-        end)
-    end)
-
-    addModule(container, "max_parts", "Max Parts", "Max all unlocked parts levels for all vehicles instantly.", "button", nil,
-    function(done)
-        local TAG = "MaxParts"
-        LOG.info(TAG, "Module activated.")
-
-        scheduler:add(function(finishTask)
-            local vehicleListPtr = gg.getValues({{ address = BaseGameStatus + 0xB8, flags = 32 }})[1].value
-            local totalVehicles  = gg.getValues({{ address = BaseGameStatus + 0xC0, flags = 4  }})[1].value
-
-            if not vehicleListPtr or vehicleListPtr == 0 then
-                showToast("Failed to resolve vehicle list")
-                LOG.fatal(TAG, "vehicleListPtr is nil or 0.")
-                finishTask(); done(); return
-            end
-
-            LOG.dbg(TAG, "Total vehicles: " .. tostring(totalVehicles))
-
-            local upgradeList = {}
-
-            for i = 0, totalVehicles - 1 do
-                local vehiclePtr = gg.getValues({{ address = vehicleListPtr + i * 8, flags = 32 }})[1].value
-                if vehiclePtr and vehiclePtr ~= 0 then
-                    local partsListPtr = gg.getValues({{ address = vehiclePtr + 0x58, flags = 32 }})[1].value
-                    local totalParts   = gg.getValues({{ address = vehiclePtr + 0x60, flags = 4  }})[1].value
-
-                    if partsListPtr and partsListPtr ~= 0 and totalParts and totalParts > 0 then
-                        for j = 0, totalParts - 1 do
-                            local partPtr = gg.getValues({{ address = partsListPtr + j * 8, flags = 32 }})[1].value
-                            if partPtr and partPtr ~= 0 then
-                                local namePtr  = gg.getValues({{ address = partPtr + 0x18, flags = 32 }})[1].value
-                                local partName = "unknown"
-
-                                if namePtr and namePtr ~= 0 then
-                                    local header = gg.getValues({{ address = namePtr, flags = 4 }})[1].value
-                                    if header == 49 then
-                                        local namePtr2 = gg.getValues({{ address = namePtr + 0x10, flags = 32 }})[1].value
-                                        partName = namePtr2 ~= 0 and readString(namePtr2 + 1) or "unknown"
-                                    else
-                                        partName = readString(namePtr + 1)
-                                    end
-                                end
-
-                                local maxLevel = 3 -- fallback for unrecognised parts
-                                
-                                for key, lvl in pairs(PART_MAX_LEVEL) do
-                                    -- '$' anchors the search strictly to the end of the string
-                                    if partName:find(key .. "$") then 
-                                        maxLevel = lvl
-                                        break 
-                                    end
-                                end
-                                
-                                LOG.dbg(TAG, "[" .. partName .. "] max level: " .. tostring(maxLevel))
-                                table.insert(upgradeList, { address = partPtr + 0x20, flags = 4, value = maxLevel })
-                                table.insert(upgradeList, { address = partPtr + 0x34, flags = 4, value = maxLevel })
-                            end
-                        end
-                    end
-                end
-                showToast(tostring(i+1) .. "/" .. tostring(totalVehicles), true)
-            end
-
-            if #upgradeList > 0 then
-                gg.setValues(upgradeList)
-                showToast("All parts maxed")
-                LOG.info(TAG, "Done. Total writes: " .. tostring(#upgradeList))
-            else
-                showToast("Failed to max parts")
-                LOG.warn(TAG, "upgradeList is empty.")
-            end
-
-            finishTask()
-            done()
-        end)
-    end)
-
 end
 
 end
@@ -21187,7 +21432,9 @@ __vfs['modules/tabs/adventure.lua'] = function(...)
 ]]
 
 return function(container)
-    addModule(container, "auto_adventure_chests", "Auto Adventure Chests (unstable)", "Automatically level up your adventure chests", "button", nil,
+    local function t(key, ...) return T("adventure." .. key, ...) end
+
+    addModule(container, "auto_adventure_chests", t("auto_adventure_chests.title"), t("auto_adventure_chests.desc"), "button", nil,
     function(done)
         local TAG = "AutoAdventureChests"
         LOG.info(TAG, "Module activated.")
@@ -21199,7 +21446,7 @@ return function(container)
             local res = gg.getResults(gg.getResultsCount())
 
             if #res == 0 then
-                showToast("No adventure chests found")
+                showToast(t("auto_adventure_chests.none_found"))
                 LOG.warn(TAG, "Search returned 0 results.")
                 finishTask()
                 done()
@@ -21212,36 +21459,36 @@ return function(container)
             gg.clearResults()
 
             LOG.info(TAG, "Done.")
-            showToast("Done")
+            showToast(t("auto_adventure_chests.done"))
 
             finishTask()
             done()
         end)
     end)
     
-    addArchModule(container, "set_distance", "Set Distance", "Sets your Adventure race distance to a custom value. Must be in an active race. Higher distance can gain more stars. Max stars at 5000m. (Not a teleport function)", "button", nil,
+    addArchModule(container, "set_distance", t("set_distance.title"), t("set_distance.desc"), "button", nil,
     function(done)
         local TAG = "SetDistance"
         LOG.info(TAG, "Module activated.")
         
         if memory:load("set_distance_loop") then
             local action = showDialog(
-                "Set Distance — Loop Active",
-                "The distance loop is currently running.\nWhat do you want to do?",
-                {"Stop Loop"}, {"Keep Running"}
+                t("set_distance.loop_active_title"),
+                t("set_distance.loop_active_msg"),
+                {t("set_distance.stop_loop")}, {t("set_distance.keep_running")}
             )
             if action == 1 then
                 memory:save("set_distance_loop", false)
-                showToast("Loop will stop after current tick.")
+                showToast(t("set_distance.loop_will_stop"))
             end
             done()
             return
         end
 
-        local result = showPrompt("Set Distance", {
-            {"Target distance (meters)", "number", "5000"},
-            {"Loop (auto re-apply)",     "switch",  "false"},
-            {"Loop interval (ms, min 250)", "number", "1000"},
+        local result = showPrompt(t("set_distance.title"), {
+            {t("set_distance.prompt_target"), "number", "5000"},
+            {t("set_distance.prompt_loop"),     "switch",  "false"},
+            {t("set_distance.prompt_interval"), "number", "1000"},
         })
 
         if not result then
@@ -21256,9 +21503,9 @@ return function(container)
         -- Warn if > 5000m — no stars, but race still counts distance
         if target_meters > 5000 then
             local warn = showDialog(
-                "Distance Warning",
-                "Distance over 5000m won't give you any stars.\n\nThe race will still register the distance, but no star rewards will be given. Continue?",
-                {"Continue"}, {"Cancel"}
+                t("set_distance.over_max_title"),
+                t("set_distance.over_max_msg"),
+                {t("set_distance.continue_button")}, {T("common.cancel")}
             )
             if warn ~= 1 then
                 done()
@@ -21374,14 +21621,14 @@ return function(container)
 
             if not isAdventureTab then
                 LOG.warn(TAG, "Not in Adventure tab.")
-                showToast("Go to Adventure tab and start a race first")
+                showToast(t("set_distance.not_in_adventure"))
                 return false
             end
 
             local distanceBase = resolveDistanceBase()
             if not distanceBase then
                 LOG.fatal(TAG, "Failed to resolve distanceBase.")
-                showToast("Start a race first")
+                showToast(t("set_distance.start_race_first"))
                 return false
             end
 
@@ -21404,7 +21651,7 @@ return function(container)
                 return
             end
 
-            showToast("Distance set: " .. tostring(target_meters) .. "m")
+            showToast(t("set_distance.applied", tostring(target_meters)))
 
             if not loop_enabled then
                 finishTask()
@@ -21421,7 +21668,7 @@ return function(container)
             local function loopTick()
                 if not memory:load("set_distance_loop") then
                     LOG.info(TAG, "Loop stopped.")
-                    showToast("Set Distance loop stopped.")
+                    showToast(t("set_distance.loop_stopped"))
                     memory:save("set_distance_ptr", nil) -- clear cache on stop
                     return
                 end
@@ -21433,7 +21680,7 @@ return function(container)
 
                 -- Reminder every 2 ticks
                 if tickCount % 2 == 0 then
-                    showToast("Distance loop running — tap Set Distance to stop", true)
+                    showToast(t("set_distance.loop_running"), true)
                 end
 
                 scheduler:add(function(ft)
@@ -21473,9 +21720,10 @@ __vfs['modules/tabs/cups.lua'] = function(...)
 ]]
 
 return function(container)
+    local function t(key, ...) return T("cups." .. key, ...) end
     
-    addModule(container, "adjust_countdown", "Adjust Countdown", "Adjust the countdown before starting race", "slider",
-    {title="Seconds", min=0, max=10, current=3},
+    addModule(container, "adjust_countdown", t("adjust_countdown.title"), t("adjust_countdown.desc"), "slider",
+    {title=t("slider.seconds"), min=0, max=10, current=3},
     function(done, vals)
         local countdownValue = vals
 
@@ -21502,7 +21750,7 @@ return function(container)
             
             gg.editAll(cast.float(countdownValue), 1)
             
-            showToast("Countdown adjusted to " .. tostring(countdownValue) .. "s", true)
+            showToast(t("adjust_countdown.applied", tostring(countdownValue)), true)
             LOG.info(TAG, "Done")
             gg.clearResults()
             finishTask()
@@ -21510,11 +21758,11 @@ return function(container)
         end)
     end)
     
-    addArchModule(container, "auto_win", "Auto Win", "Automatically win no matter what your race results is", "switch", nil, aobs.autoWin)
+    addArchModule(container, "auto_win", t("auto_win.title"), t("auto_win.desc"), "switch", nil, aobs.autoWin)
     
-    addArchModule(container, "force_boss", "Force Boss", "Force boss always appears", "switch", nil, aobs.forceBoss)
+    addArchModule(container, "force_boss", t("force_boss.title"), t("force_boss.desc"), "switch", nil, aobs.forceBoss)
     
-    addModule(container, "force_cup", "Force Cup", "Forces a single cup", "switch", nil,
+    addModule(container, "force_cup", t("force_cup.title"), t("force_cup.desc"), "switch", nil,
     function(done, state)
         local TAG = "ForceCup"
 
@@ -21548,7 +21796,7 @@ return function(container)
                     gg.clearResults()
 
                     if #results == 0 then
-                        showToast("Force Cup not found. Try again later.")
+                        showToast(t("force_cup.not_found"))
                         LOG.error(TAG, "Pattern not found in memory.")
                         finishTask()
                         done()
@@ -21585,7 +21833,7 @@ return function(container)
                 end
 
                 gg.addListItems(freezeItems)
-                showToast("Force Cup Enabled")
+                showToast(t("force_cup.enabled"))
                 LOG.info(TAG, "Force Cup enabled. Items frozen.")
 
             else
@@ -21610,7 +21858,7 @@ return function(container)
                     LOG.warn(TAG, "No cache found on disable. Nothing to unfreeze.")
                 end
 
-                showToast("Force Cup Disabled")
+                showToast(t("force_cup.disabled"))
             end
 
             finishTask()
@@ -21618,7 +21866,7 @@ return function(container)
         end)
     end)
     
-    addModule(container, "unlimited_tasks", "Unlimited Tasks", "Freeze all tasks as completed and always claimable. Claim rewards repeatedly.", "switch", nil,
+    addModule(container, "unlimited_tasks", t("unlimited_tasks.title"), t("unlimited_tasks.desc"), "switch", nil,
     function(done, state)
         local TAG = "UnlimitedTasks"
 
@@ -21626,7 +21874,7 @@ return function(container)
             local ptr1 = gg.getValues({{ address = BaseGameStatus + 0x6F8, flags = 32 }})[1].value
 
             if not ptr1 or ptr1 == 0 then
-                showToast("Failed to resolve task list")
+                showToast(t("unlimited_tasks.resolve_failed"))
                 LOG.fatal(TAG, "Ptr1 is nil or 0.")
                 finishTask()
                 done()
@@ -21636,7 +21884,7 @@ return function(container)
             local totalTasks = gg.getValues({{ address = BaseGameStatus + 0x700, flags = 4 }})[1].value
 
             if not totalTasks or totalTasks == 0 then
-                showToast("No tasks found")
+                showToast(t("unlimited_tasks.none_found"))
                 LOG.warn(TAG, "totalTasks is 0.")
                 finishTask()
                 done()
@@ -21665,15 +21913,15 @@ return function(container)
             if #freezeItems > 0 then
                 if state then
                     gg.addListItems(freezeItems)
-                    showToast("Unlimited Tasks Enabled")
+                    showToast(t("unlimited_tasks.enabled"))
                     LOG.info(TAG, "Enabled. Frozen " .. tostring(#freezeItems / 3) .. " tasks.")
                 else
                     gg.removeListItems(freezeItems)
-                    showToast("Unlimited Tasks Disabled")
+                    showToast(t("unlimited_tasks.disabled"))
                     LOG.info(TAG, "Disabled. Unfrozen " .. tostring(#freezeItems / 3) .. " tasks.")
                 end
             else
-                showToast("No tasks to freeze")
+                showToast(t("unlimited_tasks.none_to_freeze"))
                 LOG.warn(TAG, "freezeItems is empty.")
             end
 
@@ -21682,7 +21930,7 @@ return function(container)
         end)
     end)
     
-    addModule(container, "rank_points_bonus", "+498 Rank Points", "Make all league tasks gives you 498 points instead of 200 points, also remove other rewards.", "switch", nil,
+    addModule(container, "rank_points_bonus", t("rank_points_bonus.title"), t("rank_points_bonus.desc"), "switch", nil,
     function(done, state)
         local TAG = "RankPointsBonus"
         LOG.info(TAG, "Module activated. state=" .. tostring(state))
@@ -21697,7 +21945,7 @@ return function(container)
                 gg.clearResults()
 
                 if #results == 0 then
-                    showToast("No league tasks found")
+                    showToast(t("rank_points_bonus.none_found"))
                     LOG.warn(TAG, "Anchor search returned 0 results.")
                     finishTask()
                     done()
@@ -21748,9 +21996,9 @@ return function(container)
                 LOG.info(TAG, "Done. Patched: " .. tostring(successCount))
 
                 if successCount > 0 then
-                    showToast("Rank points boosted: " .. tostring(successCount))
+                    showToast(t("rank_points_bonus.boosted", tostring(successCount)))
                 else
-                    showToast("No matching league tasks found")
+                    showToast(t("rank_points_bonus.no_match"))
                 end
             else
                 -- DISABLE: restore original values from saved data
@@ -21758,7 +22006,7 @@ return function(container)
 
                 if not saved or #saved == 0 then
                     LOG.warn(TAG, "No saved data to restore.")
-                    showToast("Nothing to restore")
+                    showToast(t("rank_points_bonus.nothing_to_restore"))
                     finishTask()
                     done()
                     return
@@ -21777,7 +22025,7 @@ return function(container)
 
                 memory:save("rank_points_bonus", {})
                 LOG.info(TAG, "Restored: " .. tostring(restoreCount))
-                showToast("Restored: " .. tostring(restoreCount))
+                showToast(t("rank_points_bonus.restored", tostring(restoreCount)))
             end
 
             finishTask()
@@ -21798,6 +22046,7 @@ __vfs['modules/tabs/event.lua'] = function(...)
 ]]
 
 return function(container)
+    local function t(key, ...) return T("event." .. key, ...) end
 
     -- Helper: get file size in bytes, returns -1 if unreadable
     local function fileSize(path)
@@ -21826,8 +22075,8 @@ return function(container)
         return Shell.su("[ -d \"" .. path .. "\" ] && echo yes || echo no") == "yes"
     end
 
-    addModule(container, "patch_rewards", "Event Rewards Patch", "Patch the current public event rewards to custom one provided by VOID (require game restart)", "button", nil, function(done)
-        gg.toast("Checking environment permissions...")
+    addModule(container, "patch_rewards", t("patch_rewards.title"), t("patch_rewards.desc"), "button", nil, function(done)
+        gg.toast(t("checking_permissions"))
         local hasRoot = checkRoot()
 
         if hasRoot then
@@ -21836,7 +22085,7 @@ return function(container)
             memory:save("shell_states", {root=false})
         end
 
-        gg.toast("Scanning active files...")
+        gg.toast(t("scanning_files"))
 
         local eventsPath = game_path .. "/files/content_cache/json/events/"
 
@@ -21849,7 +22098,7 @@ return function(container)
             jsonMod = json.decode(custom_rewards)
         end)
         if not ok or not jsonMod then
-            table.insert(failedList, "Failed to decode rewards JSON")
+            table.insert(failedList, t("decode_rewards_failed"))
             jsonMod = nil
         end
 
@@ -21859,8 +22108,8 @@ return function(container)
             Shell.su("mkdir -p \"" .. safeWorkspace .. "\"")
             Shell.su("chmod 777 \"" .. safeWorkspace .. "\"")
             if not dirExists(safeWorkspace) then
-                table.insert(failedList, "FATAL: Workspace creation failed: " .. safeWorkspace)
-                showDialog("Patch Results", "FATAL: Could not create workspace directory.\n" .. safeWorkspace, {"OK"})
+                table.insert(failedList, t("workspace_creation_failed", safeWorkspace))
+                showDialog(t("patch_results_title"), t("workspace_creation_failed_dialog", safeWorkspace), {T("common.ok")})
                 done()
                 return
             end
@@ -21885,23 +22134,23 @@ return function(container)
 
                 if not fileExists(secureActiveCopy) then
                     LOG.warn("EventPatch", "Root copy verification FAILED for: " .. secureActiveCopy)
-                    table.insert(failedList, "Root copy failed: " .. active)
+                    table.insert(failedList, t("root_copy_failed", active))
                     goto continue_path
                 end
 
                 targetActivePath = secureActiveCopy
                 activeMovedViaRoot = true
             else
-                table.insert(failedList, "File inaccessible at path: " .. path)
+                table.insert(failedList, t("file_inaccessible", path))
                 goto continue_path
             end
 
             if not fileExists(targetActivePath) then
-                table.insert(failedList, "Pre-decrypt: source not found: " .. targetActivePath)
+                table.insert(failedList, t("predecrypt_not_found", targetActivePath))
                 goto continue_path
             end
             if fileSize(targetActivePath) <= 0 then
-                table.insert(failedList, "Pre-decrypt: source is empty (0 bytes): " .. targetActivePath)
+                table.insert(failedList, t("predecrypt_empty", targetActivePath))
                 goto continue_path
             end
 
@@ -21920,27 +22169,27 @@ return function(container)
                         jsonActive = json.decode(activeContent)
                     end)
                     if not ok2 or not jsonActive then
-                        table.insert(failedList, "Failed to decode active_events.json at path: " .. path)
+                        table.insert(failedList, t("decode_active_failed", path))
                         goto continue_path
                     end
 
                     local gameEvents = jsonActive.gameEvents or {}
                     if #gameEvents == 0 then
-                        table.insert(failedList, "No active events found at path: " .. path)
+                        table.insert(failedList, t("no_active_events", path))
                         goto continue_path
                     end
 
                     local labels = {}
                     for i = 1, #gameEvents do labels[i] = tostring(gameEvents[i]) end
 
-                    local selections = gg.multiChoice(labels, nil, "Select events to patch:\nPath: " .. path)
+                    local selections = gg.multiChoice(labels, nil, t("select_events_patch", path))
                     if not selections then
-                        table.insert(failedList, "User cancelled selection for path: " .. path)
+                        table.insert(failedList, t("user_cancelled", path))
                         goto continue_path
                     end
 
                     if not jsonMod then
-                        table.insert(failedList, "Embedded rewards not available, skipping patches for path: " .. path)
+                        table.insert(failedList, t("rewards_unavailable", path))
                         goto continue_path
                     end
                     local eventRewards = jsonMod.eventRewards
@@ -21974,23 +22223,23 @@ return function(container)
 
                                                 if not fileExists(secureEventCopy) then
                                                     LOG.warn("EventPatch", "Root event copy FAILED for: " .. secureEventCopy)
-                                                    table.insert(failedList, "Root copy failed: " .. eventPath)
+                                                    table.insert(failedList, t("root_copy_failed", eventPath))
                                                     goto next_event
                                                 end
 
                                                 targetEventPath = secureEventCopy
                                                 eventMovedViaRoot = true
                                             else
-                                                table.insert(failedList, "Skipped unreadable event: " .. eventName)
+                                                table.insert(failedList, t("skipped_unreadable", eventName))
                                                 goto next_event
                                             end
 
                                             if not fileExists(targetEventPath) then
-                                                table.insert(failedList, "Pre-decrypt: event not found: " .. targetEventPath)
+                                                table.insert(failedList, t("predecrypt_event_not_found", targetEventPath))
                                                 goto next_event
                                             end
                                             if fileSize(targetEventPath) <= 0 then
-                                                table.insert(failedList, "Pre-decrypt: event is empty (0 bytes): " .. targetEventPath)
+                                                table.insert(failedList, t("predecrypt_event_empty", targetEventPath))
                                                 goto next_event
                                             end
 
@@ -22040,14 +22289,14 @@ return function(container)
 
                                                     if not writeOk then
                                                         pcall(function() eventFile:close() end)
-                                                        table.insert(failedList, "Failed processing " .. eventName .. ": " .. tostring(writeErr))
+                                                        table.insert(failedList, t("processing_failed", eventName, tostring(writeErr)))
                                                     end
                                                     os.remove(decryptedPath)
                                                 else
-                                                    table.insert(failedList, "Cannot open decrypted file: " .. decryptedPath)
+                                                    table.insert(failedList, t("cannot_open_decrypted", decryptedPath))
                                                 end
                                             else
-                                                table.insert(failedList, "Failed to decrypt event: " .. eventName)
+                                                table.insert(failedList, t("decrypt_event_failed", eventName))
                                             end
                                         end
                                     end
@@ -22056,7 +22305,7 @@ return function(container)
                             end)
 
                             if not loopOk then
-                                table.insert(failedList, "Critical file processing loop crash: " .. tostring(loopErr))
+                                table.insert(failedList, t("loop_crash", tostring(loopErr)))
                             end
 
                             finishTask()
@@ -22066,10 +22315,10 @@ return function(container)
                         while not fileTaskDone do gg.sleep(50) end
                     end
                 else
-                    table.insert(failedList, "Cannot open active_events.json at path: " .. path)
+                    table.insert(failedList, t("cannot_open_active", path))
                 end
             else
-                table.insert(failedList, "Failed to decrypt active_events.json at path: " .. path)
+                table.insert(failedList, t("decrypt_active_failed", path))
             end
             ::continue_path::
         end
@@ -22081,28 +22330,28 @@ return function(container)
 
         local resultMsg = ""
         if #successList > 0 then
-            resultMsg = resultMsg .. "Successfully:\n"
+            resultMsg = resultMsg .. t("success_header") .. "\n"
             for _, name in ipairs(successList) do
-                resultMsg = resultMsg .. "- " .. name .. "\n"
+                resultMsg = resultMsg .. t("success_item", name) .. "\n"
             end
             resultMsg = resultMsg .. "\n"
         end
         if #failedList > 0 then
-            resultMsg = resultMsg .. "Failed:\n"
+            resultMsg = resultMsg .. t("failed_header") .. "\n"
             for _, e in ipairs(failedList) do
-                resultMsg = resultMsg .. "- " .. e .. "\n"
+                resultMsg = resultMsg .. t("failed_item", e) .. "\n"
             end
         end
 
-        showDialog("Patch Results", resultMsg, {"OK"})
+        showDialog(t("patch_results_title"), resultMsg, {T("common.ok")})
         done()
 
         if #successList > 0 then
             print(resultMsg)
-            showDialog("Restart Required", "Game is killed and this script gonna exit, start it again and see the patch effects", {"OK"})
+            showDialog(t("restart_required_title"), t("patch_restart_msg"), {T("common.ok")})
 
             if scheduler:get_queue_count() > 0 or scheduler:is_processing() then
-                gg.toast("Finishing pending background tasks... Please wait.")
+                gg.toast(t("finishing_tasks_patch"))
                 while scheduler:get_queue_count() > 0 or scheduler:is_processing() do
                     gg.sleep(100)
                 end
@@ -22112,12 +22361,12 @@ return function(container)
             gg.sleep(1000)
             exitScript()
         else
-            showDialog("Failed", "Failed to patch, try again.", {"OK"})
+            showDialog(T("common.failed"), t("patch_failed_msg"), {T("common.ok")})
         end
     end)
 
-    addModule(container, "restore_events", "Event Rewards Restore", "Delete modified event JSONs to force game server recovery (requires game restart)", "button", nil, function(done)
-        gg.toast("Checking environment permissions...")
+    addModule(container, "restore_events", t("restore_events.title"), t("restore_events.desc"), "button", nil, function(done)
+        gg.toast(t("checking_permissions"))
         local hasRoot = checkRoot()
 
         if hasRoot then
@@ -22126,7 +22375,7 @@ return function(container)
             memory:save("shell_states", {root=false})
         end
 
-        gg.toast("Scanning active files...")
+        gg.toast(t("scanning_files"))
 
         local eventsPath = game_path .. "/files/content_cache/json/events/"
 
@@ -22138,8 +22387,8 @@ return function(container)
             Shell.su("mkdir -p \"" .. safeWorkspace .. "\"")
             Shell.su("chmod 777 \"" .. safeWorkspace .. "\"")
             if not dirExists(safeWorkspace) then
-                table.insert(failedList, "FATAL: Workspace creation failed: " .. safeWorkspace)
-                showDialog("Restore Results", "FATAL: Could not create workspace directory.\n" .. safeWorkspace, {"OK"})
+                table.insert(failedList, t("workspace_creation_failed", safeWorkspace))
+                showDialog(t("restore_results_title"), t("workspace_creation_failed_dialog", safeWorkspace), {T("common.ok")})
                 done()
                 return
             end
@@ -22163,23 +22412,23 @@ return function(container)
 
                 if not fileExists(secureActiveCopy) then
                     LOG.warn("EventRestore", "Root copy verification FAILED for: " .. secureActiveCopy)
-                    table.insert(failedList, "Root copy failed: " .. active)
+                    table.insert(failedList, t("root_copy_failed", active))
                     goto continue_path
                 end
 
                 targetActivePath = secureActiveCopy
                 activeMovedViaRoot = true
             else
-                table.insert(failedList, "File inaccessible at path: " .. path)
+                table.insert(failedList, t("file_inaccessible", path))
                 goto continue_path
             end
 
             if not fileExists(targetActivePath) then
-                table.insert(failedList, "Pre-decrypt: source not found: " .. targetActivePath)
+                table.insert(failedList, t("predecrypt_not_found", targetActivePath))
                 goto continue_path
             end
             if fileSize(targetActivePath) <= 0 then
-                table.insert(failedList, "Pre-decrypt: source is empty (0 bytes): " .. targetActivePath)
+                table.insert(failedList, t("predecrypt_empty", targetActivePath))
                 goto continue_path
             end
 
@@ -22204,7 +22453,7 @@ return function(container)
                             local labels = {}
                             for i = 1, #gameEvents do labels[i] = tostring(gameEvents[i]) end
 
-                            local selections = gg.multiChoice(labels, nil, "Select files to restore (delete):\nPath: " .. path)
+                            local selections = gg.multiChoice(labels, nil, t("select_events_restore", path))
 
                             if selections then
                                 local fileTaskDone = false
@@ -22232,7 +22481,7 @@ return function(container)
                                                     if removed then
                                                         table.insert(successList, eventName)
                                                     else
-                                                        table.insert(failedList, "Failed to delete " .. eventName .. ": " .. tostring(remErr))
+                                                        table.insert(failedList, t("delete_failed", eventName, tostring(remErr)))
                                                     end
                                                 end
                                             end
@@ -22245,16 +22494,16 @@ return function(container)
                                 while not fileTaskDone do gg.sleep(50) end
                             end
                         else
-                            table.insert(failedList, "No active events found at path: " .. path)
+                            table.insert(failedList, t("no_active_events", path))
                         end
                     else
-                        table.insert(failedList, "Failed to decode active_events.json at path: " .. path)
+                        table.insert(failedList, t("decode_active_failed", path))
                     end
                 else
-                    table.insert(failedList, "Cannot open active_events.json at path: " .. path)
+                    table.insert(failedList, t("cannot_open_active", path))
                 end
             else
-                table.insert(failedList, "Failed to decrypt active_events.json at path: " .. path)
+                table.insert(failedList, t("decrypt_active_failed", path))
             end
             ::continue_path::
         end
@@ -22266,28 +22515,28 @@ return function(container)
 
         local resultMsg = ""
         if #successList > 0 then
-            resultMsg = resultMsg .. "Successfully Removed (Will Restore on Restart):\n"
+            resultMsg = resultMsg .. t("success_removed_header") .. "\n"
             for _, name in ipairs(successList) do
-                resultMsg = resultMsg .. "- " .. name .. ".json\n"
+                resultMsg = resultMsg .. t("success_item_json", name) .. "\n"
             end
             resultMsg = resultMsg .. "\n"
         end
         if #failedList > 0 then
-            resultMsg = resultMsg .. "Failed:\n"
+            resultMsg = resultMsg .. t("failed_header") .. "\n"
             for _, e in ipairs(failedList) do
-                resultMsg = resultMsg .. "- " .. e .. "\n"
+                resultMsg = resultMsg .. t("failed_item", e) .. "\n"
             end
         end
 
-        showDialog("Restore Results", resultMsg, {"OK"})
+        showDialog(t("restore_results_title"), resultMsg, {T("common.ok")})
         done()
 
         if #successList > 0 then
             print(resultMsg)
-            showDialog("Restart Required", "Game will now close to allow server file synchronization.", {"OK"})
+            showDialog(t("restart_required_title"), t("restore_restart_msg"), {T("common.ok")})
 
             if scheduler:get_queue_count() > 0 or scheduler:is_processing() then
-                gg.toast("Finishing pending background tasks...")
+                gg.toast(t("finishing_tasks_restore"))
                 while scheduler:get_queue_count() > 0 or scheduler:is_processing() do
                     gg.sleep(100)
                 end
@@ -22311,7 +22560,9 @@ __vfs['modules/tabs/other.lua'] = function(...)
 ]]
 
 return function(container)
-    addModule(container, "debug_mode", "Debug Mode", "Toggle the in-game debug mode", "switch", nil, function(done, state)
+    local function t(key, ...) return T("other." .. key, ...) end
+
+    addModule(container, "debug_mode", t("debug_mode.title"), t("debug_mode.desc"), "switch", nil, function(done, state)
         scheduler:add(function(finishTask)
             local TAG = "DebugMode"
             
@@ -22321,14 +22572,14 @@ return function(container)
                     flags = 1,
                     value = 1
                 }})
-                showToast("Debug Mode Enabled", true)
+                showToast(t("debug_mode.enabled"), true)
             else
                 gg.setValues({{
                     address = BaseGameStatusRaw + 0x3,
                     flags = 1,
                     value = 0
                 }})
-                showToast("Debug Mode Disabled", true)
+                showToast(t("debug_mode.disabled"), true)
             end
             
             finishTask()
@@ -22336,9 +22587,9 @@ return function(container)
         end)
     end)
     
-    addModule(container, "resolution", "Adjust Resolution", "Adjust the game width and height (default is 1280x720)", "input", {
-        {hint = "Width", type = "number"},
-        {hint = "Height", type = "number"}
+    addModule(container, "resolution", t("resolution.title"), t("resolution.desc"), "input", {
+        {hint = t("hint.width"), type = "number"},
+        {hint = t("hint.height"), type = "number"}
     }, function(done, vals)
         scheduler:add(function(finishTask)
             local TAG = "Resolution"
@@ -22360,7 +22611,7 @@ return function(container)
 
                 if #cocos == 0 then
                     LOG.warn(TAG, "GLSurfaceView not found in memory")
-                    gg.toast("GLSurfaceView not found")
+                    gg.toast(t("glsurface_not_found"))
                     finishTask()
                     done()
                     return
@@ -22405,7 +22656,7 @@ return function(container)
 
                 if #values > 0 then
                     gg.setValues(values)
-                    gg.toast(string.format("Resolution set to %dx%d", width, height))
+                    gg.toast(t("resolution.applied", width, height))
                 end
             end
 
@@ -22414,9 +22665,9 @@ return function(container)
         end)
     end)
 
-    addModule(container, "resolution_offset", "Adjust Resolution Offset", "Adjust the game width offset and height offset (default is 0x0), best for small resolution in a large screen.", "input", {
-        {hint = "Width", type = "number"},
-        {hint = "Height", type = "number"}
+    addModule(container, "resolution_offset", t("resolution_offset.title"), t("resolution_offset.desc"), "input", {
+        {hint = t("hint.width"), type = "number"},
+        {hint = t("hint.height"), type = "number"}
     }, function(done, vals)
         scheduler:add(function(finishTask)
             local width = tonumber(vals[1]) or 0
@@ -22434,7 +22685,7 @@ return function(container)
                 gg.clearResults()
 
                 if #cocos == 0 then
-                    gg.toast("GLSurfaceView not found")
+                    gg.toast(t("glsurface_not_found"))
                     finishTask()
                     done()
                     return
@@ -22475,7 +22726,7 @@ return function(container)
 
                 if #values > 0 then
                     gg.setValues(values)
-                    gg.toast(string.format("Resolution offset set to %dx%d", width, height))
+                    gg.toast(t("resolution_offset.applied", width, height))
                 end
             end
 
@@ -22519,10 +22770,11 @@ __vfs['modules/tabs/player.lua'] = function(...)
 -- Dependencies: addModule, addArchModule, showToast, memory, BaseGameStatus, BaseRegion, scheduler
 
 return function(container)
+    local function t(key, ...) return T("player." .. key, ...) end
     
-    addArchModule(container, "auto_detach", "Auto Detach", "Automatically detach parts like the Rally Car roof", "switch", nil, aobs.autoDetach)
+    addArchModule(container, "auto_detach", t("auto_detach.title"), t("auto_detach.desc"), "switch", nil, aobs.autoDetach)
 
-    addModule(container, "no_clip", "No-Clip", "Make your player go through objects without dying (You can go over the finish lines in cups)", "switch", nil,
+    addModule(container, "no_clip", t("no_clip.title"), t("no_clip.desc"), "switch", nil,
     function(done, state)
         scheduler:add(function(finishTask)
             local TAG = "NoClip"
@@ -22544,11 +22796,11 @@ return function(container)
             end
             if state then
                 gg.editAll("h CD CC 08 C1", 1)
-                showToast("No-Clip Enabled", true)
+                showToast(t("no_clip.enabled"), true)
                 LOG.info(TAG, "Enabled")
             else
                 gg.editAll("h 0A D7 23 3C", 1)
-                showToast("No-Clip Disabled", true)
+                showToast(t("no_clip.disabled"), true)
                 LOG.info(TAG, "Disabled")
             end
             gg.clearResults()
@@ -22558,7 +22810,7 @@ return function(container)
         end)
     end)
 
-    addModule(container, "hide_name", "Hide Name", "Hide your player name at race", "switch", nil,
+    addModule(container, "hide_name", t("hide_name.title"), t("hide_name.desc"), "switch", nil,
     function(done, state)
         scheduler:add(function(finishTask)
             local TAG = "HideName"
@@ -22580,11 +22832,11 @@ return function(container)
             end
             if state then
                 gg.editAll("h 00 00 00 00 00 00 00 00", 1)
-                showToast("Hide Name Enabled", true)
+                showToast(t("hide_name.enabled"), true)
                 LOG.info(TAG, "Enabled")
             else
                 gg.editAll("h 71 3D 0A 3F 71 3D 0A 3F", 1)
-                showToast("Hide Name Disabled", true)
+                showToast(t("hide_name.disabled"), true)
                 LOG.info(TAG, "Disabled")
             end
             gg.clearResults()
@@ -22594,7 +22846,7 @@ return function(container)
         end)
     end)
 
-    addModule(container, "hide_flag", "Hide Flag", "Hide your player flag at race", "switch", nil,
+    addModule(container, "hide_flag", t("hide_flag.title"), t("hide_flag.desc"), "switch", nil,
     function(done, state)
         scheduler:add(function(finishTask)
             local TAG = "HideFlag"
@@ -22640,11 +22892,11 @@ return function(container)
             end
             if state then
                 gg.editAll("h 00 00 00 00", 1)
-                showToast("Hide Flag Enabled", true)
+                showToast(t("hide_flag.enabled"), true)
                 LOG.info(TAG, "Enabled")
             else
                 gg.editAll("h FF FF FF FF", 1)
-                showToast("Hide Flag Disabled", true)
+                showToast(t("hide_flag.disabled"), true)
                 LOG.info(TAG, "Disabled")
             end
             gg.clearResults()
@@ -22654,9 +22906,9 @@ return function(container)
         end)
     end)
 
-    addModule(container, "zoom", "Adjust Zoom", "Adjust how close or far your camera", "slider", {
-        {title="Min", min=10, max=100, current=20},
-        {title="Max", min=10, max=100, current=50}
+    addModule(container, "zoom", t("zoom.title"), t("zoom.desc"), "slider", {
+        {title=t("slider.min"), min=10, max=100, current=20},
+        {title=t("slider.max"), min=10, max=100, current=50}
     }, function(done, vals)
         scheduler:add(function(finishTask)
             local TAG = "Zoom"
@@ -22689,9 +22941,9 @@ return function(container)
         end)
     end)
 
-    addModule(container, "gravity", "Adjust Gravity", "Adjust how strong is the gravity", "slider", {
-        {title="X", min=-100, max=100, current=0},
-        {title="Y", min=-100, max=100, current=-10}
+    addModule(container, "gravity", t("gravity.title"), t("gravity.desc"), "slider", {
+        {title=t("slider.x"), min=-100, max=100, current=0},
+        {title=t("slider.y"), min=-100, max=100, current=-10}
     }, function(done, vals)
         scheduler:add(function(finishTask)
             local TAG = "Gravity"
@@ -22790,7 +23042,11 @@ return function(container)
     -- =========================
     -- Helpers
     -- =========================
-    
+
+    -- Shorthand for this tab's translation namespace: t("auto_update.title")
+    -- instead of T("settings.auto_update.title").
+    local function t(key, ...) return T("settings." .. key, ...) end
+
     local function deepCopy(orig, seen)
         if type(orig) ~= "table" then
             return orig
@@ -22951,7 +23207,7 @@ return function(container)
                     for k, v in pairs(exportData.ui) do if UI[k] ~= nil then UI[k] = deepCopy(v) end end
     
                     if exportData.img_url then
-                        showToast("Downloading background image...")
+                        showToast(t("theme_downloading_bg"))
                         local dest = gg.FILES_DIR .. "/" .. (exportData.name or "background_image_" .. tostring(os.time()).. ".png")
                         local path, dErr = catbox.download(exportData.img_url, dest)
                         if path then UI.BG_IMAGE.PATH = path else LOG.error(TAG, "Background image download failed") end
@@ -22961,24 +23217,24 @@ return function(container)
     
                     memory:save_global("ui_prefs", UI)
                     saveAndRefresh()
-                    showDialog("Success", "Theme imported!", "OK")
+                    showDialog(T("common.success"), t("theme_imported"), T("common.ok"))
                 else
-                    showDialog("Failed", "Invalid bundle format.", "OK")
+                    showDialog(T("common.failed"), t("theme_invalid_bundle"), T("common.ok"))
                 end
             else
-                showDialog("Failed", "Cloud error: " .. tostring(err), "OK")
+                showDialog(T("common.failed"), t("theme_cloud_error", tostring(err)), T("common.ok"))
             end
         end
     end
     
     -- --- Updater ────────────────────────────────────────────────────────
     
-    addModuleSep(container, "Updates")
+    addModuleSep(container, t("section_updates"))
     
     -- ── Auto Update switch ────────────────────────────────────────────────────────
-    addModule(container, "auto_update", "Auto Update", "Auto update VOID on startup", "switch", nil, function(done, state)
+    addModule(container, "auto_update", t("auto_update.title"), t("auto_update.desc"), "switch", nil, function(done, state)
         if IS_DEV then
-            showDialog("Dev Mode", "Auto update is disabled for main.lua (dev build).", {"OK"})
+            showDialog(t("dev_mode_title"), t("auto_update.dev_mode_msg"), {T("common.ok")})
         else
             memory:save_global("auto_update", state)
         end
@@ -22986,74 +23242,100 @@ return function(container)
     end)
     
     -- ── Check for Update button ───────────────────────────────────────────────────
-    addModule(container, "check_updates", "Check for Update", "Check for the latest VOID release on GitHub", "button", nil, function(done)
+    addModule(container, "check_updates", t("check_updates.title"), t("check_updates.desc"), "button", nil, function(done)
         if IS_DEV then
-            showDialog("Dev Mode", "Update check is disabled for main.lua (dev build).\n\nPull from the repo manually.", {"OK"})
+            showDialog(t("dev_mode_title"), t("check_updates.dev_mode_msg"), {T("common.ok")})
             done()
             return
         end
     
-        showToast("Checking for updates...")
+        showToast(t("check_updates.checking"))
         local remote_ver, download_url, release_body = fetchLatestVersion()
 
         if not remote_ver then
-            showDialog("Update Check Failed", "Could not reach GitHub:\n" .. tostring(download_url), {"OK"})
+            showDialog(t("check_updates.failed_title"), t("check_updates.failed_msg", tostring(download_url)), {T("common.ok")})
             done()
             return
         end
     
         if not versionNewer(remote_ver, CURRENT_VERSION) then
-            showDialog("Up to date", "You are already on the latest version (v" .. CURRENT_VERSION .. ").", {"OK"})
+            showDialog(t("check_updates.up_to_date_title"), t("check_updates.up_to_date_msg", CURRENT_VERSION), {T("common.ok")})
             done()
             return
         end
     
-        local msg = "v" .. remote_ver .. "  (current: v" .. CURRENT_VERSION .. ")\n\n" .. (release_body or "No changelog available.") .. "\n\nDownload and replace this script?"
-        showDialog("Update Available", msg, {"UPDATE", function()
+        local msg = t("check_updates.available_msg", remote_ver, CURRENT_VERSION, release_body or t("check_updates.no_changelog"))
+        showDialog(T("main.update_available_title"), msg, {T("common.update_button"), function()
             if not download_url then
-                showDialog("Failed", "No .lua asset found in the release.", {"OK"})
+                showDialog(T("common.failed"), t("check_updates.no_asset_msg"), {T("common.ok")})
                 return
             end
     
-            showToast("Downloading v" .. remote_ver .. "...")
+            showToast(T("main.downloading_version", remote_ver))
             local content, err = paste.get(download_url)
             if not content then
-                showDialog("Download Failed", tostring(err), {"OK"})
+                showDialog(t("check_updates.download_failed_title"), tostring(err), {T("common.ok")})
                 return
             end
     
             local f = io.open(SCRIPT_PATH, "w")
             if not f then
-                showDialog("Write Failed", "Could not write to:\n" .. SCRIPT_PATH, {"OK"})
+                showDialog(t("check_updates.write_failed_title"), T("main.update_write_failed_msg", SCRIPT_PATH), {T("common.ok")})
                 return
             end
             f:write(content)
             f:close()
     
-            showDialog("Done", "Updated to v" .. remote_ver .. ". Restart the script to apply.", {"Restart", function()
+            showDialog(t("check_updates.done_title"), t("check_updates.done_msg", remote_ver), {t("check_updates.restart_button"), function()
                 MainHandler.post(function() os.exit() end)
-            end}, {"Later"})
-        end}, {"Cancel"})
+            end}, {T("common.later")})
+        end}, {T("common.cancel")})
     
         done()
     end)
     
+    -- ── Language ──────────────────────────────────────────────────────────────
+    addModuleSep(container, t("section_language"))
+
+    do
+        local langOptions     = {}
+        local currentIndex    = 1
+        for i, lang in ipairs(LANG_AVAILABLE) do
+            langOptions[i] = lang.name
+            if lang.code == LANG_CODE then currentIndex = i end
+        end
+
+        addModule(container, "language", t("language.title"), t("language.desc"), "spinner",
+        { options = langOptions, default = currentIndex },
+        function(done, item, index)
+            local lang = LANG_AVAILABLE[index]
+            if lang and setLanguage(lang.code) then
+                showToast(t("language.changed", lang.name))
+                done()
+                rebuildMenu()
+            else
+                showToast(t("language.failed"))
+                done()
+            end
+        end)
+    end
+    
     -- ── Read-only info ────────────────────────────────────────────────────────
 
     local function regionName()
-        if BaseRegion == -2080896 then return "O: Other"
-        elseif BaseRegion == 4 then return "Ca: C++ alloc"
-        else return "U: Unknown" end
+        if BaseRegion == -2080896 then return t("region.other")
+        elseif BaseRegion == 4 then return t("region.cpp_alloc")
+        else return t("region.unknown") end
     end
     
-    addModuleSep(container, "Memory")
+    addModuleSep(container, t("section_memory"))
 
-    addModule(container, "memory_range", "Memory Range", "Current selected memory range\n(automatically chosen by script)", "ro", regionName(), nil)
-    addModule(container, "gamestatus_address", "GameStatus", "Current gamestatus address\n(automatically chosen by script)", "ro", string.format("0x%X", BaseGameStatus or 0), nil)
-    addModule(container, "gamestatus_raw_address", "GameStatus (Raw)", "Current gamestatus (raw) address\n(automatically chosen by script)", "ro", string.format("0x%X", BaseGameStatusRaw or 0), nil)
+    addModule(container, "memory_range", t("memory_range.title"), t("memory_range.desc"), "ro", regionName(), nil)
+    addModule(container, "gamestatus_address", t("gamestatus.title"), t("gamestatus.desc"), "ro", string.format("0x%X", BaseGameStatus or 0), nil)
+    addModule(container, "gamestatus_raw_address", t("gamestatus_raw.title"), t("gamestatus_raw.desc"), "ro", string.format("0x%X", BaseGameStatusRaw or 0), nil)
     
     -- ── Session Control ────────────────────────────────────────────────────────
-    addModule(container, "clear_memory", "Clear Saved Memory", "Clear all VOID saved memory without needed to restart the whole game.", "button", nil, function(done)
+    addModule(container, "clear_memory", t("clear_memory.title"), t("clear_memory.desc"), "button", nil, function(done)
         LOG.info("Settings", "User triggered clear_all()")
         memory:clear_all()
         done()
@@ -23061,16 +23343,16 @@ return function(container)
     
     -- ── Custom Colors Info ────────────────────────────────────────────────────
     -- Allow user to change colors of this script.
-    addModuleSep(container, "UI Customizations")
+    addModuleSep(container, t("section_ui_customizations"))
     
-    addModule(container, "theme_store", "Theme Store", "Browse and install community Void themes", "button", nil,
+    addModule(container, "theme_store", t("theme_store.title"), t("theme_store.desc"), "button", nil,
     function(done)
         local TAG = "ThemeStore"
         LOG.info(TAG, "Opening theme store...")
 
         local raw, err = paste.get("https://raw.githubusercontent.com/vekendianorg/void-themes/refs/heads/main/index.json")
         if not raw then
-            showDialog("Failed", "Could not reach theme store:\n" .. tostring(err), {"OK"})
+            showDialog(T("common.failed"), t("theme_store.unreachable_msg", tostring(err)), {T("common.ok")})
             done()
             return
         end
@@ -23081,7 +23363,7 @@ return function(container)
         end)
 
         if not ok or not index or not index.themes then
-            showDialog("Failed", "Could not parse theme store data.", {"OK"})
+            showDialog(T("common.failed"), t("theme_store.parse_failed_msg"), {T("common.ok")})
             done()
             return
         end
@@ -23091,20 +23373,20 @@ return function(container)
 
         local function openStore(allThemes, currentThemes)
             local isFiltered = currentThemes ~= allThemes
-            local title = "Void Theme Store"
+            local title = t("theme_store.list_title")
             local desc  = isFiltered
-                and "Search results: " .. tostring(#currentThemes) .. " found"
-                or  tostring(#allThemes) .. " themes available"
+                and t("theme_store.search_results_desc", tostring(#currentThemes))
+                or  t("theme_store.available_desc", tostring(#allThemes))
         
             local items = {}
             for _, theme in ipairs(currentThemes) do
-                table.insert(items, theme.name .. " • by " .. theme.author)
+                table.insert(items, theme.name .. " • " .. t("theme_store.by_author", theme.author))
             end
         
             -- Search as first item
-            table.insert(items, 1, "🔍 Search...")
+            table.insert(items, 1, t("theme_store.search_item"))
             if isFiltered then
-                table.insert(items, 2, "✕ Clear search")
+                table.insert(items, 2, t("theme_store.clear_search_item"))
             end
         
             return showList(title, desc, items)
@@ -23120,8 +23402,8 @@ return function(container)
         
             elseif choice == 1 then
                 -- Search
-                local result = showPrompt("Search Themes", {
-                    {"Theme name, author or description", "text", ""}
+                local result = showPrompt(t("theme_store.search_title"), {
+                    {t("theme_store.search_hint"), "text", ""}
                 })
                 if result and result[1] ~= "" then
                     local q = result[1]:lower()
@@ -23137,7 +23419,7 @@ return function(container)
                     currentThemes = filtered
                     
                     if #filtered == 0 then
-                        showToast("No themes found for: " .. result[1])
+                        showToast(t("theme_store.no_results", result[1]))
                     end
                 end
         
@@ -23152,8 +23434,8 @@ return function(container)
                 if theme then
                     local choice = showDialog(
                         theme.name,
-                        "By " .. theme.author .. "\n\n" .. (theme.description or "") .. "\n\nID: " .. theme.id,
-                        {"Install Theme", function() applyTheme(theme.id); refreshMenu = true end}, {"Cancel"}
+                        t("theme_store.detail_msg", theme.author, theme.description or "", theme.id),
+                        {t("theme_store.install_button"), function() applyTheme(theme.id); refreshMenu = true end}, {T("common.cancel")}
                     )
                 end
             end
@@ -23164,7 +23446,7 @@ return function(container)
         rebuildMenu()
     end)
     
-    addModule(container, "reset_theme", "Reset Theme", "Reset custom theme and background image to the default", "button", nil, function(done)
+    addModule(container, "reset_theme", t("reset_theme.title"), t("reset_theme.desc"), "button", nil, function(done)
         local TAG = "ResetTheme"
         LOG.info(TAG, "User triggered theme reset")
         
@@ -23175,8 +23457,8 @@ return function(container)
         rebuildMenu()
     end)
     
-    addModule(container, "import_theme", "Import Theme", "Import custom theme from cloud", "input", {
-        { hint = "Enter Share ID", value = "", type = "text" }
+    addModule(container, "import_theme", t("import_theme.title"), t("import_theme.desc"), "input", {
+        { hint = t("import_theme.hint"), value = "", type = "text" }
     }, function(done, val)
         local TAG = "ImportTheme"
         local shareId = (type(val) == "table") and val[1] or val
@@ -23188,7 +23470,7 @@ return function(container)
         rebuildMenu()
     end)
     
-    addModule(container, "export_theme", "Export Theme", "Export custom theme and background image to cloud", "button", nil, function(done)
+    addModule(container, "export_theme", t("export_theme.title"), t("export_theme.desc"), "button", nil, function(done)
         local TAG = "ExportTheme"
         LOG.info(TAG, "User triggered theme export")
         local exportUI = deepCopy(UI)
@@ -23208,21 +23490,21 @@ return function(container)
             if link then
                 local pasteId = link:match("[^/]+$")
                 gg.copyText(pasteId)
-                showDialog("Success", "Share ID: " .. pasteId .. "\n\nCopied to clipboard.", "OK")
+                showDialog(T("common.success"), t("export_theme.share_id_msg", pasteId), T("common.ok"))
             else
-                showDialog("Failed", "Upload failed: " .. tostring(err), "OK")
+                showDialog(T("common.failed"), t("export_theme.upload_failed_msg", tostring(err)), T("common.ok"))
             end
             done()
         end
     
         if UI.BG_IMAGE and UI.BG_IMAGE.PATH and UI.BG_IMAGE.PATH ~= "no_media" then
-            showDialog("Upload Size Warning", "Include custom background image? It will increase the Upload Size depending what size is your image is.",
-            {"Yes", function()
-                showToast("Uploading background image to Catbox...")
+            showDialog(t("export_theme.size_warning_title"), t("export_theme.size_warning_msg"),
+            {T("common.yes"), function()
+                showToast(t("export_theme.uploading_bg"))
                 local url, err = catbox.upload(UI.BG_IMAGE.PATH)
-                if url then finalizeExport(url) else showDialog("Error", "Image upload failed: " .. err, "OK"); done() end
+                if url then finalizeExport(url) else showDialog(t("export_theme.image_upload_failed_title"), t("export_theme.image_upload_failed_msg", err), T("common.ok")); done() end
             end},
-            {"No"})
+            {T("common.no")})
         else
             finalizeExport(nil)
         end
@@ -23231,11 +23513,11 @@ return function(container)
     end)
     
     -- Tabs icon
-    addModule(container, "tabs_icon", "Tabs Icon", "Change tabs icon", "input", {
-        { hint = "Enter Icon", value = UI.TABS_ICON, type = "text" }
+    addModule(container, "tabs_icon", t("tabs_icon.title"), t("tabs_icon.desc"), "input", {
+        { hint = t("tabs_icon.hint"), value = UI.TABS_ICON, type = "text" }
     }, function(done, val)
         if val == nil or val == "" then
-            showToast("Cannot be empty")
+            showToast(t("tabs_icon.empty_error"))
             done()
         else
             UI.TABS_ICON = val
@@ -23263,10 +23545,10 @@ return function(container)
         UI.GLASS = recolor(UI.GLASS, 0.75)
     end
 
-    addModule(container, "bg_opacity", "Background Opacity",
-        "Transparency of panels, cards, and header",
+    addModule(container, "bg_opacity", t("bg_opacity.title"),
+        t("bg_opacity.desc"),
         "slider",
-        {min = 1, max = 255, current = getAlpha(UI.BG), title = "Alpha"},
+        {min = 1, max = 255, current = getAlpha(UI.BG), title = t("slider.alpha")},
         function(done, val)
             setLayerAlpha(val)
             saveAndRefresh()
@@ -23275,10 +23557,10 @@ return function(container)
     )
     
     -- ── Background Image Opacity ─────────────────────
-    addModule(container, "bg_image_opacity", "Background Image Opacity",
-        "Adjust visibility alpha settings directly using pure integer channels.",
+    addModule(container, "bg_image_opacity", t("bg_image_opacity.title"),
+        t("bg_image_opacity.desc"),
         "slider",
-        {min = 0, max = 255, current = UI.BG_IMAGE.ALPHA & 0xFF, title = "Alpha"},
+        {min = 0, max = 255, current = UI.BG_IMAGE.ALPHA & 0xFF, title = t("slider.alpha")},
         function(done, val) 
             UI.BG_IMAGE.ALPHA = val & 0xFF
             
@@ -23291,9 +23573,9 @@ return function(container)
     -- ── Background Image ────────────────────────────────────────────────
     -- Updates the absolute storage location path pointing to the background image image.
 
-    addModule(container, "bg_image_picker", "Background Image", "Tap to modify the absolute file path destination for your custom layout background image", "button", nil, function(done)
+    addModule(container, "bg_image_picker", t("bg_image_picker.title"), t("bg_image_picker.desc"), "button", nil, function(done)
         local response = gg.prompt(
-            { "Absolute Image File Path (.jpg or .png):", "Remove BG Image" },
+            { t("bg_image_picker.path_label"), t("bg_image_picker.remove_label") },
             { UI.BG_IMAGE.PATH == "no_media" and gg.EXT_STORAGE or UI.BG_IMAGE.PATH, false },
             { "file", "checkbox" }
         )
@@ -23302,7 +23584,7 @@ return function(container)
             if response[2] == true then
                 UI.BG_IMAGE.PATH = "no_media"
                 saveAndRefresh()
-                showDialog("Successfully", "Background Image Removed", {"OK"})
+                showDialog(t("bg_image_picker.success_title"), t("bg_image_picker.removed_msg"), {T("common.ok")})
             else
                 if response[1] then
                     local parsedPath = response[1]:gsub("^%s*(.-)%s*$", "%1")
@@ -23315,9 +23597,9 @@ return function(container)
                             
                             UI.BG_IMAGE.PATH = parsedPath
                             saveAndRefresh()
-                            showDialog("Successfully", "Background image added", {"OK"})
+                            showDialog(t("bg_image_picker.success_title"), t("bg_image_picker.added_msg"), {T("common.ok")})
                         else
-                            showDialog("Failed", "File not found or read operation refused:\n" .. tostring(parsedPath), {"OK"})
+                            showDialog(T("common.failed"), t("bg_image_picker.not_found_msg", tostring(parsedPath)), {T("common.ok")})
                         end
                     end
                 end
@@ -23346,13 +23628,13 @@ return function(container)
         UI.CARD = recolorRgb(UI.CARD, 1.55)
     end
 
-    addModule(container, "bg_rgb", "Background RGB",
-        "Hue for panel backgrounds (Header and Card scale automatically)",
+    addModule(container, "bg_rgb", t("bg_rgb.title"),
+        t("bg_rgb.desc"),
         "slider",
         {
-            {min = 0, max = 255, current = (UI.BG >> 16) & 0xFF, title = "R"},
-            {min = 0, max = 255, current = (UI.BG >> 8) & 0xFF, title = "G"},
-            {min = 0, max = 255, current = UI.BG & 0xFF, title = "B"},
+            {min = 0, max = 255, current = (UI.BG >> 16) & 0xFF, title = t("slider.r")},
+            {min = 0, max = 255, current = (UI.BG >> 8) & 0xFF, title = t("slider.g")},
+            {min = 0, max = 255, current = UI.BG & 0xFF, title = t("slider.b")},
         },
         function(done, vals)
             setBgRgb(vals[1], vals[2], vals[3])
@@ -23370,13 +23652,13 @@ return function(container)
         UI.MUTED = (0x4D << 24) | ((r >> 1) << 16) | ((g >> 1) << 8) | (b >> 1)
     end
 
-    addModule(container, "accent_rgb", "Accent RGB",
-        "Tint for buttons, toggles, and active cards (muted color auto-derived)",
+    addModule(container, "accent_rgb", t("accent_rgb.title"),
+        t("accent_rgb.desc"),
         "slider",
         {
-            {min = 0, max = 255, current = (UI.ACCENT >> 16) & 0xFF, title = "R"},
-            {min = 0, max = 255, current = (UI.ACCENT >> 8) & 0xFF, title = "G"},
-            {min = 0, max = 255, current = UI.ACCENT & 0xFF, title = "B"},
+            {min = 0, max = 255, current = (UI.ACCENT >> 16) & 0xFF, title = t("slider.r")},
+            {min = 0, max = 255, current = (UI.ACCENT >> 8) & 0xFF, title = t("slider.g")},
+            {min = 0, max = 255, current = UI.ACCENT & 0xFF, title = t("slider.b")},
         },
         function(done, vals)
             buildAccent(vals[1], vals[2], vals[3])
@@ -23393,13 +23675,13 @@ return function(container)
         UI.LOGO = (0xFF << 24) | (r << 16) | (g << 8) | b
     end
 
-    addModule(container, "logo_rgb", "Highlight RGB",
-        "Color for labels, icons, and interactive text (always fully opaque)",
+    addModule(container, "logo_rgb", t("logo_rgb.title"),
+        t("logo_rgb.desc"),
         "slider",
         {
-            {min = 0, max = 255, current = (UI.LOGO >> 16) & 0xFF, title = "R"},
-            {min = 0, max = 255, current = (UI.LOGO >> 8) & 0xFF, title = "G"},
-            {min = 0, max = 255, current = UI.LOGO & 0xFF, title = "B"},
+            {min = 0, max = 255, current = (UI.LOGO >> 16) & 0xFF, title = t("slider.r")},
+            {min = 0, max = 255, current = (UI.LOGO >> 8) & 0xFF, title = t("slider.g")},
+            {min = 0, max = 255, current = UI.LOGO & 0xFF, title = t("slider.b")},
         },
         function(done, vals)
             buildLogo(vals[1], vals[2], vals[3])
@@ -23416,13 +23698,13 @@ return function(container)
         UI.SUB = (0xDD << 24) | (r << 16) | (g << 8) | b
     end
 
-    addModule(container, "sub_rgb", "Sub-text RGB",
-        "Color for descriptions and inactive tab labels",
+    addModule(container, "sub_rgb", t("sub_rgb.title"),
+        t("sub_rgb.desc"),
         "slider",
         {
-            {min = 0, max = 255, current = (UI.SUB >> 16) & 0xFF, title = "R"},
-            {min = 0, max = 255, current = (UI.SUB >> 8) & 0xFF, title = "G"},
-            {min = 0, max = 255, current = UI.SUB & 0xFF, title = "B"},
+            {min = 0, max = 255, current = (UI.SUB >> 16) & 0xFF, title = t("slider.r")},
+            {min = 0, max = 255, current = (UI.SUB >> 8) & 0xFF, title = t("slider.g")},
+            {min = 0, max = 255, current = UI.SUB & 0xFF, title = t("slider.b")},
         },
         function(done, vals)
             buildSub(vals[1], vals[2], vals[3])
@@ -23439,13 +23721,13 @@ return function(container)
         UI.LOGO = UI.TEXT
     end
     
-    addModule(container, "text_rgb", "Text RGB",
-        "Color for main menu text",
+    addModule(container, "text_rgb", t("text_rgb.title"),
+        t("text_rgb.desc"),
         "slider",
         {
-            {min = 0, max = 255, current = (UI.TEXT >> 16) & 0xFF, title = "R"},
-            {min = 0, max = 255, current = (UI.TEXT >> 8) & 0xFF, title = "G"},
-            {min = 0, max = 255, current = UI.TEXT & 0xFF, title = "B"},
+            {min = 0, max = 255, current = (UI.TEXT >> 16) & 0xFF, title = t("slider.r")},
+            {min = 0, max = 255, current = (UI.TEXT >> 8) & 0xFF, title = t("slider.g")},
+            {min = 0, max = 255, current = UI.TEXT & 0xFF, title = t("slider.b")},
         },
         function(done, vals)
             buildText(vals[1], vals[2], vals[3])
@@ -23456,20 +23738,20 @@ return function(container)
 
     -- ── Window Size ───────────────────────────────────────────────────────────
     
-    addModule(container, "win_width", "Menu Width",
-        "Width of the floating menu (" .. RESIZE_MIN_W .. " – " .. RESIZE_MAX_W .. " dp)",
+    addModule(container, "win_width", t("win_width.title"),
+        t("win_width.desc", RESIZE_MIN_W, RESIZE_MAX_W),
         "slider",
-        {min = RESIZE_MIN_W, max = RESIZE_MAX_W, current = WIN_W, title = "Width"},
+        {min = RESIZE_MIN_W, max = RESIZE_MAX_W, current = WIN_W, title = t("slider.width")},
         function(done, val)
             applyWindowResize(val, WIN_H)
             done()
         end
     )
 
-    addModule(container, "win_height", "Menu Height",
-        "Height of the scrollable content area (" .. RESIZE_MIN_H .. " – " .. RESIZE_MAX_H .. " dp)",
+    addModule(container, "win_height", t("win_height.title"),
+        t("win_height.desc", RESIZE_MIN_H, RESIZE_MAX_H),
         "slider",
-        {min = RESIZE_MIN_H, max = RESIZE_MAX_H, current = WIN_H, title = "Height"},
+        {min = RESIZE_MIN_H, max = RESIZE_MAX_H, current = WIN_H, title = t("slider.height")},
         function(done, val)
             applyWindowResize(WIN_W, val)
             done()
@@ -23489,7 +23771,9 @@ __vfs['modules/tabs/shop.lua'] = function(...)
 ]]
 
 return function(container)
-    addModule(container, "free_chest", "Free Chest", "Make the chests free in Shop Tab", "switch", nil, function(done, state)
+    local function t(key, ...) return T("shop." .. key, ...) end
+
+    addModule(container, "free_chest", t("free_chest.title"), t("free_chest.desc"), "switch", nil, function(done, state)
         scheduler:add(function(finishTask)
             local TAG = "FreeChest"
             local cache = memory:load("free_chest")
@@ -23511,10 +23795,10 @@ return function(container)
             
             if state then
                 gg.editAll("0", 1)
-                showToast("Free Chest Enabled", true)
+                showToast(t("free_chest.enabled"), true)
             else
                 gg.editAll("h CD CC CC 3D", 1)
-                showToast("Free Chest Disabled", true)
+                showToast(t("free_chest.disabled"), true)
             end
             
             gg.clearResults()
@@ -23523,7 +23807,7 @@ return function(container)
         end)
     end)
     
-    addModule(container, "free_purchases", "Free Purchases", "Make some daily deals purchases free in the shop tab (also works for special offers as popup/badges)", "button", nil, function(done)
+    addModule(container, "free_purchases", t("free_purchases.title"), t("free_purchases.desc"), "button", nil, function(done)
         scheduler:add(function(finishTask)
             gg.clearResults()
             gg.setRanges(4)
@@ -23545,7 +23829,7 @@ return function(container)
                         table.insert(tptrs, {address = sp.address + 0x18, flags = 4})
                     end
                     counter = counter + 1
-                    showToast(tostring(counter) .. "/" .. tostring(totalres), true)
+                    showToast(t("free_purchases.progress", counter, totalres), true)
                 end
                 
                 tptrs = gg.getValues(tptrs)
@@ -23560,7 +23844,7 @@ return function(container)
                 
                 if #edits > 0 then
                     gg.setValues(edits)
-                    gg.toast("Free Purchase Successful")
+                    gg.toast(t("free_purchases.success"))
                 end
             end
 
@@ -23570,14 +23854,8 @@ return function(container)
         end)
     end)
     
-    addModule(container, "change_chest", "Change Chest", "Change legendary chest to selected chest", "spinner", {
-        options = {
-            "Common Chest", "Uncommon Chest", "Rare Chest", "Epic Chest",
-            "Champion Chest", "Special Chest 1", "Xmas Chest", "Legendary Chest",
-            "Blue Chest", "VIP Chest 1", "VIP Chest 2", "Video Chest",
-            "Starter Chest", "Special Chest 2", "Fingersoft Chest", "Mega Chest",
-            "Team Spirit Chest", "Style Chest", "Mythic Chest"
-        },
+    addModule(container, "change_chest", t("change_chest.title"), t("change_chest.desc"), "spinner", {
+        options = t("change_chest.options"),
         default = 8
     }, function(done, item, index)
         scheduler:add(function(finishTask)
@@ -23603,7 +23881,7 @@ return function(container)
             end
             
             gg.editAll(chestIDs[index], 1)
-            showToast("Chest changed to " .. item)
+            showToast(t("change_chest.changed", item))
             
             gg.clearResults()
             finishTask()
@@ -23626,6 +23904,590 @@ return function(container)
     -- TODO: add team modules
 end
 
+end
+
+__vfs['modules/tabs/vehicle.lua'] = function(...)
+--[[
+  Vehicle Tab - Vehicle modifications
+  Features: Max Vehicles, Max Mastery, Max Parts
+  
+  @module callback Receives container View to populate with modules
+]]
+
+-- Part name → max upgrade level. Defined at module scope so it is
+-- built once on first tab load, not rebuilt on every render call.
+local PART_MAX_LEVEL = {
+    start_boost           = 10,
+    perfect_landing_boost = 7,
+    jump                  = 10,
+    wheelie_boost         = 10,
+    afterburner           = 7,
+    fume_boost            = 10,
+    thrusters             = 4,
+    glide                 = 15,
+    fuel_boost            = 4,
+    coin_boost            = 4,
+    winter_tyres          = 15,
+    magnet                = 15,
+    spoiler               = 7,
+    turbo_boost           = 7,
+    flip_speed_boost      = 10,
+    nitro                 = 4,
+    air_control           = 15,
+    heavyweight           = 15,
+    rollcage              = 15,
+    echo                  = 3,
+    amplifier             = 3,
+}
+
+return function(container)
+    local function t(key, ...) return T("vehicle." .. key, ...) end
+
+    local function findZeroRegion(size)
+        local ranges = gg.getRangesList()
+        for _, region in ipairs(ranges) do
+            if region.state == "A" then
+                local reads = {}
+                for addr = region.start, region.start + size * 4, 4 do
+                    table.insert(reads, { address = addr, flags = 4 })
+                end
+    
+                local values = gg.getValues(reads)
+                if values then
+                    local allZero = true
+                    for _, v in ipairs(values) do
+                        if v.value ~= 0 then
+                            allZero = false
+                            break
+                        end
+                    end
+    
+                    if allZero then
+                        return region.start, region.start + size * 4
+                    end
+                end
+            end
+        end
+        return nil, nil
+    end
+    
+    local function resolveVehicleList()
+        local cached = memory:load("vehicle_list_deep")
+        if cached and #cached > 0 then
+            local check = gg.getValues({{ address = cached[1].deepPtrAddr, flags = 32 }})
+            if check and check[1] and check[1].value ~= 0 then
+                LOG.dbg("VehicleList", "Cache hit: " .. tostring(#cached) .. " vehicles")
+                return cached
+            else
+                LOG.warn("VehicleList", "Cache stale — re-resolving")
+                memory:save("vehicle_list_deep", nil)
+            end
+        end
+    
+        -- Anchor
+        gg.clearResults()
+        gg.setRanges(BaseRegion)
+        gg.searchNumber("h 18 48 49 4C 4C 20 43 4C 49 4D 42 45", 1)
+        gg.refineNumber("h 18", 1)
+        local anchorResults = gg.getResults(gg.getResultsCount())
+        gg.clearResults()
+    
+        if #anchorResults == 0 then
+            LOG.warn("VehicleList", "Anchor search returned 0 results.")
+            return nil
+        end
+    
+        local anchor = anchorResults[1]
+    
+        -- Pattern check — 1 getValues
+        local pattern = gg.getValues({
+            { address = anchor.address - 0x20, flags = 4 },
+            { address = anchor.address - 0x8,  flags = 4 }
+        })
+    
+        if not pattern or not pattern[1] or not pattern[2]
+        or pattern[1].value ~= 0x65656A08
+        or pattern[2].value ~= 0x403147AE then
+            LOG.warn("VehicleList", "Pattern mismatch.")
+            return nil
+        end
+    
+        -- Refs search
+        gg.clearResults()
+        gg.searchNumber(pattern[1].address, 32)
+        local refResults = gg.getResults(gg.getResultsCount())
+        gg.clearResults()
+    
+        if not refResults or #refResults == 0 then
+            LOG.warn("VehicleList", "No refs found.")
+            return nil
+        end
+    
+        -- Collect raw vehiclePtrs — sequential (unavoidable, unknown count per ref)
+        local written = {}
+        local rawPtrs = {}
+    
+        for refIdx, ref in ipairs(refResults) do
+            local vehicleIdx = 0
+            while true do
+                local ptrRead = gg.getValues({{
+                    address = ref.address + vehicleIdx * 8,
+                    flags   = 32
+                }})
+    
+                if not ptrRead or not ptrRead[1] or ptrRead[1].value == 0 then
+                    LOG.dbg("VehicleList", string.format("ref[%d] vehicleIdx[%d] stop", refIdx, vehicleIdx))
+                    break
+                end
+    
+                local vehiclePtr = ptrRead[1].value
+                if not written[vehiclePtr] then
+                    written[vehiclePtr] = true
+                    table.insert(rawPtrs, vehiclePtr)
+                end
+    
+                vehicleIdx = vehicleIdx + 1
+            end
+        end
+    
+        if #rawPtrs == 0 then
+            LOG.warn("VehicleList", "No raw ptrs collected.")
+            return nil
+        end
+    
+        -- Batch read all deepPtrs — 1 getValues
+        local deepReads = {}
+        for _, vehiclePtr in ipairs(rawPtrs) do
+            table.insert(deepReads, { address = vehiclePtr + 0x530, flags = 32 })
+        end
+        local deepPtrs = gg.getValues(deepReads)
+    
+        if not deepPtrs then
+            LOG.warn("VehicleList", "deepPtrs batch read failed.")
+            return nil
+        end
+    
+        -- Collect valid deepPtr values for batch verify
+        local validPtrs = {}
+        for i, dp in ipairs(deepPtrs) do
+            if dp and dp.value ~= 0 then
+                table.insert(validPtrs, {
+                    vehiclePtr  = rawPtrs[i],
+                    deepPtrAddr = rawPtrs[i] + 0x530,
+                    deepPtr     = dp.value,
+                })
+            end
+        end
+    
+        if #validPtrs == 0 then
+            LOG.warn("VehicleList", "No valid deepPtrs.")
+            return nil
+        end
+    
+        -- Batch verify all — 1 getValues
+        local verifyReads = {}
+        for _, v in ipairs(validPtrs) do
+            table.insert(verifyReads, { address = v.deepPtr + 0x0, flags = 4 })
+            table.insert(verifyReads, { address = v.deepPtr + 0x4, flags = 4 })
+            table.insert(verifyReads, { address = v.deepPtr + 0x8, flags = 4 })
+            table.insert(verifyReads, { address = v.deepPtr + 0xC, flags = 4 })
+        end
+        local verifyResults = gg.getValues(verifyReads)
+    
+        if not verifyResults then
+            LOG.warn("VehicleList", "Verify batch read failed.")
+            return nil
+        end
+    
+        -- Filter verified vehicles
+        local vehicles = {}
+        for i, v in ipairs(validPtrs) do
+            local base = (i - 1) * 4 + 1
+            local v0 = verifyResults[base]
+            local v1 = verifyResults[base + 1]
+            local v2 = verifyResults[base + 2]
+            local v3 = verifyResults[base + 3]
+    
+            if v0 and v1 and v2 and v3
+            and v0.value == 0
+            and v1.value == 18
+            and v2.value == 53 then
+                table.insert(vehicles, {
+                    vehiclePtr  = v.vehiclePtr,
+                    deepPtrAddr = v.deepPtrAddr,
+                })
+            else
+                LOG.dbg("VehicleList", string.format("vehiclePtr=0x%X failed verify: %d %d %d %d",
+                    v.vehiclePtr,
+                    v0 and v0.value or -1,
+                    v1 and v1.value or -1,
+                    v2 and v2.value or -1,
+                    v3 and v3.value or -1))
+            end
+        end
+    
+        if #vehicles == 0 then
+            LOG.warn("VehicleList", "No vehicles passed verification.")
+            return nil
+        end
+    
+        memory:save("vehicle_list_deep", vehicles)
+        LOG.info("VehicleList", "Resolved + cached: " .. tostring(#vehicles) .. " vehicles")
+        return vehicles
+    end
+    
+    local function forEachVehicle(vehicles, cb)
+        -- Batch read all deepPtrs — 1 getValues
+        local reads = {}
+        for _, v in ipairs(vehicles) do
+            table.insert(reads, { address = v.deepPtrAddr, flags = 32 })
+        end
+        local deepPtrs = gg.getValues(reads)
+        if not deepPtrs then
+            LOG.warn("VehicleList", "forEachVehicle deepPtrs read failed.")
+            return 0
+        end
+    
+        local successCount = 0
+        for i, v in ipairs(vehicles) do
+            local dp = deepPtrs[i]
+            if dp and dp.value ~= 0 then
+                cb(v.vehiclePtr, dp.value, v.deepPtrAddr)
+                successCount = successCount + 1
+            else
+                LOG.warn("VehicleList", string.format("vehiclePtr=0x%X deepPtr invalid at forEach", v.vehiclePtr))
+            end
+        end
+        return successCount
+    end
+    
+    addModule(container, "parts_slot", t("parts_slot.title"), t("parts_slot.desc"), "slider",
+    {title=t("parts_slot.slider_title"), min=1, max=15, current=3},
+    function(done, vals)
+        local slot = vals
+        local TAG = "PartsSlot"
+        LOG.info(TAG, "Slot: " .. tostring(slot))
+
+        scheduler:add(function(finishTask)
+            local cached = memory:load("parts_slot_deep")
+
+            -- Validate cache
+            if cached and #cached > 0 then
+                local check = gg.getValues({{ address = cached[1], flags = 32 }})
+                if not check or not check[1] or check[1].value == 0 then
+                    LOG.warn(TAG, "Cache stale — re-resolving")
+                    cached = nil
+                    memory:save("parts_slot_deep", nil)
+                end
+            end
+
+            if not cached then
+                local vehiclePtrs = resolveVehicleList()
+                if not vehiclePtrs then
+                    showToast(t("common.no_vehicles"))
+                    finishTask()
+                    done()
+                    return
+                end
+                cached = {}
+                for _, vehiclePtr in ipairs(vehiclePtrs) do
+                    table.insert(cached, vehiclePtr.deepPtrAddr)
+                end
+                memory:save("parts_slot_deep", cached)
+                LOG.info(TAG, "Cached " .. tostring(#cached) .. " deepPtrAddrs")
+            end
+
+            -- Read all deepPtrs in one call
+            local reads = {}
+            for _, deepPtrAddr in ipairs(cached) do
+                table.insert(reads, { address = deepPtrAddr, flags = 32 })
+            end
+            local deepPtrs = gg.getValues(reads)
+
+            local slotStart, slotEnd = findZeroRegion(slot)
+            if not slotStart then
+                showToast(t("common.no_zero_region"))
+                finishTask()
+                done()
+                return
+            end
+
+            -- Batch ALL edits into one setValues call
+            local edits = {}
+            for _, dp in ipairs(deepPtrs) do
+                if dp and dp.value ~= 0 then
+                    local deepPtrAddr = dp.address
+                    table.insert(edits, { address = deepPtrAddr + 0x0,  flags = 32, value = slotStart })
+                    table.insert(edits, { address = deepPtrAddr + 0x8,  flags = 32, value = slotEnd })
+                    table.insert(edits, { address = deepPtrAddr + 0x10, flags = 32, value = slotEnd })
+                end
+            end
+
+            if #edits > 0 then
+                gg.setValues(edits)
+                local count = #edits / 3
+                showToast(t("parts_slot.applied", count))
+                LOG.info(TAG, "Done. Edits: " .. tostring(#edits) .. " (" .. tostring(count) .. " vehicles)")
+            else
+                showToast(t("common.no_vehicles"))
+            end
+
+            finishTask()
+            done()
+        end)
+    end)
+    
+    addModule(container, "unlock_vehicles", t("unlock_vehicles.title"), t("unlock_vehicles.desc"), "button", nil,
+    function(done)
+        local TAG = "UnlockVehicles"
+        LOG.info(TAG, "Module activated.")
+        scheduler:add(function(finishTask)
+            local vehiclePtrs = resolveVehicleList()
+            if not vehiclePtrs then
+                showToast(t("common.no_vehicles"))
+                finishTask()
+                done()
+                return
+            end
+
+            -- Collect all edits first, one setValues at end
+            local edits = {}
+            forEachVehicle(vehiclePtrs, function(vehiclePtr, deepPtr, deepPtrAddr)
+                table.insert(edits, { address = vehiclePtr + 0x110, flags = 4, value = 1 })
+                for off = 0x114, 0x14C, 4 do
+                    table.insert(edits, { address = vehiclePtr + off, flags = 4, value = 0 })
+                end
+            end)
+            if #edits > 0 then gg.setValues(edits) end
+
+            showToast(successCount > 0 and t("unlock_vehicles.unlocked", successCount) or t("unlock_vehicles.none_to_unlock"))
+            LOG.info(TAG, "Done. Success: " .. tostring(successCount))
+            finishTask()
+            done()
+        end)
+    end)
+
+    addModule(container, "max_vehicles", t("max_vehicles.title"), t("max_vehicles.desc"), "button", nil,
+    function(done)
+        local TAG = "MaxVehicles"
+        LOG.info(TAG, "Module activated.")
+
+        scheduler:add(function(finishTask)
+            local vehicleListPtr = gg.getValues({{ address = BaseGameStatus + 0xB8, flags = 32 }})[1].value
+            local totalVehicles  = gg.getValues({{ address = BaseGameStatus + 0xC0, flags = 4  }})[1].value
+
+            if not vehicleListPtr or vehicleListPtr == 0 then
+                showToast(t("max_vehicles.no_vehicles"))
+                LOG.fatal(TAG, "vehicleListPtr is nil or 0.")
+                finishTask(); done(); return
+            end
+
+            LOG.dbg(TAG, "Total vehicles: " .. tostring(totalVehicles))
+
+            local upgradeList = {}
+
+            for i = 0, totalVehicles - 1 do
+                local vehiclePtr = gg.getValues({{ address = vehicleListPtr + i * 8, flags = 32 }})[1].value
+                if vehiclePtr and vehiclePtr ~= 0 then
+                    local namePtr     = gg.getValues({{ address = vehiclePtr + 0x18, flags = 32 }})[1].value
+                    local vehicleName = (namePtr and namePtr ~= 0) and readString(namePtr + 1) or "unknown"
+                    local upgradeSlots = vehicleName:find("lowrider") and 5 or 4
+
+                    local upgradeListPtr = gg.getValues({{ address = vehiclePtr + 0x20, flags = 32 }})[1].value
+                    if upgradeListPtr and upgradeListPtr ~= 0 then
+                        for j = 0, upgradeSlots - 1 do
+                            local upgradePtr = gg.getValues({{ address = upgradeListPtr + j * 8, flags = 32 }})[1].value
+                            if upgradePtr and upgradePtr ~= 0 then
+                                table.insert(upgradeList, { address = upgradePtr + 0x20, flags = 4, value = 19 })
+                                table.insert(upgradeList, { address = upgradePtr + 0x24, flags = 4, value = 19 })
+                            end
+                        end
+                        LOG.dbg(TAG, "[" .. vehicleName .. "] queued " .. tostring(upgradeSlots) .. " upgrade slots.")
+                    end
+                end
+                showToast(t("common.progress", i+1, totalVehicles), true)
+            end
+
+            if #upgradeList > 0 then
+                gg.setValues(upgradeList)
+                showToast(t("max_vehicles.all_maxed"))
+                LOG.info(TAG, "Done. Total writes: " .. tostring(#upgradeList))
+            else
+                showToast(t("max_vehicles.failed"))
+                LOG.warn(TAG, "upgradeList is empty.")
+            end
+
+            finishTask()
+            done()
+        end)
+    end)
+
+    addModule(container, "max_mastery", t("max_mastery.title"), t("max_mastery.desc"), "button", nil,
+    function(done)
+        local TAG = "MaxMastery"
+        LOG.info(TAG, "Module activated.")
+
+        scheduler:add(function(finishTask)
+            local masteryTimestamp = os.time(os.date("!*t"))
+            local vehicleListPtr   = gg.getValues({{ address = BaseGameStatus + 0xB8, flags = 32 }})[1].value
+            local totalVehicles    = gg.getValues({{ address = BaseGameStatus + 0xC0, flags = 4  }})[1].value
+
+            if not vehicleListPtr or vehicleListPtr == 0 then
+                showToast(t("max_mastery.failed"))
+                LOG.fatal(TAG, "vehicleListPtr is nil or 0.")
+                finishTask(); done(); return
+            end
+
+            if not totalVehicles or totalVehicles == 0 then
+                showToast(t("max_mastery.failed"))
+                LOG.fatal(TAG, "totalVehicles is nil or 0.")
+                finishTask(); done(); return
+            end
+
+            LOG.dbg(TAG, "Total vehicles: " .. tostring(totalVehicles))
+
+            local successCount = 0
+            local skipCount    = 0
+
+            for i = 1, totalVehicles do
+                local vehiclePtr = gg.getValues({{ address = vehicleListPtr + (i - 1) * 8, flags = 32 }})[1].value
+                if not vehiclePtr or vehiclePtr == 0 then
+                    skipCount = skipCount + 1; goto continue
+                end
+
+                local namePtr     = gg.getValues({{ address = vehiclePtr + 0x18, flags = 32 }})[1].value
+                local vehicleName = (namePtr and namePtr ~= 0) and readString(namePtr + 1) or "Unknown"
+
+                local masteryPtr = gg.getValues({{ address = vehiclePtr + 0x120, flags = 32 }})[1].value
+                if not masteryPtr or masteryPtr == 0 then
+                    LOG.dbg(TAG, "[" .. vehicleName .. "] masteryPtr is 0. Skipping (not maxed).")
+                    skipCount = skipCount + 1; goto continue
+                end
+
+                -- Read up to 4 CA pointers
+                local ptrReads  = {}
+                for j = 0, 3 do
+                    table.insert(ptrReads, { address = masteryPtr + j * 8, flags = 32 })
+                end
+                local rawPtrs   = gg.getValues(ptrReads)
+                local validPtrs = {}
+                if rawPtrs then
+                    for _, p in ipairs(rawPtrs) do
+                        if p and p.value and p.value ~= 0 then
+                            table.insert(validPtrs, p.value)
+                        end
+                    end
+                end
+
+                if #validPtrs == 0 then
+                    LOG.dbg(TAG, "[" .. vehicleName .. "] No valid CA pointers. Skipping.")
+                    skipCount = skipCount + 1; goto continue
+                end
+
+                local writes = {}
+                for _, p in ipairs(validPtrs) do
+                    table.insert(writes, { address = p + 0x18, flags = 4, value = 65793 })
+                    table.insert(writes, { address = p + 0x1C, flags = 4, value = masteryTimestamp })
+                end
+
+                gg.setValues({
+                    { address = vehiclePtr + 0x120, flags = 32, value = masteryPtr },
+                    { address = vehiclePtr + 0x128, flags = 4,  value = 4 },
+                    { address = vehiclePtr + 0x12C, flags = 4,  value = 4 },
+                    { address = vehiclePtr + 0x130, flags = 4,  value = 4 },
+                })
+                gg.setValues(writes)
+
+                LOG.info(TAG, "[" .. vehicleName .. "] Mastery maxed.")
+                successCount = successCount + 1
+                
+                showToast(t("common.progress", i, totalVehicles), true)
+                ::continue::
+            end
+
+            LOG.info(TAG, string.format("Complete. Success: %d | Skipped: %d", successCount, skipCount))
+            showToast(successCount > 0 and t("max_mastery.all_maxed") or t("max_mastery.failed"))
+            finishTask()
+            done()
+        end)
+    end)
+
+    addModule(container, "max_parts", t("max_parts.title"), t("max_parts.desc"), "button", nil,
+    function(done)
+        local TAG = "MaxParts"
+        LOG.info(TAG, "Module activated.")
+
+        scheduler:add(function(finishTask)
+            local vehicleListPtr = gg.getValues({{ address = BaseGameStatus + 0xB8, flags = 32 }})[1].value
+            local totalVehicles  = gg.getValues({{ address = BaseGameStatus + 0xC0, flags = 4  }})[1].value
+
+            if not vehicleListPtr or vehicleListPtr == 0 then
+                showToast(t("max_parts.no_vehicles"))
+                LOG.fatal(TAG, "vehicleListPtr is nil or 0.")
+                finishTask(); done(); return
+            end
+
+            LOG.dbg(TAG, "Total vehicles: " .. tostring(totalVehicles))
+
+            local upgradeList = {}
+
+            for i = 0, totalVehicles - 1 do
+                local vehiclePtr = gg.getValues({{ address = vehicleListPtr + i * 8, flags = 32 }})[1].value
+                if vehiclePtr and vehiclePtr ~= 0 then
+                    local partsListPtr = gg.getValues({{ address = vehiclePtr + 0x58, flags = 32 }})[1].value
+                    local totalParts   = gg.getValues({{ address = vehiclePtr + 0x60, flags = 4  }})[1].value
+
+                    if partsListPtr and partsListPtr ~= 0 and totalParts and totalParts > 0 then
+                        for j = 0, totalParts - 1 do
+                            local partPtr = gg.getValues({{ address = partsListPtr + j * 8, flags = 32 }})[1].value
+                            if partPtr and partPtr ~= 0 then
+                                local namePtr  = gg.getValues({{ address = partPtr + 0x18, flags = 32 }})[1].value
+                                local partName = "unknown"
+
+                                if namePtr and namePtr ~= 0 then
+                                    local header = gg.getValues({{ address = namePtr, flags = 4 }})[1].value
+                                    if header == 49 then
+                                        local namePtr2 = gg.getValues({{ address = namePtr + 0x10, flags = 32 }})[1].value
+                                        partName = namePtr2 ~= 0 and readString(namePtr2 + 1) or "unknown"
+                                    else
+                                        partName = readString(namePtr + 1)
+                                    end
+                                end
+
+                                local maxLevel = 3 -- fallback for unrecognised parts
+                                
+                                for key, lvl in pairs(PART_MAX_LEVEL) do
+                                    -- '$' anchors the search strictly to the end of the string
+                                    if partName:find(key .. "$") then 
+                                        maxLevel = lvl
+                                        break 
+                                    end
+                                end
+                                
+                                LOG.dbg(TAG, "[" .. partName .. "] max level: " .. tostring(maxLevel))
+                                table.insert(upgradeList, { address = partPtr + 0x20, flags = 4, value = maxLevel })
+                                table.insert(upgradeList, { address = partPtr + 0x34, flags = 4, value = maxLevel })
+                            end
+                        end
+                    end
+                end
+                showToast(t("common.progress", i+1, totalVehicles), true)
+            end
+
+            if #upgradeList > 0 then
+                gg.setValues(upgradeList)
+                showToast(t("max_parts.all_maxed"))
+                LOG.info(TAG, "Done. Total writes: " .. tostring(#upgradeList))
+            else
+                showToast(t("max_parts.failed"))
+                LOG.warn(TAG, "upgradeList is empty.")
+            end
+
+            finishTask()
+            done()
+        end)
+    end)
+end
 end
 
 __vfs['ui/ui.lua'] = function(...)
@@ -23686,13 +24548,13 @@ function loadCategory(id, tabView)
         local status, err = pcall(function() setCategory(moduleContainer) end)
         if not status then
             local errTxt = TextView(activity)
-            errTxt.setText("Error: " .. tostring(err))
+            errTxt.setText(T("ui.category_error", tostring(err)))
             errTxt.setTextColor(UI.RED)
             moduleContainer.addView(errTxt)
         end
     else
         local errTxt = TextView(activity)
-        errTxt.setText("Category Not Found")
+        errTxt.setText(T("ui.category_not_found"))
         errTxt.setTextColor(UI.SUB)
         moduleContainer.addView(errTxt)
     end
@@ -23911,7 +24773,7 @@ function addModule(parent, id, title, desc, mode, extra, callback)
 
     elseif mode == "ro" then
         local info = TextView(activity)
-        local rawText = tostring(extra or "N/A")
+        local rawText = tostring(extra or T("ui.na"))
         info.setText(rawText)
         info.setTextColor(UI.LOGO)
         info.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
@@ -23939,7 +24801,7 @@ function addModule(parent, id, title, desc, mode, extra, callback)
         local currentIdx = savedIdx or defaultIdx
 
         local options     = extra.options or extra
-        local initialText = options[currentIdx] or "Select"
+        local initialText = options[currentIdx] or T("ui.spinner_select")
 
         local val = TextView(activity)
         val.setText(tostring(initialText))
@@ -24010,7 +24872,7 @@ function addModule(parent, id, title, desc, mode, extra, callback)
 
         for i, cfg in ipairs(slidersData) do
             local valTxt = TextView(activity)
-            valTxt.setText((cfg.title or "Value") .. ": " .. currentValues[i])
+            valTxt.setText((cfg.title or T("ui.slider_default_title")) .. ": " .. currentValues[i])
             valTxt.setTextColor(UI.SUB)
             valTxt.setTextSize(1, 10)
             valTxt.setPadding(dp(2), dp(5), 0, 0)
@@ -24033,7 +24895,7 @@ function addModule(parent, id, title, desc, mode, extra, callback)
                     local newVal = p + cfg.min
                     currentValues[i] = newVal
                     if isMulti then sliderStates[id][i] = newVal else sliderStates[id] = newVal end
-                    valTxt.setText((cfg.title or "Value") .. ": " .. newVal)
+                    valTxt.setText((cfg.title or T("ui.slider_default_title")) .. ": " .. newVal)
                 end
             }))
             controlsRow.addView(seek)
@@ -24365,13 +25227,13 @@ function createIconView()
     end
     
     addHeaderBtn("✕", UI.RED, function()
-        showDialog("Confirm Exit", "Exit The Script?", {"Yes", function()
+        showDialog(T("common.confirm_exit_title"), T("common.confirm_exit_msg"), {T("common.yes"), function()
             memory:save("toggle_states",  toggleStates)
             memory:save("input_states",   inputStates)
             memory:save("spinner_states", spinnerStates)
             memory:save("slider_states",  sliderStates)
             exitScript()
-        end}, {"No"})
+        end}, {T("common.no")})
     end)
     
     -- Drag & Click
@@ -24501,13 +25363,13 @@ local function _buildMenuHeader(root)
         onClick = function()
             Thread(Runnable({ run = function()
                 pcall(function()
-                    showDialog("Confirm Exit", "Exit The Script?", {"Yes", function()
+                    showDialog(T("common.confirm_exit_title"), T("common.confirm_exit_msg"), {T("common.yes"), function()
                         memory:save("toggle_states",  toggleStates)
                         memory:save("input_states",   inputStates)
                         memory:save("spinner_states", spinnerStates)
                         memory:save("slider_states",  sliderStates)
                         exitScript()
-                    end}, {"No"})
+                    end}, {T("common.no")})
                 end)
             end })).start()
         end
@@ -24608,7 +25470,7 @@ function applyWindowResize(newW, newH)
     WIN_W = math.max(RESIZE_MIN_W, math.min(RESIZE_MAX_W, math.floor(newW)))
     WIN_H = math.max(RESIZE_MIN_H, math.min(RESIZE_MAX_H, math.floor(newH)))
     memory:save_global("window_size", { w = WIN_W, h = WIN_H })
-    showToast("Size saved! Restart the script")
+    showToast(T("ui.size_saved_restart"))
     exitScript()
 end
 
@@ -24841,7 +25703,7 @@ end
 -- VOID v1 — HCR2 Modding Framework
 -- Load order: env → imports → constants → core → patches → arch+data → modules → ui → init → loop
 
-scriptSubHeader = " v1.0.22 • By Vekendian"
+scriptSubHeader = " v1.0.23 • By Vekendian"
 
 do
     local LOG_TO_FILE  = true
@@ -25239,10 +26101,10 @@ function exitScript()
     -- FIX: use renamed public scheduler API
     local pending = scheduler:get_queue_count() or 0
     if pending > 0 or scheduler:is_processing() then
-        showDialog("Warning: Active Operations",
-            ("There are %d background task(s) running.\nForce exit may corrupt game state."):format(pending),
-            {"Wait (Safe)", function() showToast("Waiting...") end},
-            {"Force Exit",  function()
+        showDialog(T("main.exit_active_ops_title"),
+            T("main.exit_active_ops_msg", pending),
+            {T("common.wait_safe"), function() showToast(T("common.waiting")) end},
+            {T("common.force_exit"),  function()
                 if activeView then pcall(function() windowManager.removeView(activeView) end) end
                 exit = true
             end})
@@ -25255,6 +26117,7 @@ end
 -- ── Core modules ──────────────────────────────────────────────────────────────
 
 memory    = loadModule("core/engines/memory.lua")
+loadModule("core/utils/lang.lua") -- sets globals: T, setLanguage, LANG_CODE, LANG_AVAILABLE
 scheduler = loadModule("core/engines/scheduler.lua")
 loader    = loadModule("core/utils/loader.lua")
 catbox    = loadModule("core/utils/catbox.lua")
@@ -25315,12 +26178,12 @@ loadModule("ui/ui.lua")
 
 local PKG = "com.fingersoft.hcr2"
 gg.setVisible(false)
-showToast("Initializing...", true)
+showToast(T("main.initializing"), true)
 
 local target_info = gg.getTargetInfo()
-if not target_info then gg.alert("No app found"); os.exit() end
+if not target_info then gg.alert(T("main.no_app_found")); os.exit() end
 if not target_info.x64 then
-    showDialog("64-bit Required", "ARMv8a is mandatory. x86_64 is partially supported.")
+    showDialog(T("main.arch_64bit_required_title"), T("main.arch_64bit_required_msg"))
     os.exit()
 end
 
@@ -25369,12 +26232,12 @@ local auto_update = memory:load_global("auto_update")
 if auto_update and not IS_DEV then
     local remote_ver, download_url, release_body = fetchLatestVersion()
     if remote_ver and versionNewer(remote_ver, CURRENT_VERSION) and download_url then
-        local msg = "v" .. remote_ver .. " is available (current: v" .. CURRENT_VERSION .. ")\n\n" .. (release_body or "No changelog.") .. "\n\nUpdate now?"
-        showDialog("Update Available", msg, {"UPDATE", function()
-            showToast("Downloading v" .. remote_ver .. "...")
+        local msg = T("main.update_available_msg", remote_ver, CURRENT_VERSION, release_body or T("main.no_changelog"))
+        showDialog(T("main.update_available_title"), msg, {T("common.update_button"), function()
+            showToast(T("main.downloading_version", remote_ver))
             local content, err = paste.get(download_url)
             if not content then
-                showDialog("Failed", "Could not download the update:\n" .. tostring(err), {"OK"})
+                showDialog(T("common.failed"), T("main.update_download_failed_msg", tostring(err)), {T("common.ok")})
                 return
             end
 
@@ -25384,27 +26247,27 @@ if auto_update and not IS_DEV then
 
             local f = io.open(new_path, "w")
             if not f then
-                showDialog("Failed", "Could not write to:\n" .. new_path, {"OK"})
+                showDialog(T("common.failed"), T("main.update_write_failed_msg", new_path), {T("common.ok")})
                 return
             end
             f:write(content)
             f:close()
             
             showDialog(
-                "VOID Updated to v" .. remote_ver,
-                "VOID has been updated successfully.\n\nThe new script has been saved as:\nvoid_v" .. remote_ver .. ".lua\n\nRun it from GameGuardian to apply the update.",
-                {"Got it"}
+                T("main.update_done_title", remote_ver),
+                T("main.update_done_msg", remote_ver),
+                {T("common.got_it")}
             )
             
-            showToast("Launching v" .. remote_ver .. "...")
+            showToast(T("main.launching_version", remote_ver))
             local ok, load_err = pcall(function() dofile(new_path) end)
             if not ok then
-                showDialog("Launch Failed", "Downloaded but could not run:\n" .. tostring(load_err), {"OK"})
+                showDialog(T("common.launch_failed"), T("main.launch_failed_msg", tostring(load_err)), {T("common.ok")})
                 return
             end
 
             exitScript()
-        end}, {"Later"})
+        end}, {T("common.later")})
     end
 end
 
@@ -25490,18 +26353,18 @@ local function detectVirtualSpace()
     for _, path in ipairs(paths) do
         local uid = path:match("/user/(%d+)/") or "?"
         local short = path:match("(user/.-/" .. PKG .. ")") or path
-        table.insert(items, "User " .. uid .. "  —  " .. short)
+        table.insert(items, T("main.user_space_item", uid, short))
     end
     
     local selected = nil
     while not selected or selected == 0 do
         selected = showList(
-            "Multiple Spaces Detected",
-            "HCR2 was found in " .. tostring(#paths) .. " virtual spaces.\nSelect the space you are currently playing in.",
+            T("main.multiple_spaces_title"),
+            T("main.multiple_spaces_desc", tostring(#paths)),
             items
         )
         if not selected or selected == 0 then
-            showToast("Please select a space to continue.")
+            showToast(T("main.select_space_toast"))
         end
     end
 
@@ -25515,17 +26378,17 @@ if not exit then
     vm_status, game_path = detectVirtualSpace()
     
     if vm_status == 3 then
-        showDialog("Permission Error",
-            "Shell access was denied.\n\nVoid needs this to locate HCR2 in your virtual space. Check Void source code if you want to verify what command is being run.",
-            {"OK"})
+        showDialog(T("main.permission_error_title"),
+            T("main.permission_error_msg"),
+            {T("common.ok")})
         os.exit()
     end
     
     if vm_status == 2 or game_path == nil then
         local action = showDialog(
-            "HCR2 Data Not Found",
-            "Void couldn't locate HCR2 data in your virtual space. This may happen if HCR2 hasn't been launched yet, or your virtual space app uses an unusual path structure.\n\nFeatures that rely on game files (Event Rewards, etc.) will not work without a valid path.",
-            {"Proceed Anyway"}, {"Manual Mode"}, {"Retry"}
+            T("main.hcr2_not_found_title"),
+            T("main.hcr2_not_found_msg"),
+            {T("common.proceed_anyway")}, {T("common.manual_mode")}, {T("common.retry")}
         )
     
         if action == 1 then
@@ -25534,15 +26397,15 @@ if not exit then
     
         elseif action == 2 then
             -- Manual mode — replace gg.prompt with showPrompt
-            local response = showPrompt("Manual Data Path", {
-                {"Enter the HCR2 data path", "text", "/"}
+            local response = showPrompt(T("main.manual_data_path_title"), {
+                {T("main.manual_data_path_hint"), "text", "/"}
             })
             if response and response[1] and response[1] ~= "" then
                 vm_status = 1
                 game_path = response[1]
                 LOG.info("Main", "Manual path set: " .. game_path)
             else
-                showToast("Cancelled — proceeding without path.")
+                showToast(T("main.manual_path_cancelled"))
                 LOG.warn("Main", "Manual path cancelled.")
             end
     
@@ -25557,7 +26420,7 @@ if not exit then
         local tick_count = 0
         while #gg.getRangesList(lib) == 0 do
             tick_count = tick_count + 1
-            if tick_count % 7 == 0 then showToast("Waiting for " .. lib .. "...") end
+            if tick_count % 7 == 0 then showToast(T("main.waiting_for_lib", lib)) end
             gg.sleep(500)
             if tick_count > 120 then return false end
         end
@@ -25627,13 +26490,13 @@ if not exit then
         end
     end
     
-    showToast("Initialized", true)
+    showToast(T("main.initialized"), true)
     LOG.info("INIT", "Initialized | BaseGameStatus=" .. tostring(BaseGameStatus) .. " BaseRegion=" .. tostring(BaseRegion))
     
     if BaseGameStatus == nil or BaseRegion == nil then
         LOG.fatal("INIT", "BaseGameStatus or BaseRegion is NIL — floating menu will NOT appear!")
         LOG.flush()
-        showToast("GameStatus Not Found"); exit = true
+        showToast(T("main.gamestatus_not_found")); exit = true
     else
         LOG.info("INIT", "BaseGameStatus OK=" .. tostring(BaseGameStatus) .. " | scheduling initUI() via MainHandler")
         
@@ -25662,7 +26525,7 @@ if not exit then
     
     while not exit do
         local ok, err = pcall(function()
-            if gg.isVisible(true) then gg.setVisible(false); gg.toast("Don't interrupt this script") end
+            if gg.isVisible(true) then gg.setVisible(false); gg.toast(T("main.dont_interrupt")) end
             if FORCE_EXIT then exitScript() end
             gg.sleep(100)
         end)

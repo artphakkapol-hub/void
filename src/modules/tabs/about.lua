@@ -1,8 +1,11 @@
 return function(container)
-    addModule(container, "about_script", "About Script", "A powerful and highly optimized memory manipulation script built for Hill Climb Racing 2 on the custom GG: ME (GameGuardian: Memory Editor) environment.\n\nDownload ME:\nhttps://github.com/vekendianorg/me/releases/", "ro", " ", nil)
-    addModule(container, "script_owner", "Script Owner", "- Vekendian Organization (github: vekendianorg)", "ro", " ", nil)
-    addModule(container, "script_dev", "Script Developer", "- Lazor (github: lazor-git)\n- AMR (github: amr-gt)\n- Erik (github: eomthix)", "ro", " ", nil)
-    addModule(container, "credits", "Credits", "- Lazor (github: lazor-git)\n- Lan9118 (discord: lan9118)\n- AMR (github: amr-gt)\n- Erik (github: eomthix)\n- Sr Romero", "ro", " ", nil)
-    addModule(container, "special_thanks", "Special Thanks", "- Aryan/KokushiboModz", "ro", " ", nil)
+    local function t(key, ...) return T("about." .. key, ...) end
+
+    addModule(container, "about_script", t("about_script.title"), t("about_script.desc"), "ro", " ", nil)
+    addModule(container, "script_owner", t("script_owner.title"), t("script_owner.desc"), "ro", " ", nil)
+    addModule(container, "script_dev", t("script_dev.title"), t("script_dev.desc"), "ro", " ", nil)
+    addModule(container, "script_translator", t("script_translator.title"), t("script_translator.desc"), "ro", " ", nil)
+    addModule(container, "credits", t("credits.title"), t("credits.desc"), "ro", " ", nil)
+    addModule(container, "special_thanks", t("special_thanks.title"), t("special_thanks.desc"), "ro", " ", nil)
     
 end

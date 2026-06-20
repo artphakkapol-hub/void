@@ -12,7 +12,7 @@ end
 function catbox.upload(filePath, fileName)
     if not filePath or filePath == "" then
         if LOG and LOG.warn then LOG.warn(TAG, "Upload Aborted: File path is missing") end
-        return nil, "File path is missing"
+        return nil, T("errors.file_path_missing")
     end
 
     -- Automatically extract filename from path if not provided
@@ -68,13 +68,13 @@ function catbox.upload(filePath, fileName)
             return catboxUrl
         else
             conn.disconnect()
-            return nil, "HTTP Error Code: " .. tostring(responseCode)
+            return nil, T("errors.http_error_code", tostring(responseCode))
         end
     end)
 
     if not status then
         if LOG and LOG.error then LOG.error(TAG, "Upload Request Crashed: " .. tostring(res)) end
-        return nil, "Crashed: " .. tostring(res)
+        return nil, T("errors.crashed", tostring(res))
     end
 
     if not res and err then
@@ -90,12 +90,12 @@ end
 function catbox.download(fileUrl, destPath)
     if not fileUrl or fileUrl == "" then
         if LOG and LOG.warn then LOG.warn(TAG, "Download Aborted: URL is missing") end
-        return nil, "URL is missing"
+        return nil, T("errors.download_url_missing")
     end
     
     if not destPath or destPath == "" then
         if LOG and LOG.warn then LOG.warn(TAG, "Download Aborted: Destination path missing") end
-        return nil, "Destination path is missing"
+        return nil, T("errors.dest_path_missing")
     end
 
     local status, res, err = pcall(function()
@@ -128,13 +128,13 @@ function catbox.download(fileUrl, destPath)
             return destPath
         else
             conn.disconnect()
-            return nil, "HTTP Error Code: " .. tostring(responseCode)
+            return nil, T("errors.http_error_code", tostring(responseCode))
         end
     end)
 
     if not status then
         if LOG and LOG.error then LOG.error(TAG, "Download Request Crashed: " .. tostring(res)) end
-        return nil, "Crashed: " .. tostring(res)
+        return nil, T("errors.crashed", tostring(res))
     end
 
     if not res and err then

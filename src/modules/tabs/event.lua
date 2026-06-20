@@ -7,6 +7,7 @@
 ]]
 
 return function(container)
+    local function t(key, ...) return T("event." .. key, ...) end
 
     -- Helper: get file size in bytes, returns -1 if unreadable
     local function fileSize(path)
@@ -35,8 +36,8 @@ return function(container)
         return Shell.su("[ -d \"" .. path .. "\" ] && echo yes || echo no") == "yes"
     end
 
-    addModule(container, "patch_rewards", "Event Rewards Patch", "Patch the current public event rewards to custom one provided by VOID (require game restart)", "button", nil, function(done)
-        gg.toast("Checking environment permissions...")
+    addModule(container, "patch_rewards", t("patch_rewards.title"), t("patch_rewards.desc"), "button", nil, function(done)
+        gg.toast(t("checking_permissions"))
         local hasRoot = checkRoot()
 
         if hasRoot then
@@ -45,7 +46,7 @@ return function(container)
             memory:save("shell_states", {root=false})
         end
 
-        gg.toast("Scanning active files...")
+        gg.toast(t("scanning_files"))
 
         local eventsPath = game_path .. "/files/content_cache/json/events/"
 
@@ -58,7 +59,7 @@ return function(container)
             jsonMod = json.decode(custom_rewards)
         end)
         if not ok or not jsonMod then
-            table.insert(failedList, "Failed to decode rewards JSON")
+            table.insert(failedList, t("decode_rewards_failed"))
             jsonMod = nil
         end
 
@@ -68,8 +69,8 @@ return function(container)
             Shell.su("mkdir -p \"" .. safeWorkspace .. "\"")
             Shell.su("chmod 777 \"" .. safeWorkspace .. "\"")
             if not dirExists(safeWorkspace) then
-                table.insert(failedList, "FATAL: Workspace creation failed: " .. safeWorkspace)
-                showDialog("Patch Results", "FATAL: Could not create workspace directory.\n" .. safeWorkspace, {"OK"})
+                table.insert(failedList, t("workspace_creation_failed", safeWorkspace))
+                showDialog(t("patch_results_title"), t("workspace_creation_failed_dialog", safeWorkspace), {T("common.ok")})
                 done()
                 return
             end
@@ -94,23 +95,23 @@ return function(container)
 
                 if not fileExists(secureActiveCopy) then
                     LOG.warn("EventPatch", "Root copy verification FAILED for: " .. secureActiveCopy)
-                    table.insert(failedList, "Root copy failed: " .. active)
+                    table.insert(failedList, t("root_copy_failed", active))
                     goto continue_path
                 end
 
                 targetActivePath = secureActiveCopy
                 activeMovedViaRoot = true
             else
-                table.insert(failedList, "File inaccessible at path: " .. path)
+                table.insert(failedList, t("file_inaccessible", path))
                 goto continue_path
             end
 
             if not fileExists(targetActivePath) then
-                table.insert(failedList, "Pre-decrypt: source not found: " .. targetActivePath)
+                table.insert(failedList, t("predecrypt_not_found", targetActivePath))
                 goto continue_path
             end
             if fileSize(targetActivePath) <= 0 then
-                table.insert(failedList, "Pre-decrypt: source is empty (0 bytes): " .. targetActivePath)
+                table.insert(failedList, t("predecrypt_empty", targetActivePath))
                 goto continue_path
             end
 
@@ -129,27 +130,27 @@ return function(container)
                         jsonActive = json.decode(activeContent)
                     end)
                     if not ok2 or not jsonActive then
-                        table.insert(failedList, "Failed to decode active_events.json at path: " .. path)
+                        table.insert(failedList, t("decode_active_failed", path))
                         goto continue_path
                     end
 
                     local gameEvents = jsonActive.gameEvents or {}
                     if #gameEvents == 0 then
-                        table.insert(failedList, "No active events found at path: " .. path)
+                        table.insert(failedList, t("no_active_events", path))
                         goto continue_path
                     end
 
                     local labels = {}
                     for i = 1, #gameEvents do labels[i] = tostring(gameEvents[i]) end
 
-                    local selections = gg.multiChoice(labels, nil, "Select events to patch:\nPath: " .. path)
+                    local selections = gg.multiChoice(labels, nil, t("select_events_patch", path))
                     if not selections then
-                        table.insert(failedList, "User cancelled selection for path: " .. path)
+                        table.insert(failedList, t("user_cancelled", path))
                         goto continue_path
                     end
 
                     if not jsonMod then
-                        table.insert(failedList, "Embedded rewards not available, skipping patches for path: " .. path)
+                        table.insert(failedList, t("rewards_unavailable", path))
                         goto continue_path
                     end
                     local eventRewards = jsonMod.eventRewards
@@ -183,23 +184,23 @@ return function(container)
 
                                                 if not fileExists(secureEventCopy) then
                                                     LOG.warn("EventPatch", "Root event copy FAILED for: " .. secureEventCopy)
-                                                    table.insert(failedList, "Root copy failed: " .. eventPath)
+                                                    table.insert(failedList, t("root_copy_failed", eventPath))
                                                     goto next_event
                                                 end
 
                                                 targetEventPath = secureEventCopy
                                                 eventMovedViaRoot = true
                                             else
-                                                table.insert(failedList, "Skipped unreadable event: " .. eventName)
+                                                table.insert(failedList, t("skipped_unreadable", eventName))
                                                 goto next_event
                                             end
 
                                             if not fileExists(targetEventPath) then
-                                                table.insert(failedList, "Pre-decrypt: event not found: " .. targetEventPath)
+                                                table.insert(failedList, t("predecrypt_event_not_found", targetEventPath))
                                                 goto next_event
                                             end
                                             if fileSize(targetEventPath) <= 0 then
-                                                table.insert(failedList, "Pre-decrypt: event is empty (0 bytes): " .. targetEventPath)
+                                                table.insert(failedList, t("predecrypt_event_empty", targetEventPath))
                                                 goto next_event
                                             end
 
@@ -249,14 +250,14 @@ return function(container)
 
                                                     if not writeOk then
                                                         pcall(function() eventFile:close() end)
-                                                        table.insert(failedList, "Failed processing " .. eventName .. ": " .. tostring(writeErr))
+                                                        table.insert(failedList, t("processing_failed", eventName, tostring(writeErr)))
                                                     end
                                                     os.remove(decryptedPath)
                                                 else
-                                                    table.insert(failedList, "Cannot open decrypted file: " .. decryptedPath)
+                                                    table.insert(failedList, t("cannot_open_decrypted", decryptedPath))
                                                 end
                                             else
-                                                table.insert(failedList, "Failed to decrypt event: " .. eventName)
+                                                table.insert(failedList, t("decrypt_event_failed", eventName))
                                             end
                                         end
                                     end
@@ -265,7 +266,7 @@ return function(container)
                             end)
 
                             if not loopOk then
-                                table.insert(failedList, "Critical file processing loop crash: " .. tostring(loopErr))
+                                table.insert(failedList, t("loop_crash", tostring(loopErr)))
                             end
 
                             finishTask()
@@ -275,10 +276,10 @@ return function(container)
                         while not fileTaskDone do gg.sleep(50) end
                     end
                 else
-                    table.insert(failedList, "Cannot open active_events.json at path: " .. path)
+                    table.insert(failedList, t("cannot_open_active", path))
                 end
             else
-                table.insert(failedList, "Failed to decrypt active_events.json at path: " .. path)
+                table.insert(failedList, t("decrypt_active_failed", path))
             end
             ::continue_path::
         end
@@ -290,28 +291,28 @@ return function(container)
 
         local resultMsg = ""
         if #successList > 0 then
-            resultMsg = resultMsg .. "Successfully:\n"
+            resultMsg = resultMsg .. t("success_header") .. "\n"
             for _, name in ipairs(successList) do
-                resultMsg = resultMsg .. "- " .. name .. "\n"
+                resultMsg = resultMsg .. t("success_item", name) .. "\n"
             end
             resultMsg = resultMsg .. "\n"
         end
         if #failedList > 0 then
-            resultMsg = resultMsg .. "Failed:\n"
+            resultMsg = resultMsg .. t("failed_header") .. "\n"
             for _, e in ipairs(failedList) do
-                resultMsg = resultMsg .. "- " .. e .. "\n"
+                resultMsg = resultMsg .. t("failed_item", e) .. "\n"
             end
         end
 
-        showDialog("Patch Results", resultMsg, {"OK"})
+        showDialog(t("patch_results_title"), resultMsg, {T("common.ok")})
         done()
 
         if #successList > 0 then
             print(resultMsg)
-            showDialog("Restart Required", "Game is killed and this script gonna exit, start it again and see the patch effects", {"OK"})
+            showDialog(t("restart_required_title"), t("patch_restart_msg"), {T("common.ok")})
 
             if scheduler:get_queue_count() > 0 or scheduler:is_processing() then
-                gg.toast("Finishing pending background tasks... Please wait.")
+                gg.toast(t("finishing_tasks_patch"))
                 while scheduler:get_queue_count() > 0 or scheduler:is_processing() do
                     gg.sleep(100)
                 end
@@ -321,12 +322,12 @@ return function(container)
             gg.sleep(1000)
             exitScript()
         else
-            showDialog("Failed", "Failed to patch, try again.", {"OK"})
+            showDialog(T("common.failed"), t("patch_failed_msg"), {T("common.ok")})
         end
     end)
 
-    addModule(container, "restore_events", "Event Rewards Restore", "Delete modified event JSONs to force game server recovery (requires game restart)", "button", nil, function(done)
-        gg.toast("Checking environment permissions...")
+    addModule(container, "restore_events", t("restore_events.title"), t("restore_events.desc"), "button", nil, function(done)
+        gg.toast(t("checking_permissions"))
         local hasRoot = checkRoot()
 
         if hasRoot then
@@ -335,7 +336,7 @@ return function(container)
             memory:save("shell_states", {root=false})
         end
 
-        gg.toast("Scanning active files...")
+        gg.toast(t("scanning_files"))
 
         local eventsPath = game_path .. "/files/content_cache/json/events/"
 
@@ -347,8 +348,8 @@ return function(container)
             Shell.su("mkdir -p \"" .. safeWorkspace .. "\"")
             Shell.su("chmod 777 \"" .. safeWorkspace .. "\"")
             if not dirExists(safeWorkspace) then
-                table.insert(failedList, "FATAL: Workspace creation failed: " .. safeWorkspace)
-                showDialog("Restore Results", "FATAL: Could not create workspace directory.\n" .. safeWorkspace, {"OK"})
+                table.insert(failedList, t("workspace_creation_failed", safeWorkspace))
+                showDialog(t("restore_results_title"), t("workspace_creation_failed_dialog", safeWorkspace), {T("common.ok")})
                 done()
                 return
             end
@@ -372,23 +373,23 @@ return function(container)
 
                 if not fileExists(secureActiveCopy) then
                     LOG.warn("EventRestore", "Root copy verification FAILED for: " .. secureActiveCopy)
-                    table.insert(failedList, "Root copy failed: " .. active)
+                    table.insert(failedList, t("root_copy_failed", active))
                     goto continue_path
                 end
 
                 targetActivePath = secureActiveCopy
                 activeMovedViaRoot = true
             else
-                table.insert(failedList, "File inaccessible at path: " .. path)
+                table.insert(failedList, t("file_inaccessible", path))
                 goto continue_path
             end
 
             if not fileExists(targetActivePath) then
-                table.insert(failedList, "Pre-decrypt: source not found: " .. targetActivePath)
+                table.insert(failedList, t("predecrypt_not_found", targetActivePath))
                 goto continue_path
             end
             if fileSize(targetActivePath) <= 0 then
-                table.insert(failedList, "Pre-decrypt: source is empty (0 bytes): " .. targetActivePath)
+                table.insert(failedList, t("predecrypt_empty", targetActivePath))
                 goto continue_path
             end
 
@@ -413,7 +414,7 @@ return function(container)
                             local labels = {}
                             for i = 1, #gameEvents do labels[i] = tostring(gameEvents[i]) end
 
-                            local selections = gg.multiChoice(labels, nil, "Select files to restore (delete):\nPath: " .. path)
+                            local selections = gg.multiChoice(labels, nil, t("select_events_restore", path))
 
                             if selections then
                                 local fileTaskDone = false
@@ -441,7 +442,7 @@ return function(container)
                                                     if removed then
                                                         table.insert(successList, eventName)
                                                     else
-                                                        table.insert(failedList, "Failed to delete " .. eventName .. ": " .. tostring(remErr))
+                                                        table.insert(failedList, t("delete_failed", eventName, tostring(remErr)))
                                                     end
                                                 end
                                             end
@@ -454,16 +455,16 @@ return function(container)
                                 while not fileTaskDone do gg.sleep(50) end
                             end
                         else
-                            table.insert(failedList, "No active events found at path: " .. path)
+                            table.insert(failedList, t("no_active_events", path))
                         end
                     else
-                        table.insert(failedList, "Failed to decode active_events.json at path: " .. path)
+                        table.insert(failedList, t("decode_active_failed", path))
                     end
                 else
-                    table.insert(failedList, "Cannot open active_events.json at path: " .. path)
+                    table.insert(failedList, t("cannot_open_active", path))
                 end
             else
-                table.insert(failedList, "Failed to decrypt active_events.json at path: " .. path)
+                table.insert(failedList, t("decrypt_active_failed", path))
             end
             ::continue_path::
         end
@@ -475,28 +476,28 @@ return function(container)
 
         local resultMsg = ""
         if #successList > 0 then
-            resultMsg = resultMsg .. "Successfully Removed (Will Restore on Restart):\n"
+            resultMsg = resultMsg .. t("success_removed_header") .. "\n"
             for _, name in ipairs(successList) do
-                resultMsg = resultMsg .. "- " .. name .. ".json\n"
+                resultMsg = resultMsg .. t("success_item_json", name) .. "\n"
             end
             resultMsg = resultMsg .. "\n"
         end
         if #failedList > 0 then
-            resultMsg = resultMsg .. "Failed:\n"
+            resultMsg = resultMsg .. t("failed_header") .. "\n"
             for _, e in ipairs(failedList) do
-                resultMsg = resultMsg .. "- " .. e .. "\n"
+                resultMsg = resultMsg .. t("failed_item", e) .. "\n"
             end
         end
 
-        showDialog("Restore Results", resultMsg, {"OK"})
+        showDialog(t("restore_results_title"), resultMsg, {T("common.ok")})
         done()
 
         if #successList > 0 then
             print(resultMsg)
-            showDialog("Restart Required", "Game will now close to allow server file synchronization.", {"OK"})
+            showDialog(t("restart_required_title"), t("restore_restart_msg"), {T("common.ok")})
 
             if scheduler:get_queue_count() > 0 or scheduler:is_processing() then
-                gg.toast("Finishing pending background tasks...")
+                gg.toast(t("finishing_tasks_restore"))
                 while scheduler:get_queue_count() > 0 or scheduler:is_processing() do
                     gg.sleep(100)
                 end

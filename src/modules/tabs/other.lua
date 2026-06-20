@@ -6,7 +6,9 @@
 ]]
 
 return function(container)
-    addModule(container, "debug_mode", "Debug Mode", "Toggle the in-game debug mode", "switch", nil, function(done, state)
+    local function t(key, ...) return T("other." .. key, ...) end
+
+    addModule(container, "debug_mode", t("debug_mode.title"), t("debug_mode.desc"), "switch", nil, function(done, state)
         scheduler:add(function(finishTask)
             local TAG = "DebugMode"
             
@@ -16,14 +18,14 @@ return function(container)
                     flags = 1,
                     value = 1
                 }})
-                showToast("Debug Mode Enabled", true)
+                showToast(t("debug_mode.enabled"), true)
             else
                 gg.setValues({{
                     address = BaseGameStatusRaw + 0x3,
                     flags = 1,
                     value = 0
                 }})
-                showToast("Debug Mode Disabled", true)
+                showToast(t("debug_mode.disabled"), true)
             end
             
             finishTask()
@@ -31,9 +33,9 @@ return function(container)
         end)
     end)
     
-    addModule(container, "resolution", "Adjust Resolution", "Adjust the game width and height (default is 1280x720)", "input", {
-        {hint = "Width", type = "number"},
-        {hint = "Height", type = "number"}
+    addModule(container, "resolution", t("resolution.title"), t("resolution.desc"), "input", {
+        {hint = t("hint.width"), type = "number"},
+        {hint = t("hint.height"), type = "number"}
     }, function(done, vals)
         scheduler:add(function(finishTask)
             local TAG = "Resolution"
@@ -55,7 +57,7 @@ return function(container)
 
                 if #cocos == 0 then
                     LOG.warn(TAG, "GLSurfaceView not found in memory")
-                    gg.toast("GLSurfaceView not found")
+                    gg.toast(t("glsurface_not_found"))
                     finishTask()
                     done()
                     return
@@ -100,7 +102,7 @@ return function(container)
 
                 if #values > 0 then
                     gg.setValues(values)
-                    gg.toast(string.format("Resolution set to %dx%d", width, height))
+                    gg.toast(t("resolution.applied", width, height))
                 end
             end
 
@@ -109,9 +111,9 @@ return function(container)
         end)
     end)
 
-    addModule(container, "resolution_offset", "Adjust Resolution Offset", "Adjust the game width offset and height offset (default is 0x0), best for small resolution in a large screen.", "input", {
-        {hint = "Width", type = "number"},
-        {hint = "Height", type = "number"}
+    addModule(container, "resolution_offset", t("resolution_offset.title"), t("resolution_offset.desc"), "input", {
+        {hint = t("hint.width"), type = "number"},
+        {hint = t("hint.height"), type = "number"}
     }, function(done, vals)
         scheduler:add(function(finishTask)
             local width = tonumber(vals[1]) or 0
@@ -129,7 +131,7 @@ return function(container)
                 gg.clearResults()
 
                 if #cocos == 0 then
-                    gg.toast("GLSurfaceView not found")
+                    gg.toast(t("glsurface_not_found"))
                     finishTask()
                     done()
                     return
@@ -170,7 +172,7 @@ return function(container)
 
                 if #values > 0 then
                     gg.setValues(values)
-                    gg.toast(string.format("Resolution offset set to %dx%d", width, height))
+                    gg.toast(t("resolution_offset.applied", width, height))
                 end
             end
 
