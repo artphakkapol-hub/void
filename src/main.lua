@@ -1,7 +1,7 @@
 -- VOID v1 — HCR2 Modding Framework
 -- Load order: env → imports → constants → core → patches → arch+data → modules → ui → init → loop
 
-scriptSubHeader = " v1.0.21 • By Vekendian"
+scriptSubHeader = " v1.0.22 • By Vekendian"
 
 do
     local LOG_TO_FILE  = true

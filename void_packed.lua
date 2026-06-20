@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-20 20:58:20
+-- Packed by bundle.py  •  2026-06-20 21:00:03
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -24841,7 +24841,7 @@ end
 -- VOID v1 — HCR2 Modding Framework
 -- Load order: env → imports → constants → core → patches → arch+data → modules → ui → init → loop
 
-scriptSubHeader = " v1.0.21 • By Vekendian"
+scriptSubHeader = " v1.0.22 • By Vekendian"
 
 do
     local LOG_TO_FILE  = true
