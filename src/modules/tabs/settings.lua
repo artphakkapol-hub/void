@@ -141,7 +141,8 @@ return function(container)
                 menuView = nil
                 activeView = nil
             end
-
+            
+            switchToMenu()
             createMenuView("settings")
             switchToMenu()
         end)
@@ -161,6 +162,37 @@ return function(container)
         
     end
     
+    local function applyTheme(shareId)
+        local TAG = "ApplyTheme"
+        if shareId and shareId ~= "" then
+            local rawText, err = paste.get("https://paste.rs/" .. shareId)
+            
+            if rawText then
+                local ok, exportData = pcall(load(rawText))
+                if ok and type(exportData) == "table" and exportData.version then
+                    for k, v in pairs(exportData.ui) do if UI[k] ~= nil then UI[k] = deepCopy(v) end end
+    
+                    if exportData.img_url then
+                        showToast("Downloading background image...")
+                        local dest = gg.FILES_DIR .. "/" .. (exportData.name or "background_image_" .. tostring(os.time()).. ".png")
+                        local path, dErr = catbox.download(exportData.img_url, dest)
+                        if path then UI.BG_IMAGE.PATH = path else LOG.error(TAG, "Background image download failed") end
+                    else
+                        UI.BG_IMAGE.PATH = "no_media"
+                    end
+    
+                    memory:save_global("ui_prefs", UI)
+                    saveAndRefresh()
+                    showDialog("Success", "Theme imported!", "OK")
+                else
+                    showDialog("Failed", "Invalid bundle format.", "OK")
+                end
+            else
+                showDialog("Failed", "Cloud error: " .. tostring(err), "OK")
+            end
+        end
+    end
+    
     -- --- Updater ────────────────────────────────────────────────────────
     
     addModuleSep(container, "Updates")
@@ -169,11 +201,9 @@ return function(container)
     addModule(container, "auto_update", "Auto Update", "Auto update VOID on startup", "switch", nil, function(done, state)
         if IS_DEV then
             showDialog("Dev Mode", "Auto update is disabled for main.lua (dev build).", {"OK"})
-            toggleStates["auto_update"] = false
-            done()
-            return
+        else
+            memory:save_global("auto_update", state)
         end
-        memory:save_global("auto_update", state)
         done()
     end)
     
@@ -244,7 +274,7 @@ return function(container)
     addModule(container, "gamestatus_address", "GameStatus", "Current gamestatus address\n(automatically chosen by script)", "ro", string.format("0x%X", BaseGameStatus or 0), nil)
     addModule(container, "gamestatus_raw_address", "GameStatus (Raw)", "Current gamestatus (raw) address\n(automatically chosen by script)", "ro", string.format("0x%X", BaseGameStatusRaw or 0), nil)
     
-    -- ── Session Control or smth ────────────────────────────────────────────────────────
+    -- ── Session Control ────────────────────────────────────────────────────────
     addModule(container, "clear_memory", "Clear Saved Memory", "Clear all VOID saved memory without needed to restart the whole game.", "button", nil, function(done)
         LOG.info("Settings", "User triggered clear_all()")
         memory:clear_all()
@@ -252,11 +282,113 @@ return function(container)
     end)
     
     -- ── Custom Colors Info ────────────────────────────────────────────────────
-    -- Allow user to changes colors of this script.
+    -- Allow user to change colors of this script.
     addModuleSep(container, "UI Customizations")
+    
+    addModule(container, "theme_store", "Theme Store", "Browse and install community Void themes", "button", nil,
+    function(done)
+        local TAG = "ThemeStore"
+        LOG.info(TAG, "Opening theme store...")
+
+        local raw, err = paste.get("https://raw.githubusercontent.com/vekendianorg/void-themes/refs/heads/main/index.json")
+        if not raw then
+            showDialog("Failed", "Could not reach theme store:\n" .. tostring(err), {"OK"})
+            done()
+            return
+        end
+
+        local index = nil
+        local ok, parseErr = pcall(function()
+            index = json.decode(raw)
+        end)
+
+        if not ok or not index or not index.themes then
+            showDialog("Failed", "Could not parse theme store data.", {"OK"})
+            done()
+            return
+        end
+
+        local allThemes = index.themes
+        local currentThemes = allThemes
+
+        local function openStore(allThemes, currentThemes)
+            local isFiltered = currentThemes ~= allThemes
+            local title = "Void Theme Store"
+            local desc  = isFiltered
+                and "Search results: " .. tostring(#currentThemes) .. " found"
+                or  tostring(#allThemes) .. " themes available"
+        
+            local items = {}
+            for _, theme in ipairs(currentThemes) do
+                table.insert(items, theme.name .. " • by " .. theme.author)
+            end
+        
+            -- Search as first item
+            table.insert(items, 1, "🔍 Search...")
+            if isFiltered then
+                table.insert(items, 2, "✕ Clear search")
+            end
+        
+            return showList(title, desc, items)
+        end
+
+        -- Store loop
+        local refreshMenu = false
+        while true do
+            local choice = openStore(allThemes, currentThemes)
+        
+            if choice == 0 then
+                break -- cancelled / outside tap
+        
+            elseif choice == 1 then
+                -- Search
+                local result = showPrompt("Search Themes", {
+                    {"Theme name, author or description", "text", ""}
+                })
+                if result and result[1] ~= "" then
+                    local q = result[1]:lower()
+                    local filtered = {}
+                    for _, theme in ipairs(allThemes) do
+                        if theme.name:lower():find(q, 1, true)
+                        or theme.author:lower():find(q, 1, true)
+                        or (theme.description and theme.description:lower():find(q, 1, true)) then
+                            table.insert(filtered, theme)
+                        end
+                    end
+                    
+                    currentThemes = filtered
+                    
+                    if #filtered == 0 then
+                        showToast("No themes found for: " .. result[1])
+                    end
+                end
+        
+            elseif currentThemes ~= allThemes and choice == 2 then
+                -- Clear search
+                currentThemes = allThemes
+        
+            else
+                -- Theme selected — offset by search + clear buttons
+                local offset = currentThemes ~= allThemes and 2 or 1
+                local theme = currentThemes[choice - offset]
+                if theme then
+                    local choice = showDialog(
+                        theme.name,
+                        "By " .. theme.author .. "\n\n" .. (theme.description or "") .. "\n\nID: " .. theme.id,
+                        {"Install Theme", function() applyTheme(theme.id); refreshMenu = true end}, {"Cancel"}
+                    )
+                end
+            end
+            if refreshMenu then break end
+        end
+        
+        done()
+        rebuildMenu()
+    end)
     
     addModule(container, "reset_theme", "Reset Theme", "Reset custom theme and background image to the default", "button", nil, function(done)
         local TAG = "ResetTheme"
+        LOG.info(TAG, "User triggered theme reset")
         
         memory:delete_global("ui_prefs")
         UI = loadModule("configs/colors.lua")
@@ -265,8 +397,22 @@ return function(container)
         rebuildMenu()
     end)
     
+    addModule(container, "import_theme", "Import Theme", "Import custom theme from cloud", "input", {
+        { hint = "Enter Share ID", value = "", type = "text" }
+    }, function(done, val)
+        local TAG = "ImportTheme"
+        local shareId = (type(val) == "table") and val[1] or val
+        LOG.info(TAG, "Importing theme with share ID: " .. tostring(shareId))
+        
+        applyTheme(shareId)
+    
+        done()
+        rebuildMenu()
+    end)
+    
     addModule(container, "export_theme", "Export Theme", "Export custom theme and background image to cloud", "button", nil, function(done)
         local TAG = "ExportTheme"
+        LOG.info(TAG, "User triggered theme export")
         local exportUI = deepCopy(UI)
     
         local function finalizeExport(imageUrl)
@@ -304,44 +450,6 @@ return function(container)
         end
         
         done()
-    end)
-        
-    addModule(container, "import_theme", "Import Theme", "Import custom theme from cloud", "input", {
-        { hint = "Enter Share ID", value = "", type = "text" }
-    }, function(done, val)
-        local TAG = "ImportTheme"
-        local shareId = (type(val) == "table") and val[1] or val
-        
-        if shareId and shareId ~= "" then
-            local rawText, err = paste.get("https://paste.rs/" .. shareId)
-            
-            if rawText then
-                local ok, exportData = pcall(load(rawText))
-                if ok and type(exportData) == "table" and exportData.version then
-                    for k, v in pairs(exportData.ui) do if UI[k] ~= nil then UI[k] = deepCopy(v) end end
-    
-                    if exportData.img_url then
-                        showToast("Downloading background image...")
-                        local dest = gg.FILES_DIR .. "/" .. (exportData.name or "background_image_" .. tostring(os.time()).. ".png")
-                        local path, dErr = catbox.download(exportData.img_url, dest)
-                        if path then UI.BG_IMAGE.PATH = path else LOG.error(TAG, "Background image download failed") end
-                    else
-                        UI.BG_IMAGE.PATH = "no_media"
-                    end
-    
-                    memory:save_global("ui_prefs", UI)
-                    saveAndRefresh()
-                    showDialog("Success", "Theme imported!", "OK")
-                else
-                    showDialog("Failed", "Invalid bundle format.", "OK")
-                end
-            else
-                showDialog("Failed", "Cloud error: " .. tostring(err), "OK")
-            end
-        end
-    
-        done()
-        rebuildMenu()
     end)
     
     -- Tabs icon
@@ -416,7 +524,7 @@ return function(container)
             if response[2] == true then
                 UI.BG_IMAGE.PATH = "no_media"
                 saveAndRefresh()
-                showDialog("Successfully", "Restart this script to see the results", {"OK"})
+                showDialog("Successfully", "Background Image Removed", {"OK"})
             else
                 if response[1] then
                     local parsedPath = response[1]:gsub("^%s*(.-)%s*$", "%1")

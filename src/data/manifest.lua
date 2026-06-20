@@ -62,11 +62,10 @@
 return {
 
     ["arm64-v8a"] = {
-        default_base = "data/arm64-v8a/1.73.lua", -- 1.73
+        default_base = "data/arm64-v8a/1.73.3.lua", -- 1.73
 
         ["1"] = {
             ["73"] = {
-                base = "data/arm64-v8a/1.73.lua",
                 ["3"] = "data/arm64-v8a/1.73.3.lua",
             },
             

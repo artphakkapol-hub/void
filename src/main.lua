@@ -143,6 +143,8 @@ Zip         = import("org.vekendian.Zip")
 
 Array                       = luajava.bindClass("java.lang.reflect.Array")
 Byte                        = luajava.bindClass("java.lang.Byte")
+Integer                     = luajava.bindClass("java.lang.Integer")
+String                      = luajava.bindClass("java.lang.String")
 ClipData                    = import("android.content.ClipData")
 Color                       = import("android.graphics.Color")
 Context                     = import("android.content.Context")
@@ -192,8 +194,7 @@ SCRIPT_NAME = SCRIPT_PATH:match("([^/\\]+)$") or ""
 IS_DEV = SCRIPT_NAME == "main.lua"
 CURRENT_VERSION = scriptSubHeader:match("v([%d%.]+)") or "0.0.0"
 RELEASE_API = "https://api.github.com/repos/vekendianorg/void/releases/latest"
-    
-    
+
 UI = loadModule("configs/colors.lua")
 
 -- ── Global state ──────────────────────────────────────────────────────────────
@@ -222,6 +223,8 @@ processingStates = {}
 lastClickTimes   = {}
 RO_Fields        = {}
 
+cast      = loadModule("core/utils/cast.lua")
+json      = loadModule("core/utils/json.lua")
 
 -- ── UI utilities (global; needed by modules before ui.lua loads) ──────────────
 
@@ -248,20 +251,108 @@ function getSkin(color, radius, stroke_w, stroke_c)
     return d
 end
 
-function showToast(msg, fast) Tools.a(msg, fast and 0 or 1) end
+function showToast(msg, fast)
+    Tools.a(msg, fast and 0 or 1)
+end
 
 function showDialog(title, msg, pos, neg, neu)
     local ctx = Tools.e()
     if not ctx then return 0 end
     local function wrap(b)
-        if type(b) == "table"  then return { tostring(b[1]) }
+        if type(b) == "table"      then return { tostring(b[1]) }
         elseif type(b) == "string" then return { b } end
     end
-    local r = Ui.showDialog(ctx, title or "", msg or "", wrap(pos), wrap(neg), wrap(neu))
+    local r = Ui.showDialog(ctx, title or "", msg or "", wrap(pos), wrap(neg), wrap(neu), json.encode(UI))
     local function fire(b) if type(b) == "table" and type(b[2]) == "function" then pcall(b[2]) end end
     if r == 1 then fire(pos) elseif r == 2 then fire(neg) elseif r == 3 then fire(neu) end
     return r
 end
+
+function showPrompt(title, prompts)
+    local ctx = Tools.e()
+    if not ctx then return nil end
+    local labels   = Array.newInstance(String, #prompts)
+    local defaults = Array.newInstance(String, #prompts)
+    local types    = Array.newInstance(String, #prompts)
+    for i, p in ipairs(prompts) do
+        Array.set(labels,   i - 1, tostring(p[1] or ""))
+        Array.set(defaults, i - 1, tostring(p[3] or ""))
+        Array.set(types,    i - 1, tostring(p[2] or "text"))
+    end
+    local result = Ui.showPrompt(ctx, title or "", labels, defaults, types, json.encode(UI))
+    if not result then return nil end
+    local out = {}
+    for i = 1, #prompts do
+        out[i] = tostring(Array.get(result, i - 1))
+    end
+    return out
+end
+
+function showList(title, description, items, multi)
+    local ctx = Tools.e()
+    if not ctx then return multi and nil or 0 end
+    local arr = Array.newInstance(String, #items)
+    for i, item in ipairs(items) do
+        Array.set(arr, i - 1, tostring(item))
+    end
+    local result = Ui.showList(ctx, title or "", description or "", arr, multi == true, json.encode(UI))
+    if multi then
+        if not result then return nil end
+        local out = {}
+        for i = 0, Array.getLength(result) - 1 do
+            table.insert(out, Array.get(result, i))
+        end
+        return out
+    else
+        return tonumber(tostring(result)) or 0
+    end
+end
+
+--[[
+-- Test showDialog
+local r = showDialog(
+    "Test Dialog",
+    "This is a test message for showDialog.",
+    {"OK"},
+    {"Cancel"},
+    nil
+)
+print("showDialog result:", r)
+
+-- Test showPrompt with all types
+local result = showPrompt("Test Prompt", {
+    {"Text Field",    "text",     "hello"},
+    {"Number Field",  "number",   "1234"},
+    {"Password",      "password", "secret"},
+    {"Checkbox",      "checkbox", "true"},
+    {"Switch",        "switch",   "false"},
+    {"Slider",        "slider",   "75"},
+})
+
+if result then
+    print("showPrompt results:")
+    print("  text:     ", result[1])
+    print("  number:   ", result[2])
+    print("  password: ", result[3])
+    print("  checkbox: ", result[4])
+    print("  switch:   ", result[5])
+    print("  slider:   ", result[6])
+else
+    print("showPrompt: cancelled")
+end
+
+-- single
+local idx = showList("Pick one", {"Option A", "Option B", "Option C"})
+if idx > 0 then print("Picked:", idx) end
+
+-- multi
+local selected = showList("Pick many", {"A", "B", "C", "D"}, true)
+if selected then
+    for _, idx in ipairs(selected) do print("Selected:", idx) end
+end
+
+]]
+
 
 function switchToMenu()
     LOG.info("switchToMenu", "called | activeView=" .. tostring(activeView) .. " menuView=" .. tostring(menuView) .. " iconView=" .. tostring(iconView))
@@ -342,18 +433,22 @@ function exitScript()
     end
 end
 
-function isARM64() return DEVICE_ARCH == "arm64-v8a" end
-
-
 -- ── Core modules ──────────────────────────────────────────────────────────────
 
-cast      = loadModule("core/utils/cast.lua")
-json      = loadModule("core/utils/json.lua")
 memory    = loadModule("core/engines/memory.lua")
 scheduler = loadModule("core/engines/scheduler.lua")
 loader    = loadModule("core/utils/loader.lua")
 catbox    = loadModule("core/utils/catbox.lua")
 paste     = loadModule("core/utils/paste.lua")
+
+local saved_prefs = memory:load_global("ui_prefs")
+if saved_prefs then
+    LOG.info("INIT", "User preferences RE-APPLIED")
+    for k, v in pairs(saved_prefs) do
+        if UI[k] ~= nil then UI[k] = v end
+    end
+end
+
 
 -- ── Window size bounds (dp) ───────────────────────────────────────────────────
 -- Referenced by applyWindowResize and settings sliders.
@@ -495,10 +590,32 @@ if auto_update and not IS_DEV then
 end
 
 local function detectVirtualSpace()
-    if not Config.vSpaceReal then return 0, "/data/data/" .. PKG end
-
-    local vm_package_name = tostring(Config.E)
-    local result = Shell.sh("find /data/data/" .. vm_package_name .. " -maxdepth 8 -name '" .. PKG .. "' -type d 2>/dev/null")
+    if not Config.vSpaceReal then
+        LOG.info("detectVM", "Real root detected.")
+        return 0, "/data/data/" .. PKG
+    end
+    
+    local info = gg.getTargetInfo()
+    local dataDir = info.dataDir
+    local game_pkg = info.packageName
+    local first_pkg = dataDir:match("^/data/data/([^/]+)") or dataDir:match("^/data/user/%d+/([^/]+)")
+    local vm_pkg
+    
+    if Config.E and Config.E ~= "" and Config.E ~= gg.PACKAGE then
+        vm_pkg = Config.E
+    end
+    
+    if first_pkg and first_pkg ~= game_pkg then
+        vm_pkg = first_pkg
+    else
+        vm_pkg = nil
+    end
+    
+    if vm_pkg == nil then
+        return 2, nil
+    end
+    
+    local result = Shell.sh("find /data/data/" .. vm_pkg .. " -maxdepth 8 -name '" .. PKG .. "' -type d 2>/dev/null")
 
     if result and result:find("Permission denied by user") then
         LOG.warn("detectVM", "User denied shell permission.")
@@ -506,62 +623,71 @@ local function detectVirtualSpace()
     end
 
     if not result or result == "" then
-        LOG.warn("detectVM", "HCR2 not found in VM: " .. vm_package_name)
+        LOG.warn("detectVM", "HCR2 not found in VM: " .. vm_pkg)
+        return 2, nil
+    end
+    
+    -- Collect all matches first
+    local by_uid = {}
+    for path in result:gmatch("([^\n]+)") do
+        if path:find(PKG, 1, true)
+        and path:find("/user/", 1, true)
+        and not path:find("/user_de/", 1, true) then
+            local uid = path:match("/user/(%d+)/") or "?"
+            -- Keep shortest path per uid (= the root, not nested subdirs)
+            if not by_uid[uid] or #path < #by_uid[uid] then
+                by_uid[uid] = path
+            end
+        end
+    end
+    
+    -- Build sorted paths table
+    local paths = {}
+    for uid, path in pairs(by_uid) do
+        table.insert(paths, path)
+    end
+    
+    table.sort(paths, function(a, b)
+        local ua = tonumber(a:match("/user/(%d+)/") or "0") or 0
+        local ub = tonumber(b:match("/user/(%d+)/") or "0") or 0
+        return ua < ub
+    end)
+
+    if #paths == 0 then
+        LOG.warn("detectVM", "No valid /user/ paths found in VM: " .. vm_pkg)
         return 2, nil
     end
 
-    -- Collect all matches, prefer /user/
-    local paths = {}
-    local seen_users = {}
-    for path in result:gmatch("([^\n]+)") do
-        if path:find("/user/") then
-            local uid = path:match("/user/(%d+)/") or "?"
-            if not seen_users[uid] then
-                seen_users[uid] = path
-            else
-                if #path < #seen_users[uid] then
-                    seen_users[uid] = path
-                end
-            end
-        end
-    end
-    for uid, path in pairs(seen_users) do
-        table.insert(paths, path)
+    -- Single path — no need to ask
+    if #paths == 1 then
+        LOG.info("detectVM", "Single HCR2 path: " .. paths[1])
+        return 1, paths[1]
     end
 
-    table.sort(paths, function(a, b)
-        local a_score = (a:find("/user_de/") and 0 or 1)
-        local b_score = (b:find("/user_de/") and 0 or 1)
-        return a_score > b_score
-    end)
+    -- Multiple spaces with HCR2 — ask user, loop until selection made
+    LOG.info("detectVM", "Multiple HCR2 paths found: " .. tostring(#paths))
 
-    local chosen = paths[1]
-    LOG.info("detectVM", "HCR2 found at: " .. tostring(chosen))
-
-    -- Multiple paths found — ask user
-    if #paths > 1 then
-        local items = {}
-        local has_hcr2 = {}
-        for i, p in ipairs(paths) do
-            local user_id = p:match("/user[^/]*/(%d+)/") or "?"
-            local detected = p:find(PKG) and "hcr2 detected" or "no hcr2 detected"
-            table.insert(items, user_id .. " (" .. detected .. ")")
-            table.insert(has_hcr2, p:find(PKG) ~= nil)
-        end
-
-        local change = showDialog("Multiple Users Detected",
-            "We found HCR2 data across multiple users. Do you want to pick a different path?",
-            {"YES"}, {"NO"})
-        
-        if change == 1 then
-            local selected_idx = gg.choice(items, nil, "Select the user that you're currently running")
-            if selected_idx then
-                chosen = paths[selected_idx]
-                LOG.info("detectVM", "User selected path: " .. chosen)
-            end
+    local items = {}
+    for _, path in ipairs(paths) do
+        local uid = path:match("/user/(%d+)/") or "?"
+        local short = path:match("(user/.-/" .. PKG .. ")") or path
+        table.insert(items, "User " .. uid .. "  —  " .. short)
+    end
+    
+    local selected = nil
+    while not selected or selected == 0 do
+        selected = showList(
+            "Multiple Spaces Detected",
+            "HCR2 was found in " .. tostring(#paths) .. " virtual spaces.\nSelect the space you are currently playing in.",
+            items
+        )
+        if not selected or selected == 0 then
+            showToast("Please select a space to continue.")
         end
     end
 
+    local chosen = paths[selected]
+    LOG.info("detectVM", "User selected: " .. chosen)
     return 1, chosen
 end
 
@@ -570,41 +696,42 @@ if not exit then
     vm_status, game_path = detectVirtualSpace()
     
     if vm_status == 3 then
-        showDialog("Permission Error", "Please allow the script to run the terminal command. Check VOID source code if you want to verify.", {"OK"})
+        showDialog("Permission Error",
+            "Shell access was denied.\n\nVoid needs this to locate HCR2 in your virtual space. Check Void source code if you want to verify what command is being run.",
+            {"OK"})
         os.exit()
     end
     
     if vm_status == 2 or game_path == nil then
-        showDialog("Data Path Error", "We can't find the Hill Climb Racing 2 data path. Some features that rely on this path will not work. You can try manual mode if you know how to do it.",
-        {"PROCEED ANYWAY"}, {"MANUAL MODE", function()
-            local response = gg.prompt({"Enter the Data Path"}, {"/data/data/" .. tostring(Config.E) .. "/"}, {"path"})
-            if response and response[1] then
+        local action = showDialog(
+            "HCR2 Data Not Found",
+            "Void couldn't locate HCR2 data in your virtual space. This may happen if HCR2 hasn't been launched yet, or your virtual space app uses an unusual path structure.\n\nFeatures that rely on game files (Event Rewards, etc.) will not work without a valid path.",
+            {"Proceed Anyway"}, {"Manual Mode"}, {"Retry"}
+        )
+    
+        if action == 1 then
+            -- Proceed without path — affected modules will handle nil game_path gracefully
+            LOG.warn("Main", "Proceeding without game_path.")
+    
+        elseif action == 2 then
+            -- Manual mode — replace gg.prompt with showPrompt
+            local response = showPrompt("Manual Data Path", {
+                {"Enter the HCR2 data path", "text", "/"}
+            })
+            if response and response[1] and response[1] ~= "" then
                 vm_status = 1
                 game_path = response[1]
+                LOG.info("Main", "Manual path set: " .. game_path)
             else
-                showToast("Cancelled")
+                showToast("Cancelled — proceeding without path.")
+                LOG.warn("Main", "Manual path cancelled.")
             end
-        end})
-    end
     
-    local function attachToProcess(pkg)
-        gg.showUiButton()
-        local tick_count = 0
-        local has_warned = false
-        while gg.getTargetPackage() ~= pkg do
-            if gg.isVisible() and not has_warned then
-                gg.alert('Click "Sx" to stop'); has_warned = true
-            end
-            if gg.isClickedUiButton() then gg.hideUiButton(); return false end
-            tick_count = tick_count + 1
-            if tick_count % 7 == 0 then showToast("Waiting for " .. pkg .. "...") end
-            gg.setProcess(pkg); gg.sleep(500)
+        elseif action == 3 then
+            -- Retry detection
+            vm_status, game_path = detectVirtualSpace()
+            LOG.info("Main", "Retry result: vm_status=" .. tostring(vm_status) .. " path=" .. tostring(game_path))
         end
-        gg.hideUiButton(); return true
-    end
-    
-    if target_info.packageName ~= PKG then
-        if not attachToProcess(PKG) then showToast("Cancelled"); os.exit() end
     end
     
     local function awaitLib(lib)
@@ -691,14 +818,6 @@ if not exit then
     else
         LOG.info("INIT", "BaseGameStatus OK=" .. tostring(BaseGameStatus) .. " | scheduling initUI() via MainHandler")
         
-        local saved_prefs = memory:load_global("ui_prefs")
-        if saved_prefs then
-            LOG.info("INIT", "User preferences RE-APPLIED")
-            for k, v in pairs(saved_prefs) do
-                if UI[k] ~= nil then UI[k] = v end
-            end
-        end
-    
         MainHandler.post(function()
             LOG.info("INIT", "MainHandler: calling initUI()")
             local ok, err = _safePcall(function() initUI() end)

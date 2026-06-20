@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-14 17:22:06
+-- Packed by bundle.py  •  2026-06-20 20:57:31
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -20511,11 +20511,10 @@ __vfs['data/manifest.lua'] = function(...)
 return {
 
     ["arm64-v8a"] = {
-        default_base = "data/arm64-v8a/1.73.lua", -- 1.73
+        default_base = "data/arm64-v8a/1.73.3.lua", -- 1.73
 
         ["1"] = {
             ["73"] = {
-                base = "data/arm64-v8a/1.73.lua",
                 ["3"] = "data/arm64-v8a/1.73.3.lua",
             },
             
@@ -20537,13 +20536,33 @@ return {
 end
 
 __vfs['data/arm64-v8a/1.73.3.lua'] = function(...)
--- data/arm64-v8a/1.73.3.lua — Override for 1.73.3 (arm64-v8a)
---
--- Inherits everything from base.lua EXCEPT the keys listed below.
--- See data/manifest.lua for how merging works.
---
-
+-- data/arm64-v8a/1.73.3.lua — 
 return {
+    aobs = {
+        fakeVip = {
+            {scan = "h 93 D6 01 F9 68 B2 40 39 1F 01 00 71", offset = 4, patch = "h 28 00 80 52", unpatch = "h 68 B2 40 39"},
+        },
+        
+        fakeUnlock = {
+            {scan = "h 36 C5 40 F9", pattern = { { offset = 0x164, valid = {"h E0 03 1F 2A"} }, { offset = 0x16C, valid = {"h 20 00 80 52"} } }, offset = 0x164, patch = "h 20 00 80 52", unpatch = "h E0 03 1F 2A"},
+        },
+
+        autoDetach = {
+            {scan = "h 08 20 20 1E 85 00 00 54 E0 03 13 AA E1 03 14 AA", offset = 4, patch = "h 1F 20 03 D5", unpatch = "h 85 00 00 54"},
+        },
+
+        autoWin = {
+            {scan = "h E8 5F 5D A9 16 61 40 B9", offset = 4, patch = "h 55 00 80 52", unpatch = "h 16 61 40 B9"},
+            {scan = "h E0 5F 40 F9 09 4D 40 BD", offset = 4, patch = "h 0A 90 32 1E", unpatch = "h 09 4D 40 BD"},
+            {scan = "h 60 56 08 BD 60 56 48 BD 08 20 20 1E", offset = 12, patch = "h 00 00 80 52", unpatch = "h 45 00 00 54"},
+            {scan = "h 60 56 08 BD 60 56 48 BD 08 20 20 1E", offset = 16, patch = "h 60 56 08 B9", unpatch = "h 7F 56 08 B9"},
+        },
+        
+        forceBoss = {
+            {scan = "h 00 CD 41 BD FD 7B C1 A8 C0 03 5F D6", offset = 0, patch = "h 00 C1 5F BC", unpatch = "h 00 CD 41 BD"},
+            {scan = "h 00 29 44 BD FD 7B C1 A8 C0 03 5F D6", offset = 0, patch = "h 00 C1 5F BC", unpatch = "h 00 29 44 BD"},
+        },
+    },
     offsets = {
         lib_setDistanceBase = 0x200BC58,
     },
@@ -20603,10 +20622,6 @@ end
 
 __vfs['data/x86_64/1.73.3.lua'] = function(...)
 -- data/x86_64/1.73.3.lua — Override for 1.73.3 (x86_64)
---
--- Inherits everything from base.lua EXCEPT the keys listed below.
--- See data/manifest.lua for how merging works.
---
 
 return {
     offsets = {
@@ -21254,45 +21269,107 @@ return function(container)
         end)
     end)
     
-    addArchModule(container, "set_distance", "Set Distance", "Sets your Adventure race distance to a custom value. Must be in an active race. Higher distance can gain more stars. Max stars that can be gained is 5000. (Not a teleport function)", "slider",
-    {title="Meters", min=0, max=5000, current=0},
-    function(done, vals)
-        local target_meters = vals
+    addArchModule(container, "set_distance", "Set Distance", "Sets your Adventure race distance to a custom value. Must be in an active race. Higher distance can gain more stars. Max stars at 5000m. (Not a teleport function)", "button", nil,
+    function(done)
         local TAG = "SetDistance"
+        LOG.info(TAG, "Module activated.")
+        
+        if memory:load("set_distance_loop") then
+            local action = showDialog(
+                "Set Distance — Loop Active",
+                "The distance loop is currently running.\nWhat do you want to do?",
+                {"Stop Loop"}, {"Keep Running"}
+            )
+            if action == 1 then
+                memory:save("set_distance_loop", false)
+                showToast("Loop will stop after current tick.")
+            end
+            done()
+            return
+        end
 
-        LOG.info(TAG, "Module activated. Target meters: " .. tostring(target_meters))
+        local result = showPrompt("Set Distance", {
+            {"Target distance (meters)", "number", "5000"},
+            {"Loop (auto re-apply)",     "switch",  "false"},
+            {"Loop interval (ms, min 250)", "number", "1000"},
+        })
 
-        scheduler:add(function(finishTask)
-            local activeTab = gg.getValues({{ address = BaseGameStatusRaw - 0xD4, flags = 4 }})
-            local isAdventureTab = (type(activeTab) == "table" and activeTab[1] and activeTab[1].value == 0)
+        if not result then
+            done()
+            return
+        end
 
-            if not isAdventureTab then
-                showToast("Go to Adventure tab and start a race first")
-                LOG.warn(TAG, "User is not in Adventure tab. Aborting.")
-                finishTask()
+        local target_meters = tonumber(result[1]) or 5000
+        local loop_enabled  = result[2] == "true"
+        local loop_interval = math.max(250, tonumber(result[3]) or 1000)
+
+        -- Warn if > 5000m — no stars, but race still counts distance
+        if target_meters > 5000 then
+            local warn = showDialog(
+                "Distance Warning",
+                "Distance over 5000m won't give you any stars.\n\nThe race will still register the distance, but no star rewards will be given. Continue?",
+                {"Continue"}, {"Cancel"}
+            )
+            if warn ~= 1 then
                 done()
                 return
             end
+        end
 
-            LOG.dbg(TAG, "Adventure tab confirmed. Resolving lib anchor...")
+        local function isValidDistanceBase(addr)
+            local check = gg.getValues({
+                { address = addr + 0x0,  flags = 4  }, -- current distance (DWORD, should be >= 0)
+                { address = addr + 0x10, flags = 16 }, -- float, should be a valid float
+                { address = addr + 0x14, flags = 16 }, -- float, should be a valid float
+            })
+            if not check or #check ~= 3 then return false end
+            
+            local dist  = check[1].value
+            local float1 = check[2].value
+            local float2 = check[3].value
+        
+            -- Distance should be a reasonable value (0 to 999999)
+            if type(dist) ~= "number" or dist < 0 or dist > 999999 then return false end
+            -- Floats should be non-zero valid numbers (in an active race these are set)
+            if type(float1) ~= "number" or float1 == 0 then return false end
+            if type(float2) ~= "number" or float2 == 0 then return false end
+        
+            return true
+        end
+        
+        local function resolveDistanceBase()
+            local cachedPtr = memory:load("set_distance_ptr")
+            if cachedPtr and cachedPtr ~= 0 then
+                local verify = gg.getValues({{ address = cachedPtr, flags = 32 }})
+                if verify and verify[1] and verify[1].value ~= 0 then
+                    local distanceBase = verify[1].value
+                    if isValidDistanceBase(distanceBase) then
+                        LOG.dbg(TAG, string.format("Cache hit + valid: ptr=0x%X → distanceBase=0x%X", cachedPtr, distanceBase))
+                        return distanceBase
+                    else
+                        -- Not in race — keep cache, just return nil
+                        LOG.warn(TAG, "Not in race — cache kept for next run.")
+                        return nil
+                    end
+                else
+                    -- ptr.address itself gone — game restarted, clear cache
+                    LOG.warn(TAG, "ptr.address invalid — clearing cache.")
+                    memory:save("set_distance_ptr", nil)
+                end
+            end
 
             local anchorTarget = BaseLib + offsets.lib_setDistanceBase
-            LOG.dbg(TAG, string.format("Lib base: 0x%X | Anchor target: 0x%X", BaseLib, anchorTarget))
+            LOG.dbg(TAG, string.format("Resolving from scratch | anchor=0x%X", anchorTarget))
 
             gg.clearResults()
             gg.setRanges(BaseRegion)
             gg.searchNumber(anchorTarget, 32)
-
             local level1Results = gg.getResults(gg.getResultsCount())
             gg.clearResults()
-            LOG.dbg(TAG, "Level 1 references found: " .. tostring(#level1Results))
 
             if #level1Results == 0 then
-                showToast("Start a race first")
-                LOG.warn(TAG, "No references found for anchor. User likely not in a race.")
-                finishTask()
-                done()
-                return
+                LOG.warn(TAG, "Level 1: no refs found")
+                return nil
             end
 
             local distanceBase = nil
@@ -21301,32 +21378,31 @@ return function(container)
                 gg.clearResults()
                 gg.setRanges(BaseRegion)
                 gg.searchNumber(ref1.address, 32)
-
                 local level2Results = gg.getResults(gg.getResultsCount())
                 gg.clearResults()
-                
+
                 for _, ref2 in ipairs(level2Results) do
                     local offsetAddr = ref2.address - 0xAC
 
                     gg.clearResults()
                     gg.setRanges(gg.REGION_C_ALLOC)
                     gg.searchNumber(offsetAddr, 32)
-
                     local level3Results = gg.getResults(gg.getResultsCount())
                     gg.clearResults()
-                    
+
                     if #level3Results > 0 then
                         local pointerReads = {}
                         for _, ref3 in ipairs(level3Results) do
                             table.insert(pointerReads, { address = ref3.address, flags = 32 })
                         end
-
                         local resolvedPointers = gg.getValues(pointerReads)
                         if resolvedPointers then
                             for _, ptr in ipairs(resolvedPointers) do
                                 if ptr and ptr.value and ptr.value ~= 0 then
+                                    memory:save("set_distance_ptr", ptr.address)
                                     distanceBase = ptr.value
-                                    LOG.info(TAG, string.format("distanceBase resolved: 0x%X", distanceBase))
+                                    LOG.info(TAG, string.format("Resolved + cached: ptr=0x%X → distanceBase=0x%X",
+                                        ptr.address, distanceBase))
                                     break
                                 end
                             end
@@ -21339,26 +21415,87 @@ return function(container)
                 if distanceBase then break end
             end
 
+            return distanceBase
+        end
+
+        local function apply()
+            local activeTab = gg.getValues({{ address = BaseGameStatusRaw - 0xD4, flags = 4 }})
+            local isAdventureTab = (type(activeTab) == "table" and activeTab[1] and activeTab[1].value == 0)
+
+            if not isAdventureTab then
+                LOG.warn(TAG, "Not in Adventure tab.")
+                showToast("Go to Adventure tab and start a race first")
+                return false
+            end
+
+            local distanceBase = resolveDistanceBase()
             if not distanceBase then
+                LOG.fatal(TAG, "Failed to resolve distanceBase.")
                 showToast("Start a race first")
-                LOG.fatal(TAG, "Failed to resolve distanceBase. Pointer chain dropped.")
+                return false
+            end
+
+            gg.setValues({
+                { address = distanceBase + 0x0,  flags = 4,  value = target_meters },
+                { address = distanceBase + 0x10, flags = 16, value = 2000000000 },
+                { address = distanceBase + 0x14, flags = 16, value = 2000000000 },
+            })
+
+            LOG.info(TAG, "Distance set: " .. tostring(target_meters) .. "m")
+            return true
+        end
+
+        scheduler:add(function(finishTask)
+            local ok = apply()
+
+            if not ok then
+                finishTask()
+                done() -- no deadlock — always exits
+                return
+            end
+
+            showToast("Distance set: " .. tostring(target_meters) .. "m")
+
+            if not loop_enabled then
                 finishTask()
                 done()
                 return
             end
-            
-            gg.clearResults()
-            
-            gg.setValues({
-                { address = distanceBase + 0x0,  flags = 4,  value = target_meters },
-                { address = distanceBase + 0x10, flags = 16, value = 2000000000 },
-                { address = distanceBase + 0x14, flags = 16, value = 2000000000 }
-            })
-            
-            showToast("Distance set to: " .. tostring(target_meters) .. "m")
-            LOG.info(TAG, "Distance set to: " .. tostring(target_meters) .. "m")
+
+            -- Loop mode — call done() immediately so button stays clickable
+            memory:save("set_distance_loop", true)
             finishTask()
-            done()
+            done() -- ← released here, no deadlock
+
+            local tickCount = 0
+            local function loopTick()
+                if not memory:load("set_distance_loop") then
+                    LOG.info(TAG, "Loop stopped.")
+                    showToast("Set Distance loop stopped.")
+                    memory:save("set_distance_ptr", nil) -- clear cache on stop
+                    return
+                end
+
+                gg.sleep(loop_interval)
+                tickCount = tickCount + 1
+
+                apply()
+
+                -- Reminder every 2 ticks
+                if tickCount % 2 == 0 then
+                    showToast("Distance loop running — tap Set Distance to stop", true)
+                end
+
+                scheduler:add(function(ft)
+                    loopTick()
+                    ft()
+                end)
+            end
+
+            scheduler:add(function(ft)
+                loopTick()
+                ft()
+            end)
         end)
     end)
 end
@@ -22832,7 +22969,8 @@ return function(container)
                 menuView = nil
                 activeView = nil
             end
-
+            
+            switchToMenu()
             createMenuView("settings")
             switchToMenu()
         end)
@@ -22852,6 +22990,37 @@ return function(container)
         
     end
     
+    local function applyTheme(shareId)
+        local TAG = "ApplyTheme"
+        if shareId and shareId ~= "" then
+            local rawText, err = paste.get("https://paste.rs/" .. shareId)
+            
+            if rawText then
+                local ok, exportData = pcall(load(rawText))
+                if ok and type(exportData) == "table" and exportData.version then
+                    for k, v in pairs(exportData.ui) do if UI[k] ~= nil then UI[k] = deepCopy(v) end end
+    
+                    if exportData.img_url then
+                        showToast("Downloading background image...")
+                        local dest = gg.FILES_DIR .. "/" .. (exportData.name or "background_image_" .. tostring(os.time()).. ".png")
+                        local path, dErr = catbox.download(exportData.img_url, dest)
+                        if path then UI.BG_IMAGE.PATH = path else LOG.error(TAG, "Background image download failed") end
+                    else
+                        UI.BG_IMAGE.PATH = "no_media"
+                    end
+    
+                    memory:save_global("ui_prefs", UI)
+                    saveAndRefresh()
+                    showDialog("Success", "Theme imported!", "OK")
+                else
+                    showDialog("Failed", "Invalid bundle format.", "OK")
+                end
+            else
+                showDialog("Failed", "Cloud error: " .. tostring(err), "OK")
+            end
+        end
+    end
+    
     -- --- Updater ────────────────────────────────────────────────────────
     
     addModuleSep(container, "Updates")
@@ -22860,11 +23029,9 @@ return function(container)
     addModule(container, "auto_update", "Auto Update", "Auto update VOID on startup", "switch", nil, function(done, state)
         if IS_DEV then
             showDialog("Dev Mode", "Auto update is disabled for main.lua (dev build).", {"OK"})
-            toggleStates["auto_update"] = false
-            done()
-            return
+        else
+            memory:save_global("auto_update", state)
         end
-        memory:save_global("auto_update", state)
         done()
     end)
     
@@ -22935,7 +23102,7 @@ return function(container)
     addModule(container, "gamestatus_address", "GameStatus", "Current gamestatus address\n(automatically chosen by script)", "ro", string.format("0x%X", BaseGameStatus or 0), nil)
     addModule(container, "gamestatus_raw_address", "GameStatus (Raw)", "Current gamestatus (raw) address\n(automatically chosen by script)", "ro", string.format("0x%X", BaseGameStatusRaw or 0), nil)
     
-    -- ── Session Control or smth ────────────────────────────────────────────────────────
+    -- ── Session Control ────────────────────────────────────────────────────────
     addModule(container, "clear_memory", "Clear Saved Memory", "Clear all VOID saved memory without needed to restart the whole game.", "button", nil, function(done)
         LOG.info("Settings", "User triggered clear_all()")
         memory:clear_all()
@@ -22943,11 +23110,113 @@ return function(container)
     end)
     
     -- ── Custom Colors Info ────────────────────────────────────────────────────
-    -- Allow user to changes colors of this script.
+    -- Allow user to change colors of this script.
     addModuleSep(container, "UI Customizations")
+    
+    addModule(container, "theme_store", "Theme Store", "Browse and install community Void themes", "button", nil,
+    function(done)
+        local TAG = "ThemeStore"
+        LOG.info(TAG, "Opening theme store...")
+
+        local raw, err = paste.get("https://raw.githubusercontent.com/vekendianorg/void-themes/refs/heads/main/index.json")
+        if not raw then
+            showDialog("Failed", "Could not reach theme store:\n" .. tostring(err), {"OK"})
+            done()
+            return
+        end
+
+        local index = nil
+        local ok, parseErr = pcall(function()
+            index = json.decode(raw)
+        end)
+
+        if not ok or not index or not index.themes then
+            showDialog("Failed", "Could not parse theme store data.", {"OK"})
+            done()
+            return
+        end
+
+        local allThemes = index.themes
+        local currentThemes = allThemes
+
+        local function openStore(allThemes, currentThemes)
+            local isFiltered = currentThemes ~= allThemes
+            local title = "Void Theme Store"
+            local desc  = isFiltered
+                and "Search results: " .. tostring(#currentThemes) .. " found"
+                or  tostring(#allThemes) .. " themes available"
+        
+            local items = {}
+            for _, theme in ipairs(currentThemes) do
+                table.insert(items, theme.name .. " • by " .. theme.author)
+            end
+        
+            -- Search as first item
+            table.insert(items, 1, "🔍 Search...")
+            if isFiltered then
+                table.insert(items, 2, "✕ Clear search")
+            end
+        
+            return showList(title, desc, items)
+        end
+
+        -- Store loop
+        local refreshMenu = false
+        while true do
+            local choice = openStore(allThemes, currentThemes)
+        
+            if choice == 0 then
+                break -- cancelled / outside tap
+        
+            elseif choice == 1 then
+                -- Search
+                local result = showPrompt("Search Themes", {
+                    {"Theme name, author or description", "text", ""}
+                })
+                if result and result[1] ~= "" then
+                    local q = result[1]:lower()
+                    local filtered = {}
+                    for _, theme in ipairs(allThemes) do
+                        if theme.name:lower():find(q, 1, true)
+                        or theme.author:lower():find(q, 1, true)
+                        or (theme.description and theme.description:lower():find(q, 1, true)) then
+                            table.insert(filtered, theme)
+                        end
+                    end
+                    
+                    currentThemes = filtered
+                    
+                    if #filtered == 0 then
+                        showToast("No themes found for: " .. result[1])
+                    end
+                end
+        
+            elseif currentThemes ~= allThemes and choice == 2 then
+                -- Clear search
+                currentThemes = allThemes
+        
+            else
+                -- Theme selected — offset by search + clear buttons
+                local offset = currentThemes ~= allThemes and 2 or 1
+                local theme = currentThemes[choice - offset]
+                if theme then
+                    local choice = showDialog(
+                        theme.name,
+                        "By " .. theme.author .. "\n\n" .. (theme.description or "") .. "\n\nID: " .. theme.id,
+                        {"Install Theme", function() applyTheme(theme.id); refreshMenu = true end}, {"Cancel"}
+                    )
+                end
+            end
+            if refreshMenu then break end
+        end
+        
+        done()
+        rebuildMenu()
+    end)
     
     addModule(container, "reset_theme", "Reset Theme", "Reset custom theme and background image to the default", "button", nil, function(done)
         local TAG = "ResetTheme"
+        LOG.info(TAG, "User triggered theme reset")
         
         memory:delete_global("ui_prefs")
         UI = loadModule("configs/colors.lua")
@@ -22956,8 +23225,22 @@ return function(container)
         rebuildMenu()
     end)
     
+    addModule(container, "import_theme", "Import Theme", "Import custom theme from cloud", "input", {
+        { hint = "Enter Share ID", value = "", type = "text" }
+    }, function(done, val)
+        local TAG = "ImportTheme"
+        local shareId = (type(val) == "table") and val[1] or val
+        LOG.info(TAG, "Importing theme with share ID: " .. tostring(shareId))
+        
+        applyTheme(shareId)
+    
+        done()
+        rebuildMenu()
+    end)
+    
     addModule(container, "export_theme", "Export Theme", "Export custom theme and background image to cloud", "button", nil, function(done)
         local TAG = "ExportTheme"
+        LOG.info(TAG, "User triggered theme export")
         local exportUI = deepCopy(UI)
     
         local function finalizeExport(imageUrl)
@@ -22995,44 +23278,6 @@ return function(container)
         end
         
         done()
-    end)
-        
-    addModule(container, "import_theme", "Import Theme", "Import custom theme from cloud", "input", {
-        { hint = "Enter Share ID", value = "", type = "text" }
-    }, function(done, val)
-        local TAG = "ImportTheme"
-        local shareId = (type(val) == "table") and val[1] or val
-        
-        if shareId and shareId ~= "" then
-            local rawText, err = paste.get("https://paste.rs/" .. shareId)
-            
-            if rawText then
-                local ok, exportData = pcall(load(rawText))
-                if ok and type(exportData) == "table" and exportData.version then
-                    for k, v in pairs(exportData.ui) do if UI[k] ~= nil then UI[k] = deepCopy(v) end end
-    
-                    if exportData.img_url then
-                        showToast("Downloading background image...")
-                        local dest = gg.FILES_DIR .. "/" .. (exportData.name or "background_image_" .. tostring(os.time()).. ".png")
-                        local path, dErr = catbox.download(exportData.img_url, dest)
-                        if path then UI.BG_IMAGE.PATH = path else LOG.error(TAG, "Background image download failed") end
-                    else
-                        UI.BG_IMAGE.PATH = "no_media"
-                    end
-    
-                    memory:save_global("ui_prefs", UI)
-                    saveAndRefresh()
-                    showDialog("Success", "Theme imported!", "OK")
-                else
-                    showDialog("Failed", "Invalid bundle format.", "OK")
-                end
-            else
-                showDialog("Failed", "Cloud error: " .. tostring(err), "OK")
-            end
-        end
-    
-        done()
-        rebuildMenu()
     end)
     
     -- Tabs icon
@@ -23107,7 +23352,7 @@ return function(container)
             if response[2] == true then
                 UI.BG_IMAGE.PATH = "no_media"
                 saveAndRefresh()
-                showDialog("Successfully", "Restart this script to see the results", {"OK"})
+                showDialog("Successfully", "Background Image Removed", {"OK"})
             else
                 if response[1] then
                     local parsedPath = response[1]:gsub("^%s*(.-)%s*$", "%1")
@@ -24767,6 +25012,8 @@ Zip         = import("org.vekendian.Zip")
 
 Array                       = luajava.bindClass("java.lang.reflect.Array")
 Byte                        = luajava.bindClass("java.lang.Byte")
+Integer                     = luajava.bindClass("java.lang.Integer")
+String                      = luajava.bindClass("java.lang.String")
 ClipData                    = import("android.content.ClipData")
 Color                       = import("android.graphics.Color")
 Context                     = import("android.content.Context")
@@ -24816,8 +25063,7 @@ SCRIPT_NAME = SCRIPT_PATH:match("([^/\\]+)$") or ""
 IS_DEV = SCRIPT_NAME == "main.lua"
 CURRENT_VERSION = scriptSubHeader:match("v([%d%.]+)") or "0.0.0"
 RELEASE_API = "https://api.github.com/repos/vekendianorg/void/releases/latest"
-    
-    
+
 UI = loadModule("configs/colors.lua")
 
 -- ── Global state ──────────────────────────────────────────────────────────────
@@ -24846,6 +25092,8 @@ processingStates = {}
 lastClickTimes   = {}
 RO_Fields        = {}
 
+cast      = loadModule("core/utils/cast.lua")
+json      = loadModule("core/utils/json.lua")
 
 -- ── UI utilities (global; needed by modules before ui.lua loads) ──────────────
 
@@ -24872,20 +25120,108 @@ function getSkin(color, radius, stroke_w, stroke_c)
     return d
 end
 
-function showToast(msg, fast) Tools.a(msg, fast and 0 or 1) end
+function showToast(msg, fast)
+    Tools.a(msg, fast and 0 or 1)
+end
 
 function showDialog(title, msg, pos, neg, neu)
     local ctx = Tools.e()
     if not ctx then return 0 end
     local function wrap(b)
-        if type(b) == "table"  then return { tostring(b[1]) }
+        if type(b) == "table"      then return { tostring(b[1]) }
         elseif type(b) == "string" then return { b } end
     end
-    local r = Ui.showDialog(ctx, title or "", msg or "", wrap(pos), wrap(neg), wrap(neu))
+    local r = Ui.showDialog(ctx, title or "", msg or "", wrap(pos), wrap(neg), wrap(neu), json.encode(UI))
     local function fire(b) if type(b) == "table" and type(b[2]) == "function" then pcall(b[2]) end end
     if r == 1 then fire(pos) elseif r == 2 then fire(neg) elseif r == 3 then fire(neu) end
     return r
 end
+
+function showPrompt(title, prompts)
+    local ctx = Tools.e()
+    if not ctx then return nil end
+    local labels   = Array.newInstance(String, #prompts)
+    local defaults = Array.newInstance(String, #prompts)
+    local types    = Array.newInstance(String, #prompts)
+    for i, p in ipairs(prompts) do
+        Array.set(labels,   i - 1, tostring(p[1] or ""))
+        Array.set(defaults, i - 1, tostring(p[3] or ""))
+        Array.set(types,    i - 1, tostring(p[2] or "text"))
+    end
+    local result = Ui.showPrompt(ctx, title or "", labels, defaults, types, json.encode(UI))
+    if not result then return nil end
+    local out = {}
+    for i = 1, #prompts do
+        out[i] = tostring(Array.get(result, i - 1))
+    end
+    return out
+end
+
+function showList(title, description, items, multi)
+    local ctx = Tools.e()
+    if not ctx then return multi and nil or 0 end
+    local arr = Array.newInstance(String, #items)
+    for i, item in ipairs(items) do
+        Array.set(arr, i - 1, tostring(item))
+    end
+    local result = Ui.showList(ctx, title or "", description or "", arr, multi == true, json.encode(UI))
+    if multi then
+        if not result then return nil end
+        local out = {}
+        for i = 0, Array.getLength(result) - 1 do
+            table.insert(out, Array.get(result, i))
+        end
+        return out
+    else
+        return tonumber(tostring(result)) or 0
+    end
+end
+
+--[[
+-- Test showDialog
+local r = showDialog(
+    "Test Dialog",
+    "This is a test message for showDialog.",
+    {"OK"},
+    {"Cancel"},
+    nil
+)
+print("showDialog result:", r)
+
+-- Test showPrompt with all types
+local result = showPrompt("Test Prompt", {
+    {"Text Field",    "text",     "hello"},
+    {"Number Field",  "number",   "1234"},
+    {"Password",      "password", "secret"},
+    {"Checkbox",      "checkbox", "true"},
+    {"Switch",        "switch",   "false"},
+    {"Slider",        "slider",   "75"},
+})
+
+if result then
+    print("showPrompt results:")
+    print("  text:     ", result[1])
+    print("  number:   ", result[2])
+    print("  password: ", result[3])
+    print("  checkbox: ", result[4])
+    print("  switch:   ", result[5])
+    print("  slider:   ", result[6])
+else
+    print("showPrompt: cancelled")
+end
+
+-- single
+local idx = showList("Pick one", {"Option A", "Option B", "Option C"})
+if idx > 0 then print("Picked:", idx) end
+
+-- multi
+local selected = showList("Pick many", {"A", "B", "C", "D"}, true)
+if selected then
+    for _, idx in ipairs(selected) do print("Selected:", idx) end
+end
+
+]]
+
 
 function switchToMenu()
     LOG.info("switchToMenu", "called | activeView=" .. tostring(activeView) .. " menuView=" .. tostring(menuView) .. " iconView=" .. tostring(iconView))
@@ -24966,18 +25302,22 @@ function exitScript()
     end
 end
 
-function isARM64() return DEVICE_ARCH == "arm64-v8a" end
-
-
 -- ── Core modules ──────────────────────────────────────────────────────────────
 
-cast      = loadModule("core/utils/cast.lua")
-json      = loadModule("core/utils/json.lua")
 memory    = loadModule("core/engines/memory.lua")
 scheduler = loadModule("core/engines/scheduler.lua")
 loader    = loadModule("core/utils/loader.lua")
 catbox    = loadModule("core/utils/catbox.lua")
 paste     = loadModule("core/utils/paste.lua")
+
+local saved_prefs = memory:load_global("ui_prefs")
+if saved_prefs then
+    LOG.info("INIT", "User preferences RE-APPLIED")
+    for k, v in pairs(saved_prefs) do
+        if UI[k] ~= nil then UI[k] = v end
+    end
+end
+
 
 -- ── Window size bounds (dp) ───────────────────────────────────────────────────
 -- Referenced by applyWindowResize and settings sliders.
@@ -25119,10 +25459,32 @@ if auto_update and not IS_DEV then
 end
 
 local function detectVirtualSpace()
-    if not Config.vSpaceReal then return 0, "/data/data/" .. PKG end
-
-    local vm_package_name = tostring(Config.E)
-    local result = Shell.sh("find /data/data/" .. vm_package_name .. " -maxdepth 8 -name '" .. PKG .. "' -type d 2>/dev/null")
+    if not Config.vSpaceReal then
+        LOG.info("detectVM", "Real root detected.")
+        return 0, "/data/data/" .. PKG
+    end
+    
+    local info = gg.getTargetInfo()
+    local dataDir = info.dataDir
+    local game_pkg = info.packageName
+    local first_pkg = dataDir:match("^/data/data/([^/]+)") or dataDir:match("^/data/user/%d+/([^/]+)")
+    local vm_pkg
+    
+    if Config.E and Config.E ~= "" and Config.E ~= gg.PACKAGE then
+        vm_pkg = Config.E
+    end
+    
+    if first_pkg and first_pkg ~= game_pkg then
+        vm_pkg = first_pkg
+    else
+        vm_pkg = nil
+    end
+    
+    if vm_pkg == nil then
+        return 2, nil
+    end
+    
+    local result = Shell.sh("find /data/data/" .. vm_pkg .. " -maxdepth 8 -name '" .. PKG .. "' -type d 2>/dev/null")
 
     if result and result:find("Permission denied by user") then
         LOG.warn("detectVM", "User denied shell permission.")
@@ -25130,62 +25492,71 @@ local function detectVirtualSpace()
     end
 
     if not result or result == "" then
-        LOG.warn("detectVM", "HCR2 not found in VM: " .. vm_package_name)
+        LOG.warn("detectVM", "HCR2 not found in VM: " .. vm_pkg)
+        return 2, nil
+    end
+    
+    -- Collect all matches first
+    local by_uid = {}
+    for path in result:gmatch("([^\n]+)") do
+        if path:find(PKG, 1, true)
+        and path:find("/user/", 1, true)
+        and not path:find("/user_de/", 1, true) then
+            local uid = path:match("/user/(%d+)/") or "?"
+            -- Keep shortest path per uid (= the root, not nested subdirs)
+            if not by_uid[uid] or #path < #by_uid[uid] then
+                by_uid[uid] = path
+            end
+        end
+    end
+    
+    -- Build sorted paths table
+    local paths = {}
+    for uid, path in pairs(by_uid) do
+        table.insert(paths, path)
+    end
+    
+    table.sort(paths, function(a, b)
+        local ua = tonumber(a:match("/user/(%d+)/") or "0") or 0
+        local ub = tonumber(b:match("/user/(%d+)/") or "0") or 0
+        return ua < ub
+    end)
+
+    if #paths == 0 then
+        LOG.warn("detectVM", "No valid /user/ paths found in VM: " .. vm_pkg)
         return 2, nil
     end
 
-    -- Collect all matches, prefer /user/
-    local paths = {}
-    local seen_users = {}
-    for path in result:gmatch("([^\n]+)") do
-        if path:find("/user/") then
-            local uid = path:match("/user/(%d+)/") or "?"
-            if not seen_users[uid] then
-                seen_users[uid] = path
-            else
-                if #path < #seen_users[uid] then
-                    seen_users[uid] = path
-                end
-            end
-        end
-    end
-    for uid, path in pairs(seen_users) do
-        table.insert(paths, path)
+    -- Single path — no need to ask
+    if #paths == 1 then
+        LOG.info("detectVM", "Single HCR2 path: " .. paths[1])
+        return 1, paths[1]
     end
 
-    table.sort(paths, function(a, b)
-        local a_score = (a:find("/user_de/") and 0 or 1)
-        local b_score = (b:find("/user_de/") and 0 or 1)
-        return a_score > b_score
-    end)
+    -- Multiple spaces with HCR2 — ask user, loop until selection made
+    LOG.info("detectVM", "Multiple HCR2 paths found: " .. tostring(#paths))
 
-    local chosen = paths[1]
-    LOG.info("detectVM", "HCR2 found at: " .. tostring(chosen))
-
-    -- Multiple paths found — ask user
-    if #paths > 1 then
-        local items = {}
-        local has_hcr2 = {}
-        for i, p in ipairs(paths) do
-            local user_id = p:match("/user[^/]*/(%d+)/") or "?"
-            local detected = p:find(PKG) and "hcr2 detected" or "no hcr2 detected"
-            table.insert(items, user_id .. " (" .. detected .. ")")
-            table.insert(has_hcr2, p:find(PKG) ~= nil)
-        end
-
-        local change = showDialog("Multiple Users Detected",
-            "We found HCR2 data across multiple users. Do you want to pick a different path?",
-            {"YES"}, {"NO"})
-        
-        if change == 1 then
-            local selected_idx = gg.choice(items, nil, "Select the user that you're currently running")
-            if selected_idx then
-                chosen = paths[selected_idx]
-                LOG.info("detectVM", "User selected path: " .. chosen)
-            end
+    local items = {}
+    for _, path in ipairs(paths) do
+        local uid = path:match("/user/(%d+)/") or "?"
+        local short = path:match("(user/.-/" .. PKG .. ")") or path
+        table.insert(items, "User " .. uid .. "  —  " .. short)
+    end
+    
+    local selected = nil
+    while not selected or selected == 0 do
+        selected = showList(
+            "Multiple Spaces Detected",
+            "HCR2 was found in " .. tostring(#paths) .. " virtual spaces.\nSelect the space you are currently playing in.",
+            items
+        )
+        if not selected or selected == 0 then
+            showToast("Please select a space to continue.")
         end
     end
 
+    local chosen = paths[selected]
+    LOG.info("detectVM", "User selected: " .. chosen)
     return 1, chosen
 end
 
@@ -25194,41 +25565,42 @@ if not exit then
     vm_status, game_path = detectVirtualSpace()
     
     if vm_status == 3 then
-        showDialog("Permission Error", "Please allow the script to run the terminal command. Check VOID source code if you want to verify.", {"OK"})
+        showDialog("Permission Error",
+            "Shell access was denied.\n\nVoid needs this to locate HCR2 in your virtual space. Check Void source code if you want to verify what command is being run.",
+            {"OK"})
         os.exit()
     end
     
     if vm_status == 2 or game_path == nil then
-        showDialog("Data Path Error", "We can't find the Hill Climb Racing 2 data path. Some features that rely on this path will not work. You can try manual mode if you know how to do it.",
-        {"PROCEED ANYWAY"}, {"MANUAL MODE", function()
-            local response = gg.prompt({"Enter the Data Path"}, {"/data/data/" .. tostring(Config.E) .. "/"}, {"path"})
-            if response and response[1] then
+        local action = showDialog(
+            "HCR2 Data Not Found",
+            "Void couldn't locate HCR2 data in your virtual space. This may happen if HCR2 hasn't been launched yet, or your virtual space app uses an unusual path structure.\n\nFeatures that rely on game files (Event Rewards, etc.) will not work without a valid path.",
+            {"Proceed Anyway"}, {"Manual Mode"}, {"Retry"}
+        )
+    
+        if action == 1 then
+            -- Proceed without path — affected modules will handle nil game_path gracefully
+            LOG.warn("Main", "Proceeding without game_path.")
+    
+        elseif action == 2 then
+            -- Manual mode — replace gg.prompt with showPrompt
+            local response = showPrompt("Manual Data Path", {
+                {"Enter the HCR2 data path", "text", "/"}
+            })
+            if response and response[1] and response[1] ~= "" then
                 vm_status = 1
                 game_path = response[1]
+                LOG.info("Main", "Manual path set: " .. game_path)
             else
-                showToast("Cancelled")
+                showToast("Cancelled — proceeding without path.")
+                LOG.warn("Main", "Manual path cancelled.")
             end
-        end})
-    end
     
-    local function attachToProcess(pkg)
-        gg.showUiButton()
-        local tick_count = 0
-        local has_warned = false
-        while gg.getTargetPackage() ~= pkg do
-            if gg.isVisible() and not has_warned then
-                gg.alert('Click "Sx" to stop'); has_warned = true
-            end
-            if gg.isClickedUiButton() then gg.hideUiButton(); return false end
-            tick_count = tick_count + 1
-            if tick_count % 7 == 0 then showToast("Waiting for " .. pkg .. "...") end
-            gg.setProcess(pkg); gg.sleep(500)
+        elseif action == 3 then
+            -- Retry detection
+            vm_status, game_path = detectVirtualSpace()
+            LOG.info("Main", "Retry result: vm_status=" .. tostring(vm_status) .. " path=" .. tostring(game_path))
         end
-        gg.hideUiButton(); return true
-    end
-    
-    if target_info.packageName ~= PKG then
-        if not attachToProcess(PKG) then showToast("Cancelled"); os.exit() end
     end
     
     local function awaitLib(lib)
@@ -25315,14 +25687,6 @@ if not exit then
     else
         LOG.info("INIT", "BaseGameStatus OK=" .. tostring(BaseGameStatus) .. " | scheduling initUI() via MainHandler")
         
-        local saved_prefs = memory:load_global("ui_prefs")
-        if saved_prefs then
-            LOG.info("INIT", "User preferences RE-APPLIED")
-            for k, v in pairs(saved_prefs) do
-                if UI[k] ~= nil then UI[k] = v end
-            end
-        end
-    
         MainHandler.post(function()
             LOG.info("INIT", "MainHandler: calling initUI()")
             local ok, err = _safePcall(function() initUI() end)

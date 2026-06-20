@@ -38,45 +38,107 @@ return function(container)
         end)
     end)
     
-    addArchModule(container, "set_distance", "Set Distance", "Sets your Adventure race distance to a custom value. Must be in an active race. Higher distance can gain more stars. Max stars that can be gained is 5000. (Not a teleport function)", "slider",
-    {title="Meters", min=0, max=5000, current=0},
-    function(done, vals)
-        local target_meters = vals
+    addArchModule(container, "set_distance", "Set Distance", "Sets your Adventure race distance to a custom value. Must be in an active race. Higher distance can gain more stars. Max stars at 5000m. (Not a teleport function)", "button", nil,
+    function(done)
         local TAG = "SetDistance"
+        LOG.info(TAG, "Module activated.")
+        
+        if memory:load("set_distance_loop") then
+            local action = showDialog(
+                "Set Distance — Loop Active",
+                "The distance loop is currently running.\nWhat do you want to do?",
+                {"Stop Loop"}, {"Keep Running"}
+            )
+            if action == 1 then
+                memory:save("set_distance_loop", false)
+                showToast("Loop will stop after current tick.")
+            end
+            done()
+            return
+        end
 
-        LOG.info(TAG, "Module activated. Target meters: " .. tostring(target_meters))
+        local result = showPrompt("Set Distance", {
+            {"Target distance (meters)", "number", "5000"},
+            {"Loop (auto re-apply)",     "switch",  "false"},
+            {"Loop interval (ms, min 250)", "number", "1000"},
+        })
 
-        scheduler:add(function(finishTask)
-            local activeTab = gg.getValues({{ address = BaseGameStatusRaw - 0xD4, flags = 4 }})
-            local isAdventureTab = (type(activeTab) == "table" and activeTab[1] and activeTab[1].value == 0)
+        if not result then
+            done()
+            return
+        end
 
-            if not isAdventureTab then
-                showToast("Go to Adventure tab and start a race first")
-                LOG.warn(TAG, "User is not in Adventure tab. Aborting.")
-                finishTask()
+        local target_meters = tonumber(result[1]) or 5000
+        local loop_enabled  = result[2] == "true"
+        local loop_interval = math.max(250, tonumber(result[3]) or 1000)
+
+        -- Warn if > 5000m — no stars, but race still counts distance
+        if target_meters > 5000 then
+            local warn = showDialog(
+                "Distance Warning",
+                "Distance over 5000m won't give you any stars.\n\nThe race will still register the distance, but no star rewards will be given. Continue?",
+                {"Continue"}, {"Cancel"}
+            )
+            if warn ~= 1 then
                 done()
                 return
             end
+        end
 
-            LOG.dbg(TAG, "Adventure tab confirmed. Resolving lib anchor...")
+        local function isValidDistanceBase(addr)
+            local check = gg.getValues({
+                { address = addr + 0x0,  flags = 4  }, -- current distance (DWORD, should be >= 0)
+                { address = addr + 0x10, flags = 16 }, -- float, should be a valid float
+                { address = addr + 0x14, flags = 16 }, -- float, should be a valid float
+            })
+            if not check or #check ~= 3 then return false end
+            
+            local dist  = check[1].value
+            local float1 = check[2].value
+            local float2 = check[3].value
+        
+            -- Distance should be a reasonable value (0 to 999999)
+            if type(dist) ~= "number" or dist < 0 or dist > 999999 then return false end
+            -- Floats should be non-zero valid numbers (in an active race these are set)
+            if type(float1) ~= "number" or float1 == 0 then return false end
+            if type(float2) ~= "number" or float2 == 0 then return false end
+        
+            return true
+        end
+        
+        local function resolveDistanceBase()
+            local cachedPtr = memory:load("set_distance_ptr")
+            if cachedPtr and cachedPtr ~= 0 then
+                local verify = gg.getValues({{ address = cachedPtr, flags = 32 }})
+                if verify and verify[1] and verify[1].value ~= 0 then
+                    local distanceBase = verify[1].value
+                    if isValidDistanceBase(distanceBase) then
+                        LOG.dbg(TAG, string.format("Cache hit + valid: ptr=0x%X → distanceBase=0x%X", cachedPtr, distanceBase))
+                        return distanceBase
+                    else
+                        -- Not in race — keep cache, just return nil
+                        LOG.warn(TAG, "Not in race — cache kept for next run.")
+                        return nil
+                    end
+                else
+                    -- ptr.address itself gone — game restarted, clear cache
+                    LOG.warn(TAG, "ptr.address invalid — clearing cache.")
+                    memory:save("set_distance_ptr", nil)
+                end
+            end
 
             local anchorTarget = BaseLib + offsets.lib_setDistanceBase
-            LOG.dbg(TAG, string.format("Lib base: 0x%X | Anchor target: 0x%X", BaseLib, anchorTarget))
+            LOG.dbg(TAG, string.format("Resolving from scratch | anchor=0x%X", anchorTarget))
 
             gg.clearResults()
             gg.setRanges(BaseRegion)
             gg.searchNumber(anchorTarget, 32)
-
             local level1Results = gg.getResults(gg.getResultsCount())
             gg.clearResults()
-            LOG.dbg(TAG, "Level 1 references found: " .. tostring(#level1Results))
 
             if #level1Results == 0 then
-                showToast("Start a race first")
-                LOG.warn(TAG, "No references found for anchor. User likely not in a race.")
-                finishTask()
-                done()
-                return
+                LOG.warn(TAG, "Level 1: no refs found")
+                return nil
             end
 
             local distanceBase = nil
@@ -85,32 +147,31 @@ return function(container)
                 gg.clearResults()
                 gg.setRanges(BaseRegion)
                 gg.searchNumber(ref1.address, 32)
-
                 local level2Results = gg.getResults(gg.getResultsCount())
                 gg.clearResults()
-                
+
                 for _, ref2 in ipairs(level2Results) do
                     local offsetAddr = ref2.address - 0xAC
 
                     gg.clearResults()
                     gg.setRanges(gg.REGION_C_ALLOC)
                     gg.searchNumber(offsetAddr, 32)
-
                     local level3Results = gg.getResults(gg.getResultsCount())
                     gg.clearResults()
-                    
+
                     if #level3Results > 0 then
                         local pointerReads = {}
                         for _, ref3 in ipairs(level3Results) do
                             table.insert(pointerReads, { address = ref3.address, flags = 32 })
                         end
-
                         local resolvedPointers = gg.getValues(pointerReads)
                         if resolvedPointers then
                             for _, ptr in ipairs(resolvedPointers) do
                                 if ptr and ptr.value and ptr.value ~= 0 then
+                                    memory:save("set_distance_ptr", ptr.address)
                                     distanceBase = ptr.value
-                                    LOG.info(TAG, string.format("distanceBase resolved: 0x%X", distanceBase))
+                                    LOG.info(TAG, string.format("Resolved + cached: ptr=0x%X → distanceBase=0x%X",
+                                        ptr.address, distanceBase))
                                     break
                                 end
                             end
@@ -123,26 +184,87 @@ return function(container)
                 if distanceBase then break end
             end
 
+            return distanceBase
+        end
+
+        local function apply()
+            local activeTab = gg.getValues({{ address = BaseGameStatusRaw - 0xD4, flags = 4 }})
+            local isAdventureTab = (type(activeTab) == "table" and activeTab[1] and activeTab[1].value == 0)
+
+            if not isAdventureTab then
+                LOG.warn(TAG, "Not in Adventure tab.")
+                showToast("Go to Adventure tab and start a race first")
+                return false
+            end
+
+            local distanceBase = resolveDistanceBase()
             if not distanceBase then
+                LOG.fatal(TAG, "Failed to resolve distanceBase.")
                 showToast("Start a race first")
-                LOG.fatal(TAG, "Failed to resolve distanceBase. Pointer chain dropped.")
+                return false
+            end
+
+            gg.setValues({
+                { address = distanceBase + 0x0,  flags = 4,  value = target_meters },
+                { address = distanceBase + 0x10, flags = 16, value = 2000000000 },
+                { address = distanceBase + 0x14, flags = 16, value = 2000000000 },
+            })
+
+            LOG.info(TAG, "Distance set: " .. tostring(target_meters) .. "m")
+            return true
+        end
+
+        scheduler:add(function(finishTask)
+            local ok = apply()
+
+            if not ok then
+                finishTask()
+                done() -- no deadlock — always exits
+                return
+            end
+
+            showToast("Distance set: " .. tostring(target_meters) .. "m")
+
+            if not loop_enabled then
                 finishTask()
                 done()
                 return
             end
-            
-            gg.clearResults()
-            
-            gg.setValues({
-                { address = distanceBase + 0x0,  flags = 4,  value = target_meters },
-                { address = distanceBase + 0x10, flags = 16, value = 2000000000 },
-                { address = distanceBase + 0x14, flags = 16, value = 2000000000 }
-            })
-            
-            showToast("Distance set to: " .. tostring(target_meters) .. "m")
-            LOG.info(TAG, "Distance set to: " .. tostring(target_meters) .. "m")
+
+            -- Loop mode — call done() immediately so button stays clickable
+            memory:save("set_distance_loop", true)
             finishTask()
-            done()
+            done() -- ← released here, no deadlock
+
+            local tickCount = 0
+            local function loopTick()
+                if not memory:load("set_distance_loop") then
+                    LOG.info(TAG, "Loop stopped.")
+                    showToast("Set Distance loop stopped.")
+                    memory:save("set_distance_ptr", nil) -- clear cache on stop
+                    return
+                end
+
+                gg.sleep(loop_interval)
+                tickCount = tickCount + 1
+
+                apply()
+
+                -- Reminder every 2 ticks
+                if tickCount % 2 == 0 then
+                    showToast("Distance loop running — tap Set Distance to stop", true)
+                end
+
+                scheduler:add(function(ft)
+                    loopTick()
+                    ft()
+                end)
+            end
+
+            scheduler:add(function(ft)
+                loopTick()
+                ft()
+            end)
         end)
     end)
 end
