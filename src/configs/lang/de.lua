@@ -1,3 +1,24 @@
+--[[
+  configs/lang/de.lua — German language 
+  Flat table of dotted keys -> strings, loaded by core/utils/lang.lua.
+  Looked up at runtime via the global T(key, ...) function, e.g.:
+      T("common.ok")                          -> "OK"
+      T("settings.window_width_desc", 400, 650) -> "Width of the floating menu (400 - 650 dp)"
+
+  Conventions:
+    - Keys are namespaced by file: "settings.*", "account.*", "cups.*", etc.
+    - %s / %d / %X etc. are string.format placeholders — keep them in the
+      same order when translating, but they don't need to keep the same
+      letter (e.g. %s can become %d if the translated grammar needs it).
+    - Entries that are Lua arrays (e.g. spinner option lists) are returned
+      as-is, untouched by string.format.
+    - LOG.*() calls, debug tags, and internal cache/state keys are NOT
+      translated — only user-visible text (dialogs, toasts, buttons,
+      module titles/descriptions) lives here.
+
+    This file handles the German localization for the VOID script.
+]]
+
 return {
 
 -- ── Common / shared (buttons, generic dialog text) ───────────────────────────
