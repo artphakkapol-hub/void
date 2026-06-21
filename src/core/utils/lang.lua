@@ -30,6 +30,7 @@ local AVAILABLE = {
     { code = "en", name = "English" },
     { code = "id", name = "Bahasa Indonesia" },
     { code = "es", name = "Español" },
+    { code = "de", name = "Deutsch" },
     -- more languages soon
 }
 

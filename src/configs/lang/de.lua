@@ -230,26 +230,26 @@ return {
 ["about.about_script.title"] = "Über das Skript",
 ["about.about_script.desc"] = "Ein mächtiges und hochgradig optimiertes Skript zur Speichermanipulation, entwickelt für Hill Climb Racing 2 auf der maßgeschneiderten Pivot-Umgebung.\n\nPivot herunterladen:\nhttps://github.com/vekendianorg/pivot/releases/",
 ["about.script_owner.title"] = "Skript-Eigentümer",
-["about.script_owner.desc"] = "- Vekendian Organization (GitHub: vekendianorg)",
+["about.script_owner.desc"] = "- Vekendian Organization (github: vekendianorg)",
 ["about.script_dev.title"] = "Skript-Entwickler",
 ["about.script_dev.desc"] = [[
-- Lazor (GitHub: lazor-git)
-- AMR (GitHub: amr-gt)
-- Erik (GitHub: eomthix)
+- Lazor (github: lazor-git)
+- AMR (github: amr-gt)
+- Erik (github: eomthix)
 ]],
 ["about.script_translator.title"] = "Übersetzer",
 ["about.script_translator.desc"] = [[
-- Englisch: Lazor (GitHub: lazor-git)
-- Bahasa Indonesia: Lazor (GitHub: lazor-git)
-- Spanisch: Jayy2k (GitHub: Jayy2k)
-- Deutsch: Gemini
+- Englisch: Lazor (github: lazor-git)
+- Bahasa Indonesia: Lazor (github: lazor-git)
+- Spanisch: Jayy2k (github: Jayy2k)
+- Deutsch: Erik (github: eomthix)
 ]],
 ["about.credits.title"] = "Credits",
 ["about.credits.desc"] = [[
-- Lazor (GitHub: lazor-git)
+- Lazor (github: lazor-git)
 - Lan9118 (Discord: lan9118)
-- AMR (GitHub: amr-gt)
-- Erik (GitHub: eomthix)
+- AMR (github: amr-gt)
+- Erik (github: eomthix)
 - Sr Romero
 ]],
 ["about.special_thanks.title"] = "Besonderer Dank an",
