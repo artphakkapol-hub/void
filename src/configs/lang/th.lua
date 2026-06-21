@@ -23,12 +23,12 @@
 return {
 
 -- ── Common / shared (buttons, generic dialog text) ───────────────────────────
-["common.ok"] = "OK",
-["common.cancel"] = "Отмена",
-["common.yes"] = "Да",
-["common.no"] = "Нет",
-["common.failed"] = "Ошибка",
-["common.success"] = "Обработано",
+["common.ok"] = "ตกลง",
+["common.cancel"] = "ยกเลิก",
+["common.yes"] = "ใช่",
+["common.no"] = "ไม่",
+["common.failed"] = "ไม่สําเร็จ",
+["common.success"] = "สําเร็จ",
 ["common.later"] = "Позже",
 ["common.got_it"] = "Получить это",
 ["common.retry"] = "Повторить",
