@@ -29,6 +29,7 @@
 local AVAILABLE = {
     { code = "en", name = "English" },
     { code = "id", name = "Bahasa Indonesia" },
+    { code = "es", name = "Español" },
     -- more languages soon
 }
 

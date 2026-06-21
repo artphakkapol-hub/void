@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-21 14:15:24
+-- Packed by bundle.py  •  2026-06-21 14:17:05
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -24746,6 +24746,7 @@ __vfs['core/utils/lang.lua'] = function(...)
 local AVAILABLE = {
     { code = "en", name = "English" },
     { code = "id", name = "Bahasa Indonesia" },
+    { code = "es", name = "Español" },
     -- more languages soon
 }
 
