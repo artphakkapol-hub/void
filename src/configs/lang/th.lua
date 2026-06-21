@@ -23,8 +23,8 @@
 return {
 
 -- ── Common / shared (buttons, generic dialog text) ───────────────────────────
-["common.ok"] = "OK",
-["common.cancel"] = "Отмена",
+["common.ok"] = "โอเค",
+["common.cancel"] = "ยกเลิก",
 ["common.yes"] = "Да",
 ["common.no"] = "Нет",
 ["common.failed"] = "Ошибка",
