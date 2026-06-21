@@ -8,195 +8,183 @@
   by a process change.
 ]]
 
+
+-- =========================
+-- Helpers
+-- =========================
+local function deepCopy(orig, seen)
+    if type(orig) ~= "table" then
+        return orig
+    end
+    if seen and seen[orig] then
+        return seen[orig]
+    end
+    local copy = {}
+    seen = seen or {}
+    seen[orig] = copy
+    for k, v in pairs(orig) do
+        copy[deepCopy(k, seen)] = deepCopy(v, seen)
+    end
+    return copy
+end
+
+local function getFileName(path)
+    path = tostring(path or "")
+    local name = path:match("([^/\\]+)$") or "background image.png"
+    name = name:gsub("[^%w%._%-]", "_")
+    if name == "" then
+        name = "background image.png"
+    end
+    return name
+end
+
+local function safeJoinPath(folder, name)
+    folder = tostring(folder or "")
+    name = getFileName(name)
+    if folder:sub(-1) == "/" then
+        return folder .. name
+    end
+    return folder .. "/" .. name
+end
+
+local function bytesToHex(data)
+    if type(data) ~= "string" then
+        return nil
+    end
+    return (data:gsub(".", function(c)
+        return string.format("%02x", string.byte(c))
+    end))
+end
+
+local function hexToBytes(hex)
+    if type(hex) ~= "string" then
+        return nil
+    end
+    hex = hex:gsub("%s+", "")
+    if hex == "" then
+        return ""
+    end
+    if #hex % 2 ~= 0 then
+        return nil
+    end
+    local out = hex:gsub("..", function(cc)
+        local n = tonumber(cc, 16)
+        if not n then
+            return ""
+        end
+        return string.char(n)
+    end)
+    return out
+end
+
+local function serializeValue(v, seen)
+    local t = type(v)
+    if t == "string" then
+        return string.format("%q", v)
+    elseif t == "number" or t == "boolean" then
+        return tostring(v)
+    elseif t == "table" then
+        if seen and seen[v] then
+            return "nil"
+        end
+        seen = seen or {}
+        seen[v] = true
+        local parts = {}
+        for k, val in pairs(v) do
+            local keyType = type(k)
+            local keyStr
+            if keyType == "string" then
+                keyStr = "[" .. string.format("%q", k) .. "]"
+            elseif keyType == "number" then
+                keyStr = "[" .. tostring(k) .. "]"
+            elseif keyType == "boolean" then
+                keyStr = "[" .. tostring(k) .. "]"
+            else
+                goto continue
+            end
+            local valueStr = serializeValue(val, seen)
+            if valueStr ~= nil then
+                parts[#parts + 1] = keyStr .. "=" .. valueStr
+            end
+            ::continue::
+        end
+        return "{" .. table.concat(parts, ",") .. "}"
+    end
+    return nil
+end
+
+local function serializeTable(t)
+    return "return " .. serializeValue(t)
+end
+
+local function rebuildMenu()
+    MainHandler.post(function()
+        if menuView then
+            pcall(function() windowManager.removeView(menuView) end)
+            menuView = nil
+            activeView = nil
+        end
+        switchToMenu()
+        createMenuView("settings")
+        switchToMenu()
+    end)
+end
+
+local function saveAndRefresh()
+    LOG.info("Settings", "UI preferences saved and refresh triggered")
+    memory:save_global("ui_prefs", UI)
+    MainHandler.post(function()
+        if menuView then
+            menuView.setBackground(getSkin(UI.BG, 16, 0, UI.STROKE))
+        end
+        if activeTabView then
+            loadCategory("settings", activeTabView)
+        end
+    end)
+end
+
+local function applyTheme(shareId)
+    local TAG = "ApplyTheme"
+    if shareId and shareId ~= "" then
+        local rawText, err = paste.get("https://paste.rs/" .. shareId)
+        if rawText then
+            local ok, exportData = pcall(load(rawText))
+            if ok and type(exportData) == "table" and exportData.version then
+                for k, v in pairs(exportData.ui) do
+                    if UI[k] ~= nil then
+                        UI[k] = deepCopy(v)
+                    end
+                end
+                if exportData.img_url then
+                    showToast(t("theme_downloading_bg"))
+                    local dest = gg.FILES_DIR .. "/" .. (exportData.name or "background_image_" .. tostring(os.time()) .. ".png")
+                    local path, dErr = catbox.download(exportData.img_url, dest)
+                    if path then
+                        UI.BG_IMAGE.PATH = path
+                    else
+                        LOG.error(TAG, "Background image download failed")
+                    end
+                else
+                    UI.BG_IMAGE.PATH = "no_media"
+                end
+                memory:save_global("ui_prefs", UI)
+                saveAndRefresh()
+                showDialog(T("common.success"), t("theme_imported"), T("common.ok"))
+            else
+                showDialog(T("common.failed"), t("theme_invalid_bundle"), T("common.ok"))
+            end
+        else
+            showDialog(T("common.failed"), t("theme_cloud_error", tostring(err)), T("common.ok"))
+        end
+    end
+end
+
 return function(container)
-    -- =========================
-    -- Helpers
-    -- =========================
 
     -- Shorthand for this tab's translation namespace: t("auto_update.title")
     -- instead of T("settings.auto_update.title").
     local function t(key, ...) return T("settings." .. key, ...) end
 
-    local function deepCopy(orig, seen)
-        if type(orig) ~= "table" then
-            return orig
-        end
-    
-        if seen and seen[orig] then
-            return seen[orig]
-        end
-    
-        local copy = {}
-        seen = seen or {}
-        seen[orig] = copy
-    
-        for k, v in pairs(orig) do
-            copy[deepCopy(k, seen)] = deepCopy(v, seen)
-        end
-    
-        return copy
-    end
-    
-    local function getFileName(path)
-        path = tostring(path or "")
-        local name = path:match("([^/\\]+)$") or "background image.png"
-        name = name:gsub("[^%w%._%-]", "_")
-        if name == "" then
-            name = "background image.png"
-        end
-        return name
-    end
-    
-    local function safeJoinPath(folder, name)
-        folder = tostring(folder or "")
-        name = getFileName(name)
-        if folder:sub(-1) == "/" then
-            return folder .. name
-        end
-        return folder .. "/" .. name
-    end
-    
-    local function bytesToHex(data)
-        if type(data) ~= "string" then
-            return nil
-        end
-        return (data:gsub(".", function(c)
-            return string.format("%02x", string.byte(c))
-        end))
-    end
-    
-    local function hexToBytes(hex)
-        if type(hex) ~= "string" then
-            return nil
-        end
-    
-        hex = hex:gsub("%s+", "")
-        if hex == "" then
-            return ""
-        end
-    
-        if #hex % 2 ~= 0 then
-            return nil
-        end
-    
-        local out = hex:gsub("..", function(cc)
-            local n = tonumber(cc, 16)
-            if not n then
-                return ""
-            end
-            return string.char(n)
-        end)
-    
-        return out
-    end
-    
-    local function serializeValue(v, seen)
-        local t = type(v)
-    
-        if t == "string" then
-            return string.format("%q", v)
-        elseif t == "number" or t == "boolean" then
-            return tostring(v)
-        elseif t == "table" then
-            if seen and seen[v] then
-                return "nil"
-            end
-    
-            seen = seen or {}
-            seen[v] = true
-    
-            local parts = {}
-            for k, val in pairs(v) do
-                local keyType = type(k)
-                local keyStr
-    
-                if keyType == "string" then
-                    keyStr = "[" .. string.format("%q", k) .. "]"
-                elseif keyType == "number" then
-                    keyStr = "[" .. tostring(k) .. "]"
-                elseif keyType == "boolean" then
-                    keyStr = "[" .. tostring(k) .. "]"
-                else
-                    goto continue
-                end
-    
-                local valueStr = serializeValue(val, seen)
-                if valueStr ~= nil then
-                    parts[#parts + 1] = keyStr .. "=" .. valueStr
-                end
-    
-                ::continue::
-            end
-    
-            return "{" .. table.concat(parts, ",") .. "}"
-        end
-    
-        return nil
-    end
-    
-    local function serializeTable(t)
-        return "return " .. serializeValue(t)
-    end
-    
-    local function rebuildMenu()
-        MainHandler.post(function()
-            if menuView then
-                pcall(function() windowManager.removeView(menuView) end)
-                menuView = nil
-                activeView = nil
-            end
-            
-            switchToMenu()
-            createMenuView("settings")
-            switchToMenu()
-        end)
-    end
-    
-    local function saveAndRefresh()
-        LOG.info("Settings", "UI preferences saved and refresh triggered")
-        memory:save_global("ui_prefs", UI)
-        MainHandler.post(function()
-            if menuView then
-                menuView.setBackground(getSkin(UI.BG, 16, 0, UI.STROKE))
-            end
-            if activeTabView then
-                loadCategory("settings", activeTabView)
-            end
-        end)
-        
-    end
-    
-    local function applyTheme(shareId)
-        local TAG = "ApplyTheme"
-        if shareId and shareId ~= "" then
-            local rawText, err = paste.get("https://paste.rs/" .. shareId)
-            
-            if rawText then
-                local ok, exportData = pcall(load(rawText))
-                if ok and type(exportData) == "table" and exportData.version then
-                    for k, v in pairs(exportData.ui) do if UI[k] ~= nil then UI[k] = deepCopy(v) end end
-    
-                    if exportData.img_url then
-                        showToast(t("theme_downloading_bg"))
-                        local dest = gg.FILES_DIR .. "/" .. (exportData.name or "background_image_" .. tostring(os.time()).. ".png")
-                        local path, dErr = catbox.download(exportData.img_url, dest)
-                        if path then UI.BG_IMAGE.PATH = path else LOG.error(TAG, "Background image download failed") end
-                    else
-                        UI.BG_IMAGE.PATH = "no_media"
-                    end
-    
-                    memory:save_global("ui_prefs", UI)
-                    saveAndRefresh()
-                    showDialog(T("common.success"), t("theme_imported"), T("common.ok"))
-                else
-                    showDialog(T("common.failed"), t("theme_invalid_bundle"), T("common.ok"))
-                end
-            else
-                showDialog(T("common.failed"), t("theme_cloud_error", tostring(err)), T("common.ok"))
-            end
-        end
-    end
-    
     -- --- Updater ────────────────────────────────────────────────────────
     
     addModuleSep(container, t("section_updates"))

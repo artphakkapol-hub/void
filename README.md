@@ -1,7 +1,7 @@
 # 🌌 Void
-> A powerful and highly optimized memory manipulation script built for Hill Climb Racing 2 on the custom **GG: ME** (GameGuardian: Memory Editor) environment.
+> A powerful and highly optimized memory manipulation script built for Hill Climb Racing 2 on the custom **Pivot** environment.
 >
-> Download ME: https://github.com/vekendianorg/me/releases/
+> Download Pivot: https://github.com/vekendianorg/pivot/releases/
 
 ---
 
