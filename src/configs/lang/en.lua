@@ -256,13 +256,29 @@ return {
 ["about.script_owner.title"] = "Script Owner",
 ["about.script_owner.desc"] = "- Vekendian Organization (github: vekendianorg)",
 ["about.script_dev.title"] = "Script Developer",
-["about.script_dev.desc"] = "- Lazor (github: lazor-git)\n- AMR (github: amr-gt)\n- Erik (github: eomthix)",
+["about.script_dev.desc"] = [[
+- Lazor (github: lazor-git)
+- AMR (github: amr-gt)
+- Erik (github: eomthix)
+]],
 ["about.script_translator.title"] = "Script Translator",
-["about.script_translator.desc"] = "- English: Lazor (github: lazor-git)",
+["about.script_translator.desc"] = [[
+- English: Lazor (github: lazor-git)
+- Bahasa Indonesia: Lazor (github: lazor-git)
+- Español: Jayy2k (github: Jayy2k)
+]],
 ["about.credits.title"] = "Credits",
-["about.credits.desc"] = "- Lazor (github: lazor-git)\n- Lan9118 (discord: lan9118)\n- AMR (github: amr-gt)\n- Erik (github: eomthix)\n- Sr Romero",
+["about.credits.desc"] = [[
+- Lazor (github: lazor-git)
+- Lan9118 (discord: lan9118)
+- AMR (github: amr-gt)
+- Erik (github: eomthix)
+- Sr Romero
+]],
 ["about.special_thanks.title"] = "Special Thanks",
-["about.special_thanks.desc"] = "- Aryan/KokushiboModz",
+["about.special_thanks.desc"] = [[
+- Aryan/KokushiboModz
+]],
 
 -- ── modules/tabs/other.lua ────────────────────────────────────────────────────
 ["other.debug_mode.title"] = "Debug Mode",

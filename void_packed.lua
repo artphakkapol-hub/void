@@ -1,4 +1,4 @@
--- Packed by bundle.py  •  2026-06-21 14:17:05
+-- Packed by bundle.py  •  2026-06-21 14:32:19
 
 -- Do not edit — regenerate with:  python bundle.py
 
@@ -22315,13 +22315,29 @@ return {
 ["about.script_owner.title"] = "Script Owner",
 ["about.script_owner.desc"] = "- Vekendian Organization (github: vekendianorg)",
 ["about.script_dev.title"] = "Script Developer",
-["about.script_dev.desc"] = "- Lazor (github: lazor-git)\n- AMR (github: amr-gt)\n- Erik (github: eomthix)",
+["about.script_dev.desc"] = [[
+- Lazor (github: lazor-git)
+- AMR (github: amr-gt)
+- Erik (github: eomthix)
+]],
 ["about.script_translator.title"] = "Script Translator",
-["about.script_translator.desc"] = "- English: Lazor (github: lazor-git)",
+["about.script_translator.desc"] = [[
+- English: Lazor (github: lazor-git)
+- Bahasa Indonesia: Lazor (github: lazor-git)
+- Español: Jayy2k (github: Jayy2k)
+]],
 ["about.credits.title"] = "Credits",
-["about.credits.desc"] = "- Lazor (github: lazor-git)\n- Lan9118 (discord: lan9118)\n- AMR (github: amr-gt)\n- Erik (github: eomthix)\n- Sr Romero",
+["about.credits.desc"] = [[
+- Lazor (github: lazor-git)
+- Lan9118 (discord: lan9118)
+- AMR (github: amr-gt)
+- Erik (github: eomthix)
+- Sr Romero
+]],
 ["about.special_thanks.title"] = "Special Thanks",
-["about.special_thanks.desc"] = "- Aryan/KokushiboModz",
+["about.special_thanks.desc"] = [[
+- Aryan/KokushiboModz
+]],
 
 -- ── modules/tabs/other.lua ────────────────────────────────────────────────────
 ["other.debug_mode.title"] = "Debug Mode",
@@ -22810,13 +22826,29 @@ return {
 ["about.script_owner.title"] = "Propietario del Script",
 ["about.script_owner.desc"] = "- Vekendian Organization (github: vekendianorg)",
 ["about.script_dev.title"] = "Desarrolladores del Script",
-["about.script_dev.desc"] = "- Lazor (github: lazor-git)\n- AMR (github: amr-gt)\n- Erik (github: eomthix)",
+["about.script_dev.desc"] = [[
+- Lazor (github: lazor-git)
+- AMR (github: amr-gt)
+- Erik (github: eomthix)
+]],
 ["about.script_translator.title"] = "Traductor del Script",
-["about.script_translator.desc"] = "- Inglés: Lazor (github: lazor-git)",
+["about.script_translator.desc"] = [[
+- English: Lazor (github: lazor-git)
+- Bahasa Indonesia: Lazor (github: lazor-git)
+- Español: Jayy2k (github: Jayy2k)
+]],
 ["about.credits.title"] = "Créditos",
-["about.credits.desc"] = "- Lazor (github: lazor-git)\n- Lan9118 (discord: lan9118)\n- AMR (github: amr-gt)\n- Erik (github: eomthix)\n- Sr Romero",
+["about.credits.desc"] = [[
+- Lazor (github: lazor-git)
+- Lan9118 (discord: lan9118)
+- AMR (github: amr-gt)
+- Erik (github: eomthix)
+- Sr Romero
+]],
 ["about.special_thanks.title"] = "Agradecimientos Especiales",
-["about.special_thanks.desc"] = "- Aryan/KokushiboModz",
+["about.special_thanks.desc"] = [[
+- Aryan/KokushiboModz
+]],
 
 -- ── modules/tabs/other.lua ────────────────────────────────────────────────────
 ["other.debug_mode.title"] = "Modo Depuración",
@@ -23304,13 +23336,29 @@ return {
 ["about.script_owner.title"] = "Pemilik Skrip",
 ["about.script_owner.desc"] = "- Organisasi Vekendian (github: vekendianorg)",
 ["about.script_dev.title"] = "Pengembang Skrip",
-["about.script_dev.desc"] = "- Lazor (github: lazor-git)\n- AMR (github: amr-gt)\n- Erik (github: eomthix)",
+["about.script_dev.desc"] = [[
+- Lazor (github: lazor-git)
+- AMR (github: amr-gt)
+- Erik (github: eomthix)
+]],
 ["about.script_translator.title"] = "Penerjemah Skrip",
-["about.script_translator.desc"] = "- Bahasa Indonesia: Lazor (github: lazor-git)",
+["about.script_translator.desc"] = [[
+- English: Lazor (github: lazor-git)
+- Bahasa Indonesia: Lazor (github: lazor-git)
+- Español: Jayy2k (github: Jayy2k)
+]],
 ["about.credits.title"] = "Kredit",
-["about.credits.desc"] = "- Lazor (github: lazor-git)\n- Lan9118 (discord: lan9118)\n- AMR (github: amr-gt)\n- Erik (github: eomthix)\n- Sr Romero",
+["about.credits.desc"] = [[
+- Lazor (github: lazor-git)
+- Lan9118 (discord: lan9118)
+- AMR (github: amr-gt)
+- Erik (github: eomthix)
+- Sr Romero
+]],
 ["about.special_thanks.title"] = "Terima Kasih Khusus",
-["about.special_thanks.desc"] = "- Aryan/KokushiboModz",
+["about.special_thanks.desc"] = [[
+- Aryan/KokushiboModz
+]],
 
 -- ── modules/tabs/other.lua ────────────────────────────────────────────────────
 ["other.debug_mode.title"] = "Mode Debug",
@@ -24745,8 +24793,8 @@ __vfs['core/utils/lang.lua'] = function(...)
 
 local AVAILABLE = {
     { code = "en", name = "English" },
-    { code = "id", name = "Bahasa Indonesia" },
     { code = "es", name = "Español" },
+    { code = "id", name = "Bahasa Indonesia" },
     -- more languages soon
 }
 
