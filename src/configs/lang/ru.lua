@@ -17,9 +17,7 @@
       translated — only user-visible text (dialogs, toasts, buttons,
       module titles/descriptions) lives here.
 
-  This file is the always-present fallback: every other language file only
-  needs to cover the keys it has translations for. Missing keys silently
-  fall back to English.
+    This file handles the Russian localization for the VOID script.
 ]]
 
 return {
