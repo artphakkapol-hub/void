@@ -45,22 +45,22 @@ return {
 ["common.warning"] = "ระวัง",
 
 -- ── main.lua (boot, updater, virtual-space detection, main loop) ─────────────
-["main.exit_active_ops_title"] = "เตือนก่อน: ระบบยังทำงานอยู่",
-["main.exit_active_ops_msg"] = "ยังมีอีก %d งานรันอยู่ข้างหลัง\nถ้าฝืนปิดตอนนี้ เกมอาจจะรวนหรือพังได้",
+["main.exit_active_ops_title"] = "ระวัง: ระบบยังทำงานอยู่",
+["main.exit_active_ops_msg"] = "ยังมีอีก %d งานรันอยู่ข้างหลัง\nถ้าฝืนปิดตอนนี้ เกมอาจพังได้",
 ["main.initializing"] = "กำลังโหลดระบบ...",
 ["main.no_app_found"] = "หาตัวเกมไม่เจอ",
 ["main.arch_64bit_required_title"] = "ต้องใช้ 64-bit เท่านั้น",
 ["main.arch_64bit_required_msg"] = "บังคับใช้ ARMv8a ส่วนพวก x86_64 รองรับแค่บางส่วน",
-["main.update_available_title"] = "มีอัปเดตใหม่มาแล้ว!",
+["main.update_available_title"] = "อัปเดตใหม่มาแล้ว!",
 ["main.update_available_msg"] = "เวอร์ชัน v%s มาแล้ว (ตอนนี้ใช้: v%s)\n\n%s\n\nจะอัปเดตเลยไหม?",
 ["main.no_changelog"] = "ไม่มีรายละเอียดการอัปเดต",
 ["main.downloading_version"] = "กำลังโหลด v%s...",
-["main.update_download_failed_msg"] = "โหลดอัปเดตไม่ผ่าน:\n%s",
+["main.update_download_failed_msg"] = "อัปเดตไม่ผ่าน:\n%s",
 ["main.update_write_failed_msg"] = "เขียนไฟล์ลงที่นี่ไม่ได้:\n%s",
-["main.update_done_title"] = "VOID อัปเดตเป็น v%s เรียบร้อย",
-["main.update_done_msg"] = "อัปเดต VOID สำเร็จแล้ว\n\nไฟล์สคริปต์ใหม่ถูกเซฟไว้ที่:\nvoid_v%s.lua\n\nไปกดรันต่อใน GameGuardian ได้เลย",
+["main.update_done_title"] = "VOID อัปเดตเป็น v%s สําเร็จ",
+["main.update_done_msg"] = "อัปเดต VOID สำเร็จแล้ว\n\nไฟล์ใหม่ถูกเซฟไว้ที่:\nvoid_v%s.lua\n\nไปรันต่อใน GameGuardian ได้เลย",
 ["main.launching_version"] = "กำลังเปิด v%s...",
-["main.launch_failed_msg"] = "โหลดมาแล้ว แต่เปิดรันไม่ได้:\n%s",
+["main.launch_failed_msg"] = "รันไม่ได้:\n%s",
 
 ["main.multiple_spaces_title"] = "Multiple Spaces Detected",
 ["main.multiple_spaces_desc"] = "HCR2 was found in %d virtual spaces.\nSelect the space you are currently playing in.",
@@ -264,6 +264,7 @@ return {
 - Bahasa Indonesia: Lazor (github: lazor-git)
 - Español: Jayy2k (github: Jayy2k)
 - Deutsch: Erik (github: eomthix)
+- Thai: NaiArt777 (github: artphakkapol-hub)
 ]],
 ["about.credits.title"] = "Credits",
 ["about.credits.desc"] = [[
